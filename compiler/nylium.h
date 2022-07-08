@@ -13,3 +13,15 @@
 * See the License for the specific language governing permissionsand
 * limitations under the License.
 */
+#pragma once
+
+namespace nylium {
+	namespace compiler {
+		int compile(/*TODO params*/);
+	}
+}
+#ifndef NYLIUM_MAIN
+int main(/*TODO params*/) {
+	//TODO call compile
+}
+#endif

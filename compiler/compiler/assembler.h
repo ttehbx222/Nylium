@@ -15,28 +15,6 @@
 */
 #pragma once
 
-#include "file_io.h"
-#include "serializer.h"
+namespace nylium {
 
-namespace yaml {
-	enum class type {
-
-	};
-	class node {
-	public:
-		node(type type, serializer::serializable value);
-		node(type type, std::string value);
-	};
-	class table : public node {
-	public:
-		node& get(std::string key);
-	};
-	class Config : public table{
-	private:
-		io::File* config_file;
-	public:
-		Config(io::File& file);
-		Config(std::string file);
-		void save();
-	};
 }
