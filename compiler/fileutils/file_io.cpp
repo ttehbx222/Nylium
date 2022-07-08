@@ -15,7 +15,23 @@
 */
 
 #include "file_io.h"
+#include <fstream>
 
 namespace io {
-
+	File::File(std::string path) {
+		std::ifstream file(path);
+		file_path = path;
+		if (file_exists = file.good()) {
+			std::string line;
+			while (std::getline(file, &line)) {
+				file_content.push_back(line);
+			}
+		}
+	}
+	File::save() {
+		std::ofstream file(file_path);
+		for (std::string line : file_content) {
+			file << line << std::endl;
+		}
+	}
 }

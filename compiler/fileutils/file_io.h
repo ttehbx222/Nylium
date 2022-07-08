@@ -15,7 +15,25 @@
 */
 
 #include <string>
+#include <vector>
 
 namespace io {
-	
+	class File {
+	private:
+		std::string file_path;
+		bool file_exists;
+		std::vector<std::string> file_content;
+	public:
+		File(std::string path);
+		inline std::string path() {
+			return file_path;
+		}
+		inline bool file_exists() {
+			return good;
+		}
+		inline std::vector<std::string>& content() {
+			return content_lines;
+		}
+		void save();
+	};
 }
