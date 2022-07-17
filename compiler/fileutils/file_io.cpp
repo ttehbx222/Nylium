@@ -29,7 +29,7 @@ namespace io {
 			file_content.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
 		}
 	}
-	TextFile::save() {
+	void TextFile::save() {
 		ofstream() << file_content;
 	}
 }

@@ -28,7 +28,7 @@ namespace io {
 	public:
 		File(std::string path);
 		inline std::ofstream& ofstream() {
-			return sfile_ofstream;
+			return file_ofstream;
 		}
 		inline std::ifstream& ifstream() {
 			return file_ifstream;
@@ -41,8 +41,8 @@ namespace io {
 	private:
 		std::string file_content;
 	public:
-		TextFile(std::string path) : File(path);
-		inline std::string& content() const {
+		TextFile(std::string path);
+		inline std::string& content() {
 			return file_content;
 		}
 		void save();

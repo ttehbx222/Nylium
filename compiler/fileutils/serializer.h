@@ -14,10 +14,32 @@
 * limitations under the License.
 */
 #pragma once
+#include <string>
 
 namespace serializer {
-	template<class T>
+#define TYPE_ERROR -2
+	template<class V>
 	class Serializable {
-		virtual T serialize() = 0;
+	public:
+		virtual V serialize() = 0;
+		template<class T>
+		virtual T& value() = 0;
 	};
+	namespace string {
+		class SerializableString : public Serializable<std::string>{
+		private:
+			std::string s_str;
+		public:
+			template<class T>
+			T& value() {
+				if (typeid(T) != typeid(std::string)) {
+					throw TYPE_ERROR;
+				}
+				return s_str;
+			}
+			std::string serialze() {
+				return s_str;
+			}
+		};
+	}
 }

@@ -24,8 +24,24 @@ namespace yaml {
 	};
 	class Value {
 	private:
-		Type type;
-		serializer::Serializable<std::string> value;
+		Type value_type;
+		serializer::Serializable<std::string> value_value;
+	public:
+		Value(std::string& value);
+		Value(long long value);
+		Value(long double value);
+		Value(std::vector<std::string>& value);
+		Value(std::vector<long long>& value);
+		Value(std::vector<long double>& value);
+		Value(Type type, serializer::Serializable<std::string> value_value);
+		static link(std::string value);
+		inline Type type() {
+			return value_type;
+		}
+		template<class T>
+		T& value() {
+			return value_value.value<T>();
+		}
 	};
 	class Node {
 	public:
