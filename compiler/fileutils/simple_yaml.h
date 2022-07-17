@@ -17,6 +17,7 @@
 
 #include "file_io.h"
 #include "serializer.h"
+#include <map>
 
 namespace yaml {
 	enum class Type {
@@ -25,31 +26,51 @@ namespace yaml {
 	class Value {
 	private:
 		Type value_type;
-		serializer::Serializable<std::string> value_value;
+		serializer::Serializable<std::string>* value_value;
 	public:
+		Value();
 		Value(std::string& value);
 		Value(long long value);
 		Value(long double value);
 		Value(std::vector<std::string>& value);
 		Value(std::vector<long long>& value);
 		Value(std::vector<long double>& value);
-		Value(Type type, serializer::Serializable<std::string> value_value);
-		static link(std::string value);
+		Value(Type type, serializer::Serializable<std::string>* value_value);
+		static Value link(std::string value);
 		inline Type type() {
 			return value_type;
 		}
 		template<class T>
-		T& value() {
-			return value_value.value<T>();
-		}
+		T& value();
+		std::string& value();
 	};
 	class Node {
+	private:
+		Type node_type;
 	public:
-		Node(Type type, serializer::Serializable<std::string>& value);
-		Node(Type type, std::string& value);
+		inline Node(Type type) {
+			node_type = type;
+		}
+		inline Type type() {
+			return node_type;
+		}
+	};
+	class ValueNode : public Node {
+	private:
+		Value node_value;
+	public:
+		inline ValueNode(Value& value) : Node(value.type()) {
+			node_value = value;
+		}
+		inline Value& value() {
+			return node_value;
+		}
 	};
 	class Table : public Node {
+	private:
+		std::map<std::string, Node> content;
 	public:
+		Table();
 		Node& get(std::string& key);
 	};
 	class Config : public Table{

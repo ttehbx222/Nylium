@@ -13,7 +13,56 @@
 * See the License for the specific language governing permissionsand
 * limitations under the License.
 */
+#include "simple_yaml.h"
 
 namespace yaml {
+	Value::Value() {
 
+	}
+	Value::Value(std::string& value) {
+
+	}
+	Value::Value(long long value) {
+
+	}
+	Value::Value(long double value) {
+
+	}
+	Value::Value(std::vector<std::string>& value) {
+
+	}
+	Value::Value(std::vector<long long>& value) {
+
+	}
+	Value::Value(std::vector<long double>& value) {
+
+	}
+	Value::Value(Type type, serializer::Serializable<std::string>* value_value) {
+
+	}
+	Value Value::link(std::string value) {
+
+	}
+
+	std::string& Value::value() {
+
+	}
+	
+	Table::Table() {
+
+	}
+	Node& Table::get(std::string& key) {
+
+	}
+
+	
+	Config::Config(io::TextFile& file) {
+
+	}
+	Config::Config(std::string& file) {
+
+	}
+	void Config::save() {
+
+	}
 }

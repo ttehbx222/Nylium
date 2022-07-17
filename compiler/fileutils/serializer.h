@@ -17,28 +17,17 @@
 #include <string>
 
 namespace serializer {
-#define TYPE_ERROR -2
-	template<class V>
+	template<class S>
 	class Serializable {
 	public:
-		virtual V serialize() = 0;
-		template<class T>
-		virtual T& value() = 0;
+		virtual S serialize() = 0;
 	};
 	namespace string {
-		class SerializableString : public Serializable<std::string>{
-		private:
-			std::string s_str;
+		struct SerializableString : public Serializable<std::string>{
 		public:
-			template<class T>
-			T& value() {
-				if (typeid(T) != typeid(std::string)) {
-					throw TYPE_ERROR;
-				}
-				return s_str;
-			}
+			std::string string;
 			std::string serialze() {
-				return s_str;
+				return string;
 			}
 		};
 	}
