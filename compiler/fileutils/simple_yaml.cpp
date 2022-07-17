@@ -45,10 +45,10 @@ namespace yaml {
 	}
 
 	std::string& Value::value() {
-
+		
 	}
 	
-	Table::Table() {
+	Table::Table() : Node(Type::TABLE) {
 
 	}
 	Node& Table::get(std::string& key) {

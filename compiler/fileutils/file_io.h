@@ -36,6 +36,9 @@ namespace io {
 		inline std::string path() {
 			return name;
 		}
+		inline void copyTo(io::File& file) {
+			file.ofstream() << ifstream().rdbuf();
+		}
 	};
 	class TextFile : public File {
 	private:

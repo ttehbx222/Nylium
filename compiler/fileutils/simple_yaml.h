@@ -21,7 +21,8 @@
 
 namespace yaml {
 	enum class Type {
-
+		TABLE,
+		YAML_NULL
 	};
 	class Value {
 	private:
