@@ -17,23 +17,33 @@
 
 #include <string>
 #include <vector>
+#include <fstream>
 
 namespace io {
 	class File {
 	private:
-		std::string file_path;
-		bool file_exists;
-		std::vector<std::string> file_content;
+		std::string name;
+		std::ofstream file_ofstream;
+		std::ifstream file_ifstream;
 	public:
 		File(std::string path);
+		inline std::ofstream& ofstream() {
+			return sfile_ofstream;
+		}
+		inline std::ifstream& ifstream() {
+			return file_ifstream;
+		}
 		inline std::string path() {
-			return file_path;
+			return name;
 		}
-		inline bool file_exists() {
-			return good;
-		}
-		inline std::vector<std::string>& content() {
-			return content_lines;
+	};
+	class TextFile : public File {
+	private:
+		std::string file_content;
+	public:
+		TextFile(std::string path) : File(path);
+		inline std::string& content() const {
+			return file_content;
 		}
 		void save();
 	};

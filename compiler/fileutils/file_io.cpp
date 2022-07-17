@@ -15,23 +15,21 @@
 */
 
 #include "file_io.h"
-#include <fstream>
+#include <streambuf>
 
 namespace io {
 	File::File(std::string path) {
-		std::ifstream file(path);
-		file_path = path;
-		if (file_exists = file.good()) {
-			std::string line;
-			while (std::getline(file, &line)) {
-				file_content.push_back(line);
-			}
+		name = path;
+		file_ofstream.open(path);
+		file_ifstream.open(path);
+	}
+	TextFile::TextFile(std::string path) : File(path) {
+		std::ifstream& file = ifstream();
+		if (file.good()) {
+			file_content.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
 		}
 	}
-	File::save() {
-		std::ofstream file(file_path);
-		for (std::string line : file_content) {
-			file << line << std::endl;
-		}
+	TextFile::save() {
+		ofstream() << file_content;
 	}
 }

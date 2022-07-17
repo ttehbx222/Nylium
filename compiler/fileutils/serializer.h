@@ -16,7 +16,8 @@
 #pragma once
 
 namespace serializer {
-	class serializable {
-
+	template<class T>
+	class Serializable {
+		virtual T serialize() = 0;
 	};
 }

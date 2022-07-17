@@ -19,24 +19,29 @@
 #include "serializer.h"
 
 namespace yaml {
-	enum class type {
+	enum class Type {
 
 	};
-	class node {
-	public:
-		node(type type, serializer::serializable value);
-		node(type type, std::string value);
-	};
-	class table : public node {
-	public:
-		node& get(std::string key);
-	};
-	class Config : public table{
+	class Value {
 	private:
-		io::File* config_file;
+		Type type;
+		serializer::Serializable<std::string> value;
+	};
+	class Node {
 	public:
-		Config(io::File& file);
-		Config(std::string file);
+		Node(Type type, serializer::Serializable<std::string>& value);
+		Node(Type type, std::string& value);
+	};
+	class Table : public Node {
+	public:
+		Node& get(std::string& key);
+	};
+	class Config : public Table{
+	private:
+		io::TextFile* config_file;
+	public:
+		Config(io::TextFile& file);
+		Config(std::string& file);
 		void save();
 	};
 }
