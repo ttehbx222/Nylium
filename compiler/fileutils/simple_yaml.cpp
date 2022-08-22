@@ -43,6 +43,9 @@ namespace yaml {
 	Value Value::link(std::string value) {
 
 	}
+	Value Value::detect(std::string value) {
+
+	}
 
 	std::string& Value::value() {
 		

@@ -22,7 +22,12 @@
 namespace yaml {
 	enum class Type {
 		TABLE,
-		YAML_NULL
+		YAML_NULL,
+		LINK,
+		INT,
+		FLOAT,
+		STRING,
+		LIST
 	};
 	class Value {
 	private:
@@ -37,7 +42,8 @@ namespace yaml {
 		Value(std::vector<long long>& value);
 		Value(std::vector<long double>& value);
 		Value(Type type, serializer::Serializable<std::string>* value_value);
-		static Value link(std::string value);
+		static Value link(std::string& value);
+		static Value detect(std::string& value);
 		inline Type type() {
 			return value_type;
 		}

@@ -23,8 +23,7 @@ namespace serializer {
 		virtual S serialize() = 0;
 	};
 	namespace string {
-		struct SerializableString : public Serializable<std::string>{
-		public:
+		struct SelfSerializableString : public Serializable<std::string>{
 			std::string string;
 			std::string serialze() {
 				return string;
