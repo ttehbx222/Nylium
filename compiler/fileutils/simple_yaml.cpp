@@ -40,10 +40,10 @@ namespace yaml {
 	Value::Value(Type type, serializer::Serializable<std::string>* value_value) {
 
 	}
-	Value Value::link(std::string value) {
+	Value Value::link(std::string& value) {
 
 	}
-	Value Value::detect(std::string value) {
+	Value Value::detect(std::string& value) {
 
 	}
 
