@@ -2,7 +2,7 @@
 * Copyright 2022 ttehbx222(Lukas Nieswand)
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
+* you may not use t  his file except in compliance with the License.
 * You may obtain a copy of the License at
 *
 * http ://www.apache.org/licenses/LICENSE-2.0
@@ -19,7 +19,7 @@
 
 namespace nylium {
 	namespace codebody {
-		enum CB_Type {
+		/*enum CB_Type {
 			OPTION_FIELD = 0x1,
 			OPTION_FUNCTION = 0x2,
 			OPTION_OBJECT = 0x4,
@@ -46,6 +46,6 @@ namespace nylium {
 		struct CodeBody {
 			int type;
 		};
-		CodeBody* get(CB_Type type, std::string name);
+		CodeBody* get(CB_Type type, std::string name);*/
 	}
 }
