@@ -14,11 +14,89 @@
 * limitations under the License.
 */
 #pragma once
-#include "../../datautils/tree.h"
 #include "code_body.h"
+#include <string>
+#include <map>
 
 namespace nylium {
 	namespace syntax {
-		Tree<codebody::CB_Type>* get(); //TODO change to reference when tree constructor loop is fixed
+
+		class TypeDeclaration;
+		class Type;
+
+		class Specification {
+			size_t size;
+			Type* spec_types;
+		};
+
+		class Type {
+		private:
+			TypeDeclaration type;
+			Specification spec;
+		public:
+			//TODO matching
+		};
+
+		class Scope {
+		private:
+			Scope* parent;
+			std::map<std::string, Declaration*> accessables;
+		public:
+			inline Scope* getParent() {
+				return parent;
+			}
+			Declaration* searchAccessables(std::string key, Specification sepc);
+		};
+
+		class ValueHolder {
+		public:
+			Type& getType() = 0;
+		};
+
+		enum OperationType {
+			FUNCTION_CALL,
+			OPERATOR,
+			ASSIGN,
+			MEMBER_CALL
+		};
+
+		class Operation : public ValueHolder {
+		private:
+			OperationType type;
+			std::string operation;
+		};
+
+		enum DeclarationType {
+			TYPE,
+			FIELD,
+			FUNCTION
+		};
+		class Declaration : public ValueHolder {
+		public:
+			virtual DeclarationType getDeclType() = 0;
+		};
+
+		class TypeDeclaration : public Declaration {
+		private:
+			Scope* class_body;
+		public:
+			DeclarationType getDeclType() {
+				return TYPE;
+			}
+		};
+		class FieldDeclaration : public Declaration {
+		public:
+			DeclarationType getDeclType() {
+				return FIELD;
+			}
+		};
+		class FunctionDeclaration : public Declaration {
+		private:
+			Scope* function_body;
+		public:
+			DeclarationType getDeclType() {
+				return FUNCTION;
+			}
+		};
 	}
 }
