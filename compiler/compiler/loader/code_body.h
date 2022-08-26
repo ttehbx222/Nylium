@@ -26,13 +26,21 @@ namespace nylium {
 			OPTION_CODE_BRACKET = 0x8,
 			TYPE = 0x10,
 			NAME = 0x20,
-			VALUE_BRACKET = 0x40,
-			CODE_BRACKET = 0x80,
-			SPECIFY_BRACKET = 0x100,
+			VALUE_BRACKET = 0x40, //TODO bracket mechanic
+			VALUE_BRACKET_CLOSE = 0x100000,
+			CODE_BRACKET = 0x80, //TODO bracket mechanic
+			CODE_BRACKET_CLOSE = 0x200000,
+			SPECIFY_BRACKET = 0x100, //TODO bracket mechanic
+			SPECIFY_BRACKET_CLOSE = 0x400000,
 			OPERATOR = 0x200,
 			MEMBER_SEPERATOR = 0x400,
 			STATIC_SEPERATOR = 0x800,
-			END = 0x1000
+			ACTION = 0x1000,
+			ASSIGN = 0x2000,
+			VARIABLE = 0x4000,
+			END = 0x8000,
+			LIST_SEPARATOR = 0x10000,
+			KEYWORD = 0x20000
 			//TODO more types
 		};
 		struct CodeBody {
