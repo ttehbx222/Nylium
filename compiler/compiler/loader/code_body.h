@@ -16,6 +16,7 @@
 #pragma once
 
 #include <string>
+#include "syntax.h"
 
 namespace nylium {
 	namespace codebody {

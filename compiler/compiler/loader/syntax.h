@@ -17,6 +17,7 @@
 #include "code_body.h"
 #include <string>
 #include <map>
+#include <vector>
 
 namespace nylium {
 	namespace syntax {
@@ -24,33 +25,58 @@ namespace nylium {
 		class TypeDeclaration;
 		class Type;
 
-		class Specification {
-			size_t size;
-			Type* spec_types;
-		};
+		typedef std::vector<Type*> Specification;
 
 		class Type {
 		private:
-			TypeDeclaration type;
+			TypeDeclaration* type;
 			Specification spec;
 		public:
 			//TODO matching
 		};
 
-		class Scope {
+		enum Visibility {
+			PRIVATE,
+			PROTECTED,
+			PUBLIC
+		};
+
+		enum CodeType {
+			SCOPE,
+			OPERATION
+		};
+
+		class CodeLine {
+		public:
+			virtual CodeType getCodeType() = 0;
+		};
+
+		class Scope : public CodeLine{
 		private:
 			Scope* parent;
-			std::map<std::string, Declaration*> accessables;
+			std::map<std::string, Declaration*> public_accessables;
+			std::map<std::string, Declaration*> protected_accessables;
+			std::map<std::string, Declaration*> private_accessables;
+			std::vector<CodeLine*> code;
 		public:
+			Scope() {}
+			Scope(Scope* scope) {
+				parent = scope;
+			}
 			inline Scope* getParent() {
 				return parent;
 			}
-			Declaration* searchAccessables(std::string key, Specification sepc);
+			inline std::vector<CodeLine*>& getCode() {
+				return code;
+			}
+			Visibility canSee(Scope* scope);
+			Declaration* searchAccessables(Scope* origin, std::string& key, Specification& sepc);
+			void addAccessible(std::string& name, Visibility visibility, Declaration* decl);
 		};
 
 		class ValueHolder {
 		public:
-			Type& getType() = 0;
+			virtual Type& getType() = 0;
 		};
 
 		enum OperationType {
@@ -60,20 +86,72 @@ namespace nylium {
 			MEMBER_CALL
 		};
 
-		class Operation : public ValueHolder {
+		class FunctionCall;
+
+		class Operation : public ValueHolder, public CodeLine {
 		private:
+			Type return_value;
 			OperationType type;
 			std::string operation;
+		public:
+			inline void setOperation(std::string& operation) {
+				this->operation = operation;
+			}
+			inline std::string& getOperation() {
+				return operation;
+			}
+			inline void setOperationType(OperationType type) {
+				this->type = type;
+			}
+			inline OperationType getOperationType() {
+				return type;
+			}
+			CodeType getCodeType() {
+				return OPERATION;
+			}
+		};
+
+		class FunctionCall : public Operation {
+		private:
+			size_t size;
+			ValueHolder* arguments;
+		public:
+			void setArguments(ValueHolder* arguments, size_t size);
 		};
 
 		enum DeclarationType {
 			TYPE,
 			FIELD,
-			FUNCTION
+			FUNCTION,
+			REFERENCE
 		};
+
+		struct DeclOptions {
+			bool opt_static = false, opt_const = false;
+		};
+
 		class Declaration : public ValueHolder {
+		protected:
+			std::string name;
+			Visibility visibility;
+			DeclOptions options;
 		public:
 			virtual DeclarationType getDeclType() = 0;
+			inline Visibility getVisibility() {
+				return visibility;
+			}
+			inline Visibility setVisibility(Visibility visibility) {
+				this->visibility = visibility;
+			}
+			inline DeclOptions& getOptions() {
+				return options;
+			}
+			void setName(std::string& name) {
+				this->name = name;
+			}
+			std::string& getName() {
+				return name;
+			}
 		};
 
 		class TypeDeclaration : public Declaration {
@@ -96,6 +174,14 @@ namespace nylium {
 		public:
 			DeclarationType getDeclType() {
 				return FUNCTION;
+			}
+		};
+		class ReferenceDeclaration : public Declaration {
+		private:
+			FieldDeclaration* refrenced;
+		public:
+			DeclarationType getDeclType() {
+				return REFERENCE;
 			}
 		};
 	}
