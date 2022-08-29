@@ -16,7 +16,7 @@
 #pragma once
 #include <map>
 
-//TODO remove
+//gitignored
 
 template <class T>
 class Tree {
