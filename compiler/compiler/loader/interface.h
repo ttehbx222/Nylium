@@ -24,9 +24,7 @@ namespace nylium{
 	}
 	class FileInterface {
 	private:
-		std::map<std::string, codebody::Declaration> public_accessables;
-		std::map<std::string, codebody::Declaration> protected_accessables;
-		std::map<std::string, codebody::Declaration> private_accessables;
+		std::map<std::string, codebody::Declaration> public_accessibles, protected_accessibles, private_accessibles;
 
 		std::string file_name;
 	};

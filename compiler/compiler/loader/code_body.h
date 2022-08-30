@@ -74,7 +74,7 @@ namespace nylium {
 				return code;
 			}
 			Visibility canSee(SCOPE scope);
-			Declaration& searchAccessables(SCOPE origin, std::string& key, Specification& sepc);
+			Declaration& searchAccessibles(SCOPE origin, std::string& key, Specification& sepc);
 			void addAccessible(std::string& name, Visibility visibility, Declaration& decl);
 		};
 
