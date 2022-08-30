@@ -15,12 +15,13 @@
 */
 #pragma once
 #include "code_body.h"
+#include "interface.h"
 #include <string>
 #include <map>
 #include <vector>
 
 namespace nylium {
-	namespace syntax {
+	namespace codebody {
 
 		class TypeDeclaration;
 		class Type;
@@ -29,7 +30,7 @@ namespace nylium {
 
 		class Type {
 		private:
-			TypeDeclaration* type;
+			TypeDeclaration type;
 			Specification spec;
 		public:
 			//TODO matching
@@ -51,27 +52,30 @@ namespace nylium {
 			virtual CodeType getCodeType() = 0;
 		};
 
+		typedef CodeLine* CODE;
+
+		class Scope;
+		typedef Scope* SCOPE;
+
 		class Scope : public CodeLine{
 		private:
-			Scope* parent;
-			std::map<std::string, Declaration*> public_accessables;
-			std::map<std::string, Declaration*> protected_accessables;
-			std::map<std::string, Declaration*> private_accessables;
-			std::vector<CodeLine*> code;
+			SCOPE parent;
+			
+			std::vector<CODE> code;
 		public:
 			Scope() {}
-			Scope(Scope* scope) {
+			Scope(SCOPE scope) {
 				parent = scope;
 			}
-			inline Scope* getParent() {
+			inline SCOPE getParent() {
 				return parent;
 			}
-			inline std::vector<CodeLine*>& getCode() {
+			inline std::vector<CODE>& getCode() {
 				return code;
 			}
-			Visibility canSee(Scope* scope);
-			Declaration* searchAccessables(Scope* origin, std::string& key, Specification& sepc);
-			void addAccessible(std::string& name, Visibility visibility, Declaration* decl);
+			Visibility canSee(SCOPE scope);
+			Declaration& searchAccessables(SCOPE origin, std::string& key, Specification& sepc);
+			void addAccessible(std::string& name, Visibility visibility, Declaration& decl);
 		};
 
 		class ValueHolder {
@@ -89,7 +93,7 @@ namespace nylium {
 		class FunctionCall;
 
 		class Operation : public ValueHolder, public CodeLine {
-		private:
+		protected:
 			Type return_value;
 			OperationType type;
 			std::string operation;
@@ -109,6 +113,9 @@ namespace nylium {
 			CodeType getCodeType() {
 				return OPERATION;
 			}
+			FunctionCall& toCall() {
+				return FunctionCall(*this);
+			}
 		};
 
 		class FunctionCall : public Operation {
@@ -116,27 +123,41 @@ namespace nylium {
 			size_t size;
 			ValueHolder* arguments;
 		public:
-			void setArguments(ValueHolder* arguments, size_t size);
+			FunctionCall(Operation& operation) {
+				type = FUNCTION_CALL;
+			}
+			inline void setArguments(ValueHolder* arguments, size_t size) {
+				this->size = size;
+				this->arguments = arguments;
+			}
 		};
 
 		enum DeclarationType {
 			TYPE,
 			FIELD,
 			FUNCTION,
-			REFERENCE
+			REFRENCE
 		};
 
 		struct DeclOptions {
 			bool opt_static = false, opt_const = false;
 		};
 
+		class TypeDeclaration;
+		class FieldDeclaration;
+		class FunctionDeclaration;
+		class RefrenceDeclaration;
+
 		class Declaration : public ValueHolder {
 		protected:
 			std::string name;
 			Visibility visibility;
 			DeclOptions options;
+			DeclarationType decl_type;
 		public:
-			virtual DeclarationType getDeclType() = 0;
+			DeclarationType getDeclType() {
+				return decl_type;
+			}
 			inline Visibility getVisibility() {
 				return visibility;
 			}
@@ -152,36 +173,55 @@ namespace nylium {
 			std::string& getName() {
 				return name;
 			}
+
+			TypeDeclaration& toType() {
+				return TypeDeclaration(*this);
+			}
+			FieldDeclaration& toField() {
+				return FieldDeclaration(*this);
+			}
+			FunctionDeclaration& toFunction() {
+				return FunctionDeclaration(*this);
+			}
+			RefrenceDeclaration& toRefrence() {
+				return RefrenceDeclaration(*this);
+			}
+
 		};
 
 		class TypeDeclaration : public Declaration {
 		private:
 			Scope* class_body;
 		public:
-			DeclarationType getDeclType() {
-				return TYPE;
+			TypeDeclaration() {
+				decl_Type = TYPE;
+			}
+			TypeDeclaration(Declaration& decl) {
+
 			}
 		};
 		class FieldDeclaration : public Declaration {
+		private:
+			ValueHolder* initial_value;
 		public:
-			DeclarationType getDeclType() {
-				return FIELD;
+			FieldDeclaration() {
+				decl_Type = FIELD;
 			}
 		};
 		class FunctionDeclaration : public Declaration {
 		private:
 			Scope* function_body;
 		public:
-			DeclarationType getDeclType() {
-				return FUNCTION;
+			FunctionDeclaration() {
+				decl_Type = FUNCTION;
 			}
 		};
-		class ReferenceDeclaration : public Declaration {
+		class RefrenceDeclaration : public Declaration {
 		private:
 			FieldDeclaration* refrenced;
 		public:
-			DeclarationType getDeclType() {
-				return REFERENCE;
+			RefrenceDeclaration() {
+				decl_Type = REFRENCE;
 			}
 		};
 	}
