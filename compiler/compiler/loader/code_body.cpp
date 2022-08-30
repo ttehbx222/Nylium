@@ -16,8 +16,15 @@
 #include "code_body.h"
 
 namespace nylium {
+	
 	namespace codebody {
-		CodeBody* codebody::get(CB_Type type, std::string name) {
+		Visibility Scope::canSee(SCOPE scope) {
+			scope
+		}
+		Declaration& Scope::searchAccessibles(SCOPE origin, std::string& key, Specification& sepc) {
+
+		}
+		void Scope::addAccessible(std::string& name, Visibility visibility, Declaration& decl) {
 
 		}
 	}

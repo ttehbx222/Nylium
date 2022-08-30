@@ -16,16 +16,23 @@
 #pragma once
 #include <map>
 #include <string>
-
+#include <vector>
 
 namespace nylium{
 	namespace codebody {
 		class Declaration;
+		class Scope;
+		typedef Scope* SCOPE;
 	}
 	class FileInterface {
 	private:
-		std::map<std::string, codebody::Declaration> public_accessibles, protected_accessibles, private_accessibles;
+		std::map<std::string, std::vector<codebody::Declaration>> public_accessibles, protected_accessibles, private_accessibles;
+		std::vector<FileInterface*> imports;
+
+		codebody::SCOPE main_scope;
 
 		std::string file_name;
+	public:
+		//TODO access accessibles
 	};
 }

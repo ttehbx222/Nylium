@@ -14,7 +14,11 @@
 * limitations under the License.
 */
 #pragma once
+#include <vector>
+#include "interface.h"
 
 namespace nylium {
+
+	std::vector<FileInterface*>& load(std::vector<std::string>& files); //TODO log component TODO file root
 
 }

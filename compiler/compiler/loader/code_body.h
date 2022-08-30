@@ -37,9 +37,9 @@ namespace nylium {
 		};
 
 		enum Visibility {
-			PRIVATE,
-			PROTECTED,
-			PUBLIC
+			PRIVATE = 0x0,
+			PROTECTED = 0x1,
+			PUBLIC = 0x2
 		};
 
 		enum CodeType {
@@ -60,7 +60,7 @@ namespace nylium {
 		class Scope : public CodeLine{
 		private:
 			SCOPE parent;
-			
+			FileInterface* parent_interface;
 			std::vector<CODE> code;
 		public:
 			Scope() {}
