@@ -19,6 +19,6 @@
 
 namespace nylium {
 
-	std::vector<FileInterface*>& load(std::vector<std::string>& files); //TODO log component TODO file root
+	std::map<std::string, FileInterface*>* load(std::string origin, std::vector<std::string>& files); //TODO log component TODO file root
 
 }

@@ -15,24 +15,60 @@
 */
 #include "logger.h"
 #include <vector>
+#include <iostream>
 
 namespace log {
 
-	std::vector<io::File> log_files;
-	bool console = false;
+	
 
-	void log::addLogFile(io::File& file) { //TODO log level
-		log_files.push_back(file);
+	std::vector<std::pair<io::File*, LOGLEVEL>> log_files;
+	LOGLEVEL console = LOGLEVEL::INFO;
+
+	void log::addLogFile(io::File* file, LOGLEVEL level) { //TODO log level
+		log_files.push_back(std::pair<io::File*, LOGLEVEL>(file, level));
 	}
 
-	void log::logToConsole(bool value) { //TODO log level
-		console = value;
-		if (console) {
-			//TODO enable colors
+	void log::logToConsole(LOGLEVEL level) { //TODO log level
+		console = level;
+		//TODO add colors
+	}
+
+	std::pair<std::string, std::string>* log_unexpected_char(TextBlock& location, LOGLEVEL level, std::vector<std::string>& arguments);
+	std::pair<std::string, std::string>* log_unknown_error(TextBlock& location, LOGLEVEL level, CODE code);
+
+	void log(TextBlock& location, LOGLEVEL level, std::vector<std::string>& arguments, CODE code = 0) {
+		std::pair<std::string, std::string>* content = nullptr;
+		switch (code) {
+		case CODE::UNEXPECTED_CHAR:
+		{
+			content = log_unexpected_char(location, level, arguments);
+			break;
+		}
+		default:
+		{
+			content = log_unknown_error(location, level, code);
+		}
+		}
+		
+		if (content) {
+			std::cout << content->first << std::endl;
+			for (auto log_file : log_files) {
+				if (log_file.second >= level) {
+
+				}
+			}
+			delete content;
 		}
 	}
 
-	void log::raw_log(std::string str) {
-
+	std::pair<std::string, std::string>* log_unexpected_char(TextBlock& location, LOGLEVEL level, std::vector<std::string>& arguments) {
+		//TODO
+		return nullptr;
 	}
+
+	std::pair<std::string, std::string>* log_unknown_error(TextBlock& location, LOGLEVEL level, CODE code) {
+		//TODO
+		return nullptr;
+	}
+
 }

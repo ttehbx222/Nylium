@@ -19,13 +19,25 @@ namespace nylium {
 	
 	namespace codebody {
 		Visibility Scope::canSee(SCOPE scope) {
-			scope
+			
 		}
 		Declaration& Scope::searchAccessibles(SCOPE origin, std::string& key, Specification& sepc) {
 
 		}
-		void Scope::addAccessible(std::string& name, Visibility visibility, Declaration& decl) {
-
+		void Scope::addAccessible(std::string& name, Visibility visibility, Declaration& decl) { //TODO log component
+			std::map<std::string, std::vector<Declaration>>* accessible_map;
+			switch (visibility) {
+			case PUBLIC: {
+				accessible_map = &public_accessibles;
+			}
+			case PROTECTED: {
+				accessible_map = &protected_accessibles;
+			}
+			case PRIVATE: {
+				accessible_map = &private_accessibles;
+			}
+			}
+			//TODO add
 		}
 	}
 }

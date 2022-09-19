@@ -28,6 +28,12 @@ namespace nylium {
 
 		typedef std::vector<Type*> Specification;
 
+		enum Castable {
+			CAST_DIRECT,
+			CAST_POSSIBLE,
+			CAST_IMPOSSIBLE
+		};
+
 		class Type {
 		private:
 			TypeDeclaration type;
@@ -43,8 +49,8 @@ namespace nylium {
 		};
 
 		enum CodeType {
-			SCOPE,
-			OPERATION
+			CT_SCOPE,
+			CT_OPERATION
 		};
 
 		class CodeLine {
@@ -60,6 +66,7 @@ namespace nylium {
 		class Scope : public CodeLine{
 		private:
 			SCOPE parent;
+			std::map<std::string, std::vector<Declaration>> public_accessibles, protected_accessibles, private_accessibles;
 			FileInterface* parent_interface;
 			std::vector<CODE> code;
 		public:
@@ -72,6 +79,9 @@ namespace nylium {
 			}
 			inline std::vector<CODE>& getCode() {
 				return code;
+			}
+			CodeType getCodeType() {
+				return CT_SCOPE;
 			}
 			Visibility canSee(SCOPE scope);
 			Declaration& searchAccessibles(SCOPE origin, std::string& key, Specification& sepc);
@@ -111,7 +121,7 @@ namespace nylium {
 				return type;
 			}
 			CodeType getCodeType() {
-				return OPERATION;
+				return CT_OPERATION;
 			}
 			FunctionCall& toCall() {
 				return FunctionCall(*this);
@@ -136,7 +146,7 @@ namespace nylium {
 			TYPE,
 			FIELD,
 			FUNCTION,
-			REFRENCE
+			REFERENCE
 		};
 
 		struct DeclOptions {
@@ -146,7 +156,7 @@ namespace nylium {
 		class TypeDeclaration;
 		class FieldDeclaration;
 		class FunctionDeclaration;
-		class RefrenceDeclaration;
+		class ReferenceDeclaration;
 
 		class Declaration : public ValueHolder {
 		protected:
@@ -183,8 +193,8 @@ namespace nylium {
 			FunctionDeclaration& toFunction() {
 				return FunctionDeclaration(*this);
 			}
-			RefrenceDeclaration& toRefrence() {
-				return RefrenceDeclaration(*this);
+			ReferenceDeclaration& toReference() {
+				return ReferenceDeclaration(*this);
 			}
 
 		};
@@ -197,7 +207,10 @@ namespace nylium {
 				decl_Type = TYPE;
 			}
 			TypeDeclaration(Declaration& decl) {
-
+				name = decl.name;
+				visibility = decl.visibility;
+				options = decl.options;
+				decl_type = TYPE;
 			}
 		};
 		class FieldDeclaration : public Declaration {
@@ -207,6 +220,12 @@ namespace nylium {
 			FieldDeclaration() {
 				decl_Type = FIELD;
 			}
+			FieldDeclaration(Declaration& decl) {
+				name = decl.name;
+				visibility = decl.visibility;
+				options = decl.options;
+				decl_type = FIELD;
+			}
 		};
 		class FunctionDeclaration : public Declaration {
 		private:
@@ -215,14 +234,36 @@ namespace nylium {
 			FunctionDeclaration() {
 				decl_Type = FUNCTION;
 			}
-		};
-		class RefrenceDeclaration : public Declaration {
-		private:
-			FieldDeclaration* refrenced;
-		public:
-			RefrenceDeclaration() {
-				decl_Type = REFRENCE;
+			FunctionDeclaration(Declaration& decl) {
+				name = decl.name;
+				visibility = decl.visibility;
+				options = decl.options;
+				decl_type = FUNCTION;
 			}
+		};
+		class ReferenceDeclaration : public Declaration {
+		private:
+			FieldDeclaration* referenced;
+		public:
+			ReferenceDeclaration() {
+				decl_Type = REFERENCE;
+			}
+			ReferenceDeclaration(Declaration& decl) {
+				name = decl.name;
+				visibility = decl.visibility;
+				options = decl.options;
+				decl_type = REFERENCE;
+			}
+		};
+
+		class TBR {
+		public:
+			size_t replacement_index;
+		};
+
+		class ResolveDeclaration : public TBR {
+		public:
+			std::string name;
 		};
 	}
 }

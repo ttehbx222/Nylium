@@ -18,7 +18,36 @@
 #include "../fileutils/file_io.h"
 
 namespace log {
-	void addLogFile(io::File& file); // TODO log level
-	void logToConsole(bool value = true); // TODO log level
-	void raw_log(std::string str);
+
+	enum class CODE {
+		NONE = 0,
+		UNEXPECTED_CHAR = 1,
+		IMPORT_INTO_INTERFACE = 2,
+		INTERFACE_NOT_FOUND = 3
+	};
+
+	enum class LOGLEVEL {
+		NONE = 0,
+		ERROR = 1,
+		WARNING = 2,
+		INFO = 3,
+		DEBUG_1 = 4,
+		DEBUG_2 = 5,
+		DEBUG_3 = 6
+	};
+
+	struct TextBlock {
+		io::File* file;
+		size_t line, chararcter, length;
+		TextBlock(io::File* file, size_t line, size_t character, size_t length) {
+			this->file = file;
+			this->line = line;
+			this->chararcter = character;
+			this->length = length;
+		}
+	};
+
+	void addLogFile(io::File* file, LOGLEVEL level);
+	void logToConsole(LOGLEVEL level);
+	void log(TextBlock& location, LOGLEVEL level, std::vector<std::string>& arguments, CODE errorCode = 0);
 }

@@ -20,10 +20,10 @@
 namespace io {
 	File::File(std::string path) {
 		name = path;
-		file_ofstream.open(path);
+		file_ofstream.open(path, std::ios_base::out | std::ios_base::app);
 		file_ifstream.open(path);
 	}
-	TextFile::TextFile(std::string path) : File(path) {
+	/*TextFile::TextFile(std::string path) : File(path) {
 		std::ifstream& file = ifstream();
 		if (file.good()) {
 			file_content.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
@@ -31,5 +31,5 @@ namespace io {
 	}
 	void TextFile::save() {
 		ofstream() << file_content;
-	}
+	}*/
 }

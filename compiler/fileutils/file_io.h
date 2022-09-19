@@ -40,7 +40,7 @@ namespace io {
 			file.ofstream() << ifstream().rdbuf();
 		}
 	};
-	class TextFile : public File {
+	/*class TextFile : public File {
 	private:
 		std::string file_content;
 	public:
@@ -49,5 +49,5 @@ namespace io {
 			return file_content;
 		}
 		void save();
-	};
+	};*/
 }
