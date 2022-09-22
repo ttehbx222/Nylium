@@ -16,20 +16,23 @@
 
 #include "file_io.h"
 #include <streambuf>
+#include <filesystem>
 
 namespace io {
+
+	std::string local = "";
+
 	File::File(std::string path) {
 		name = path;
 		file_ofstream.open(path, std::ios_base::out | std::ios_base::app);
 		file_ifstream.open(path);
+		absolute_parent_path = std::filesystem::path(path).parent_path().string();
 	}
-	/*TextFile::TextFile(std::string path) : File(path) {
-		std::ifstream& file = ifstream();
-		if (file.good()) {
-			file_content.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+
+	std::string localPath() {
+		if (local == "") {
+			local = std::filesystem::current_path().parent_path().string();
 		}
+		return local;
 	}
-	void TextFile::save() {
-		ofstream() << file_content;
-	}*/
 }

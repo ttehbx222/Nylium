@@ -35,6 +35,7 @@ namespace nylium{
 	class FileInterface : public ProjectObject{
 	private:
 		std::map<std::string, std::vector<codebody::Declaration>> public_accessibles, protected_accessibles, private_accessibles;
+		std::string name, import_path = "";
 		std::vector<FileInterface*> imports;
 
 		codebody::SCOPE main_scope;
@@ -43,9 +44,20 @@ namespace nylium{
 	public:
 		FileInterface(io::File* file) {
 			this->file = file;
+			size_t index;
+			std::string parent_path = file->parent_path();
+			while (std::string::npos != (index = parent_path.find_first_of('.'))) {
+				import_path += parent_path.substr(0, index) + ".";
+				parent_path = parent_path.substr(index + 1, parent_path.size() - index - 1);
+			}
+			import_path += parent_path;
+			//TODO set in package
 		}
 		bool isInterface() {
 			return true;
+		}
+		inline codebody::SCOPE scope() {
+			return main_scope;
 		}
 		//TODO access accessibles
 	};
@@ -54,25 +66,33 @@ namespace nylium{
 		bool isInterface() {
 			return false;
 		}
-		inline ProjectObject* get(std::string path, log::TextBlock& text_block) {
+		inline ProjectObject* get(std::string path, log::TextBlock& text_block, bool* error_flag) {
 			ProjectObject* result;
-			bool error = false;
 			size_t index = path.find_first_of('.');
 			if (index == std::string::npos) {
 				result = objects.at(path);
 			}
 			else {
 				ProjectObject* local = objects.at(path.substr(0,index));
-				//TODO null check
-				if (local->isInterface()) {
-					error = true;
-					log::log(text_block, log::LOGLEVEL::ERROR, std::vector<std::string>(), log::CODE::IMPORT_INTO_INTERFACE);
+				if (local == nullptr) {
+					(*error_flag) = true;
+					log::log(text_block, log::LOGLEVEL::ERROR, std::vector<std::string>(), log::CODE::INTERFACE_NOT_FOUND);
+					break;
 				}
-				//TODO
+				if (local->isInterface()) {
+					(*error_flag) = true;
+					log::log(text_block, log::LOGLEVEL::ERROR, std::vector<std::string>(), log::CODE::IMPORT_INTO_INTERFACE);
+					break;
+				}
+				result = ((Package*)local)->get(path.substr(index + 1, path.size() - index - 1), text_block, error_flag);
 			}
-			if (result == nullptr && !error) {
-				log::log(text_block, log::LOGLEVEL::ERROR, std::vector<std::string>(), log::CODE::INTERFACE_NOT_FOUND);
+			if (result == nullptr && !(*error_flag)) {
+				log::log(text_block, log::LOGLEVEL::ERROR, std::vector<std::string>(), log::CODE::INTERFACE_NOT_FOUND); //NO_EFFECT
 			}
+			return result;
+		}
+		inline void set(std::string path, FileInterface* f_interface) {
+			//TODO
 		}
 	};
 }

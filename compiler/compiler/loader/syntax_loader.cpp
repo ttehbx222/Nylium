@@ -25,22 +25,27 @@ namespace nylium {
 		NAMESPACE
 	};
 
-	struct LoaderLayer {
-		std::vector<std::pair<size_t, size_t>> vb_sb_memory;
-		size_t vb_open = 0, sb_open = 0, line = 0, character = 0;
-		bool more = true;
+	struct LL_info {
+		size_t vb_open = 0, sb_open = 0;
 		codebody::SCOPE scope;
+	};
+
+	struct LoaderLayer {
+		std::vector<LL_info> memory;
+		LL_info info;
+		size_t  line = 0, character = 0;
+		bool more = true;
 		io::File* file;
 		std::vector<std::string> past_lines;
 		std::string current_line;
 		inline void operator + (codebody::SCOPE& scope) {
-			this->scope = scope;
-			vb_sb_memory.push_back(std::pair<size_t, size_t>(vb_open, sb_open));
-			vb_open = sb_open = 0;
+			memory.push_back(info);
+			info = LL_info();
+			info.scope = scope;
 		}
 		inline void operator --() {
 			//TODO vb sb check
-			scope = scope->getParent();
+			info = memory.pop_back();
 		}
 		inline void new_line() {
 			past_lines.push_back(current_line);
@@ -59,7 +64,8 @@ namespace nylium {
 		for (std::string file_name : files) {
 			io::File* file = new io::File(file_name);
 			LoaderLayer* loader_layer = new LoaderLayer();
-			FileInterface* file_interface = new FileInterface
+			FileInterface* file_interface = new FileInterface(file); //WIP
+			loader_layer->info.scope = file_interface->scope();
 
 			//TODO loading
 

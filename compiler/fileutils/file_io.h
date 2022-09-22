@@ -20,9 +20,11 @@
 #include <fstream>
 
 namespace io {
+	
 	class File {
 	private:
 		std::string name;
+		std::string absolute_parent_path;
 		std::ofstream file_ofstream;
 		std::ifstream file_ifstream;
 	public:
@@ -36,10 +38,15 @@ namespace io {
 		inline std::string path() {
 			return name;
 		}
+		inline std::string parent_path() {
+			return absolute_parent_path;
+		}
 		inline void copyTo(io::File& file) {
 			file.ofstream() << ifstream().rdbuf();
 		}
 	};
+
+	std::string local_path();
 	/*class TextFile : public File {
 	private:
 		std::string file_content;
