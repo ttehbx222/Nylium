@@ -15,6 +15,8 @@
 */
 #pragma once
 
+//USE FOR IDE, NO USE YET
+
 namespace nylium {
 
 }
