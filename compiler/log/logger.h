@@ -17,13 +17,19 @@
 
 #include "../fileutils/file_io.h"
 
-namespace log {
+namespace nylium {
+	class FileInterface;
+}
 
+
+namespace log {
+	
 	enum class CODE {
 		NONE = 0,
 		UNEXPECTED_CHAR = 1,
 		IMPORT_INTO_INTERFACE = 2,
-		INTERFACE_NOT_FOUND = 3
+		INTERFACE_NOT_FOUND = 3,
+		PACKAGE_INTERFACE_OVERLAP = 4
 	};
 
 	enum class LOGLEVEL {
@@ -37,9 +43,9 @@ namespace log {
 	};
 
 	struct TextBlock {
-		io::File* file;
+		nylium::FileInterface* file;
 		size_t line, chararcter, length;
-		TextBlock(io::File* file, size_t line, size_t character, size_t length) {
+		TextBlock(nylium::FileInterface* file, size_t line, size_t character, size_t length) {
 			this->file = file;
 			this->line = line;
 			this->chararcter = character;
@@ -51,3 +57,4 @@ namespace log {
 	void logToConsole(LOGLEVEL level);
 	void log(TextBlock& location, LOGLEVEL level, std::vector<std::string>& arguments, CODE errorCode = 0);
 }
+#include "../compiler/loader/interface.h"

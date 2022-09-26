@@ -32,6 +32,7 @@ namespace nylium{
 			return !isInterface();
 		}
 	};
+	class Package;
 	class FileInterface : public ProjectObject{
 	private:
 		std::map<std::string, std::vector<codebody::Declaration>> public_accessibles, protected_accessibles, private_accessibles;
@@ -42,15 +43,19 @@ namespace nylium{
 
 		io::File* file;
 	public:
-		FileInterface(io::File* file) {
+		FileInterface(io::File* file, Package* root) {
 			this->file = file;
 			size_t index;
 			std::string parent_path = file->parent_path();
-			while (std::string::npos != (index = parent_path.find_first_of('.'))) {
-				import_path += parent_path.substr(0, index) + ".";
-				parent_path = parent_path.substr(index + 1, parent_path.size() - index - 1);
+			{
+				std::string local_path = io::local_path();
+				size_t local_path_length = local_path.size();
+				if (parent_path.rfind(local_path, 0) == 0) {
+					parent_path = parent_path.substr(local_path_length + 1, parent_path.size() - local_path_length - 1);
+				}
 			}
-			import_path += parent_path;
+			//TODO regexx replace / with into import path
+			
 			//TODO set in package
 		}
 		bool isInterface() {
@@ -61,8 +66,11 @@ namespace nylium{
 		}
 		//TODO access accessibles
 	};
-	struct Package {
+	class Package : public ProjectObject {
+	private:
+		std::string absolute_path;
 		std::map<std::string, ProjectObject*> objects;
+	public:
 		bool isInterface() {
 			return false;
 		}
@@ -91,8 +99,27 @@ namespace nylium{
 			}
 			return result;
 		}
-		inline void set(std::string path, FileInterface* f_interface) {
-			//TODO
+		inline bool set(std::string path, FileInterface* f_interface, log::TextBlock& text_block) {
+			bool error = false;
+			size_t index = path.find_first_of('.');
+			if (index == std::string::npos) {
+				objects.insert(std::pair<std::string, ProjectObject*>(path, f_interface));
+			}
+			else {
+				std::string sub_path = path.substr(0, index);
+				ProjectObject* local = objects.at(sub_path);
+				if (local == nullptr) {
+					local = new Package();
+					objects.insert(std::pair<std::string, ProjectObject*>(sub_path))
+				}
+				else if (local->isInterface()) {
+					log::log(text_block, log::LOGLEVEL::ERROR, std::vector<std::string>(), log::CODE::PACKAGE_INTERFACE_OVERLAP);
+					error = true;
+					return error;
+				}
+				error = local->set(path.substr(index + 1, path.size() - index - 1), f_interface, text_block);
+			}
+			return error;
 		}
 	};
 }

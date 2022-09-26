@@ -59,17 +59,30 @@ namespace nylium {
 
 	typedef LoaderLayer* LL;
 
-	std::map<std::string, FileInterface*>* nylium::load(std::string origin, std::vector<std::string>& files) {
-		std::vector<FileInterface*>* interfaces;
+	bool load_code(FileInterface* interfaces, Package* package);
+
+	Package* nylium::load(std::string origin, std::vector<std::string>& files) {
+		std::map<std::string, FileInterface*>* interfaces = new std::map<std::string, FileInterface*>();
+		Package* root = new Package();
 		for (std::string file_name : files) {
 			io::File* file = new io::File(file_name);
+			FileInterface* file_interface = new FileInterface(file, root); //WIP
+		}
+		for (auto const& [path, file_interface] : interfaces) {
 			LoaderLayer* loader_layer = new LoaderLayer();
-			FileInterface* file_interface = new FileInterface(file); //WIP
 			loader_layer->info.scope = file_interface->scope();
 
-			//TODO loading
+			bool success = load_code(file_interface, root, loader_layer);
+			//TODO error handling
 
 			delete loader_layer;
 		}
+		return root;
  	}
+
+	bool load_code(FileInterface* interfaces, Package* package, LoaderLayer* ll) {
+
+
+		return true;
+	}
 }

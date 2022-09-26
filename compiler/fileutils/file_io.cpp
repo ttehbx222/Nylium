@@ -32,6 +32,9 @@ namespace io {
 	std::string localPath() {
 		if (local == "") {
 			local = std::filesystem::current_path().parent_path().string();
+			if (local.find_last_of('/') == local.size() - 1) {				//removes / at end if there is one
+				local = local.substr(0, local.size() - 1);
+			}
 		}
 		return local;
 	}

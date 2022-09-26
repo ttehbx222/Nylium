@@ -106,7 +106,7 @@ namespace nylium {
 		protected:
 			Type return_value;
 			OperationType type;
-			std::string operation;
+			ValueHolder* operation;
 		public:
 			inline void setOperation(std::string& operation) {
 				this->operation = operation;
@@ -261,7 +261,7 @@ namespace nylium {
 			size_t replacement_index;
 		};
 
-		class ResolveDeclaration : public TBR {
+		class ResolveDeclaration : public TBR, public ValueHolder{
 		public:
 			std::string name;
 		};
