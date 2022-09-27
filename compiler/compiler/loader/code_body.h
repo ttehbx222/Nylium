@@ -36,7 +36,7 @@ namespace nylium {
 
 		class Type {
 		private:
-			TypeDeclaration type;
+			TypeDeclaration* type; //TODO delete
 			Specification spec;
 		public:
 			//TODO matching
@@ -104,14 +104,13 @@ namespace nylium {
 
 		class Operation : public ValueHolder, public CodeLine {
 		protected:
-			Type return_value;
 			OperationType type;
 			ValueHolder* operation;
 		public:
-			inline void setOperation(std::string& operation) {
+			inline void setOperation(ValueHolder* operation) {
 				this->operation = operation;
 			}
-			inline std::string& getOperation() {
+			inline ValueHolder* getOperation() {
 				return operation;
 			}
 			inline void setOperationType(OperationType type) {
@@ -123,9 +122,10 @@ namespace nylium {
 			CodeType getCodeType() {
 				return CT_OPERATION;
 			}
-			FunctionCall& toCall() {
-				return FunctionCall(*this);
+			Type& getType() {
+				return operation->getType();
 			}
+			FunctionCall& toCall();
 		};
 
 		class FunctionCall : public Operation {
@@ -184,18 +184,10 @@ namespace nylium {
 				return name;
 			}
 
-			TypeDeclaration& toType() {
-				return TypeDeclaration(*this);
-			}
-			FieldDeclaration& toField() {
-				return FieldDeclaration(*this);
-			}
-			FunctionDeclaration& toFunction() {
-				return FunctionDeclaration(*this);
-			}
-			ReferenceDeclaration& toReference() {
-				return ReferenceDeclaration(*this);
-			}
+			TypeDeclaration& toType();
+			FieldDeclaration& toField();
+			FunctionDeclaration& toFunction();
+			ReferenceDeclaration& toReference();
 
 		};
 
@@ -204,12 +196,12 @@ namespace nylium {
 			Scope* class_body;
 		public:
 			TypeDeclaration() {
-				decl_Type = TYPE;
+				decl_type = TYPE;
 			}
 			TypeDeclaration(Declaration& decl) {
-				name = decl.name;
-				visibility = decl.visibility;
-				options = decl.options;
+				name = decl.getName();
+				visibility = getVisibility();
+				options = decl.getOptions();
 				decl_type = TYPE;
 			}
 		};
@@ -218,12 +210,12 @@ namespace nylium {
 			ValueHolder* initial_value;
 		public:
 			FieldDeclaration() {
-				decl_Type = FIELD;
+				decl_type = FIELD;
 			}
 			FieldDeclaration(Declaration& decl) {
-				name = decl.name;
-				visibility = decl.visibility;
-				options = decl.options;
+				name = decl.getName();
+				visibility = decl.getVisibility();
+				options = decl.getOptions();
 				decl_type = FIELD;
 			}
 		};
@@ -232,12 +224,12 @@ namespace nylium {
 			Scope* function_body;
 		public:
 			FunctionDeclaration() {
-				decl_Type = FUNCTION;
+				decl_type = FUNCTION;
 			}
 			FunctionDeclaration(Declaration& decl) {
-				name = decl.name;
-				visibility = decl.visibility;
-				options = decl.options;
+				name = decl.getName();
+				visibility = decl.getVisibility();
+				options = decl.getOptions();
 				decl_type = FUNCTION;
 			}
 		};
@@ -246,12 +238,12 @@ namespace nylium {
 			FieldDeclaration* referenced;
 		public:
 			ReferenceDeclaration() {
-				decl_Type = REFERENCE;
+				decl_type = REFERENCE;
 			}
 			ReferenceDeclaration(Declaration& decl) {
-				name = decl.name;
-				visibility = decl.visibility;
-				options = decl.options;
+				name = decl.getName();
+				visibility = decl.getVisibility();
+				options = decl.getOptions();
 				decl_type = REFERENCE;
 			}
 		};
@@ -265,5 +257,24 @@ namespace nylium {
 		public:
 			std::string name;
 		};
+
+
+		//Linking
+		FunctionCall& Operation::toCall() {
+			return FunctionCall(*this);
+		}
+
+		TypeDeclaration& Declaration::toType() {
+			return TypeDeclaration(*this);
+		}
+		FieldDeclaration& Declaration::toField() {
+			return FieldDeclaration(*this);
+		}
+		FunctionDeclaration& Declaration::toFunction() {
+			return FunctionDeclaration(*this);
+		}
+		ReferenceDeclaration& Declaration::toReference() {
+			return ReferenceDeclaration(*this);
+		}
 	}
 }

@@ -1,3 +1,4 @@
 
 *.obj
 compiler/datautils/tree_remove.h
+compile_nylium.cpp

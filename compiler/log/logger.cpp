@@ -17,18 +17,18 @@
 #include <vector>
 #include <iostream>
 
-namespace log {
+namespace nlog {
 
 	
 
 	std::vector<std::pair<io::File*, LOGLEVEL>> log_files;
 	LOGLEVEL console = LOGLEVEL::INFO;
 
-	void log::addLogFile(io::File* file, LOGLEVEL level) { //TODO log level
+	void nlog::addLogFile(io::File* file, LOGLEVEL level) { //TODO log level
 		log_files.push_back(std::pair<io::File*, LOGLEVEL>(file, level));
 	}
 
-	void log::logToConsole(LOGLEVEL level) { //TODO log level
+	void nlog::logToConsole(LOGLEVEL level) { //TODO log level
 		console = level;
 		//TODO add colors
 	}
@@ -36,7 +36,7 @@ namespace log {
 	std::pair<std::string, std::string>* log_unexpected_char(TextBlock& location, LOGLEVEL level, std::vector<std::string>& arguments);
 	std::pair<std::string, std::string>* log_unknown_error(TextBlock& location, LOGLEVEL level, CODE code);
 
-	void log(TextBlock& location, LOGLEVEL level, std::vector<std::string>& arguments, CODE code = 0) {
+	void nlog::log(TextBlock& location, LOGLEVEL level, std::vector<std::string>& arguments, CODE code = 0) {
 		std::pair<std::string, std::string>* content = nullptr;
 		switch (code) {
 		case CODE::UNEXPECTED_CHAR:

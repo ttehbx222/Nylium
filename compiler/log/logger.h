@@ -22,7 +22,7 @@ namespace nylium {
 }
 
 
-namespace log {
+namespace nlog {
 	
 	enum class CODE {
 		NONE = 0,
@@ -55,6 +55,6 @@ namespace log {
 
 	void addLogFile(io::File* file, LOGLEVEL level);
 	void logToConsole(LOGLEVEL level);
-	void log(TextBlock& location, LOGLEVEL level, std::vector<std::string>& arguments, CODE errorCode = 0);
+	void log(TextBlock& location, LOGLEVEL level, std::vector<std::string>& arguments, CODE errorCode = CODE::NONE);
 }
 #include "../compiler/loader/interface.h"
