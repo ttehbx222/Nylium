@@ -38,17 +38,20 @@ namespace nylium {
 		};
 
 		enum class CodeType {
+			NDEF,
 			SCOPE,
 			OPERATION
 		};
 
 		enum class OperationType {
+			NDEF,
 			FUNCTION_CALL,
 			ASSIGN,
 			MEMBER_CALL
 		};
 
 		enum class DeclarationType {
+			NDEF,
 			TYPE,
 			FIELD,
 			FUNCTION,
@@ -56,20 +59,26 @@ namespace nylium {
 		};
 
 		enum CodeObjectType {
+			NDEF = 0x0,
 			CODE_LINE = 0x1,
 			VALUE_HOLDER = 0x2
 		};
 
 		class CodeObject {
-
+		public:
+			virtual CodeObjectType co_Type() = 0;
 		};
 
 		class CodeLine : public CodeObject {
-
+		public:
+			virtual CodeType c_Type() = 0;
 		};
 
 		class ValueHolder : public CodeObject {
-
+		private:
+			Type* f_type;
+		public:
+			inline Type* type() { return f_type; }
 		};
 
 		class Scope : public CodeLine {
@@ -77,7 +86,8 @@ namespace nylium {
 		};
 
 		class Operation : public CodeLine, public ValueHolder {
-
+		public:
+			virtual OperationType o_Type() = 0;
 		};
 
 		class FunctionCall : public Operation {
@@ -93,7 +103,8 @@ namespace nylium {
 		};
 
 		class Declaration : public ValueHolder {
-
+		public:
+			virtual DeclarationType d_Type() = 0;
 		};
 
 		class TypeDeclaration : public Declaration {
@@ -116,12 +127,11 @@ namespace nylium {
 
 		};
 
-		class Specification {
+		typedef std::vector<Type*> Specification;
 
-		};
-
-		class Type {
-
+		class Type : public TypeDeclaration{
+		private:
+			Specification f_specification;
 		};
 
 	}
