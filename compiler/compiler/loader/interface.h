@@ -20,6 +20,8 @@
 #include "../../log/logger.h"
 #include "../../fileutils/file_io.h"
 
+//TODO split into hpp & cpp
+
 namespace nylium{
 	namespace codebody {
 		class Declaration;

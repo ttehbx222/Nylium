@@ -14,7 +14,6 @@
 * limitations under the License.
 */
 #pragma once
-#include "code_body.h"
 #include "interface.h"
 #include <string>
 #include <map>

@@ -15,49 +15,11 @@
 */
 #include "loader.h"
 #include "code_body.h"
-#inclued "../../log/logger.h"
+#include "../../log/logger.h"
 #include "../../fileutils/file_io.h"
+#include "LoadLayer.hpp"
 
 namespace nylium {
-
-	enum SCOPE_DEPTH {
-		MAIN,
-		NAMESPACE
-	};
-
-	struct LL_info {
-		size_t vb_open = 0, sb_open = 0;
-		codebody::SCOPE scope;
-	};
-
-	struct LoaderLayer {
-		std::vector<LL_info> memory;
-		LL_info info;
-		size_t  line = 0, character = 0;
-		bool more = true;
-		io::File* file;
-		std::vector<std::string> past_lines;
-		std::string current_line;
-		inline void operator + (codebody::SCOPE& scope) {
-			memory.push_back(info);
-			info = LL_info();
-			info.scope = scope;
-		}
-		inline void operator --() {
-			//TODO vb sb check
-			info = memory.pop_back();
-		}
-		inline void new_line() {
-			past_lines.push_back(current_line);
-			more = std::getline(file->ifstream(), current_line);
-			if (more) {
-				character = current_line.find_first_not_of(" \t");
-				line++;
-			}
-		}
-	};
-
-	typedef LoaderLayer* LL;
 
 	bool load_code(FileInterface* interfaces, Package* package);
 
@@ -80,7 +42,7 @@ namespace nylium {
 		return root;
  	}
 
-	bool load_code(FileInterface* interfaces, Package* package, LoaderLayer* ll) {
+	bool load_code(FileInterface* interfaces, Package* package, LoadLayer* ll) {
 
 
 		return true;
