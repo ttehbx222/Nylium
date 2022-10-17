@@ -19,6 +19,8 @@
 #include <map>
 #include <vector>
 
+//TODO set constructors
+
 namespace nylium {
 
 	//Define without include
@@ -92,21 +94,24 @@ namespace nylium {
 	class CodeObject {
 	public:
 		virtual CodeObjectType co_Type() { return CodeObjectType::NDEF; }
-		virtual CodeObject* next(LoadLayer* ll);
+		virtual CodeObject* next(LoadLayer* ll); //TODO move to other classes
 	};
 
 	class CodeLine : public CodeObject {
 	public:
+		CodeLine() = delete;
+		CodeLine(CodeObject* parent); //TODO check if required
 		virtual CodeType c_Type() { return CodeType::NDEF; }
 	};
 
 	typedef CodeLine* CODE;
 
 	class ValueHolder : public CodeObject {
-	private:
+	protected:
 		std::string f_key;
 		Type* f_type;
 	public:
+		ValueHolder() = delete;
 		ValueHolder(std::string name, Type* type);
 		inline Type* type() { return f_type; }
 		inline std::string key() { return f_key; }
@@ -176,24 +181,38 @@ namespace nylium {
 	};
 
 	class TypeDeclaration : public Declaration {
+	private:
+		SCOPE f_body;
+	public:
+		inline SCOPE body() { return f_body; }
 
+		DeclarationType d_Type() { return DeclarationType::TYPE; }
 	};
 
 	class FieldDeclaration : public Declaration {
-
+	public:
+		DeclarationType d_Type() { return DeclarationType::FIELD; }
 	};
 
 	class FunctionDeclaration : public Declaration {
+	private:
+		Specification f_parameters;
+	public:
+		inline Specification& parameters() { return f_parameters; }
 
+		DeclarationType d_Type() { return DeclarationType::FUNCTION; }
 	};
 
 	class ReferenceDeclaration : public Declaration {
+	private:
+		Declaration* f_source;
+	public:
+		inline Declaration* source() { return f_source; }
 
+		DeclarationType d_Type() { return DeclarationType::REFERENCE; }
 	};
 
-	class UnresolvedDeclaration : public Declaration {
-
-	};
+	class UnresolvedDeclaration : public Declaration {};
 
 	class Type : public TypeDeclaration{
 	private:
