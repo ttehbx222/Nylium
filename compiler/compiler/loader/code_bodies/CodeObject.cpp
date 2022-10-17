@@ -14,3 +14,8 @@
 * limitations under the License.
 */
 #include "../code_bodies.hpp"
+#include "../LoadLayer.hpp"
+
+nylium::CodeObject* nylium::CodeObject::next(LL ll) {
+	//TODO
+}

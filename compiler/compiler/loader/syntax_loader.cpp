@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 #include "loader.h"
-#include "code_body.h"
+#include "code_bodies.hpp"
 #include "../../log/logger.h"
 #include "../../fileutils/file_io.h"
 #include "LoadLayer.hpp"

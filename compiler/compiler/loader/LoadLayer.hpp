@@ -15,7 +15,14 @@
 */
 #pragma once
 
+#include <string>
+#include <vector>
+
 namespace nylium {
+	
+	class Scope;
+	typedef Scope* SCOPE;
+
 	enum SCOPE_DEPTH {
 		MAIN,
 		NAMESPACE
@@ -23,7 +30,7 @@ namespace nylium {
 
 	struct LL_info {
 		size_t vb_open = 0, sb_open = 0;
-		codebody::SCOPE scope;
+		SCOPE scope;
 	};
 
 	struct LoadLayer {
@@ -34,7 +41,7 @@ namespace nylium {
 		io::File* file;
 		std::vector<std::string> past_lines;
 		std::string current_line;
-		inline void operator + (codebody::SCOPE& scope) {
+		/*inline void operator + (codebody::SCOPE& scope) {
 			memory.push_back(info);
 			info = LL_info();
 			info.scope = scope;
@@ -50,8 +57,12 @@ namespace nylium {
 				character = current_line.find_first_not_of(" \t");
 				line++;
 			}
-		}
+		}*/
+		//TODO inline functions
 	};
 
 	typedef LoadLayer* LL;
 }
+
+//dependecy
+#include "code_bodies.hpp"

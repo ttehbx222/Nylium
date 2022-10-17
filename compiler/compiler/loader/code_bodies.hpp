@@ -24,9 +24,24 @@ namespace nylium {
 	//Define without include
 	class LoadLayer;
 
-	class Type;
+	//circular dependencies
+	class CodeLine;
+	class ValueHolder;
+	class Scope;
+	typedef Scope* SCOPE;
+	class Operation;
+	class FunctionCall;
+	class AssignOperation;
+	class MemberCall;
 	class Declaration;
+	class TypeDeclaration;
+	class FieldDeclaration;
+	class FunctionDeclaration;
+	class ReferenceDeclaration;
 	class UnresolvedDeclaration;
+
+	class Type;
+	typedef std::vector<Type*> Specification;
 
 	enum class Castable {
 		CAST_DIRECT,
@@ -46,6 +61,12 @@ namespace nylium {
 		OPERATION
 	};
 
+	enum class ScopeType {
+		LOCAL = 0x0,
+		OPEN = 0x1,
+		NAMESPACE = 0x2
+	};
+
 	enum class OperationType {
 		NDEF,
 		FUNCTION_CALL,
@@ -58,7 +79,8 @@ namespace nylium {
 		TYPE,
 		FIELD,
 		FUNCTION,
-		REFERENCE
+		REFERENCE,
+		NAMESPACE
 	};
 
 	enum CodeObjectType {
@@ -69,8 +91,8 @@ namespace nylium {
 
 	class CodeObject {
 	public:
-		virtual CodeObjectType co_Type() { return CodeType::NDEF; }
-		virtual next(LoadLayer* ll);
+		virtual CodeObjectType co_Type() { return CodeObjectType::NDEF; }
+		virtual CodeObject* next(LoadLayer* ll);
 	};
 
 	class CodeLine : public CodeObject {
@@ -82,51 +104,75 @@ namespace nylium {
 
 	class ValueHolder : public CodeObject {
 	private:
+		std::string f_key;
 		Type* f_type;
 	public:
+		ValueHolder(std::string name, Type* type);
 		inline Type* type() { return f_type; }
+		inline std::string key() { return f_key; }
 	};
-
-	class Scope;
-	typedef Scope* SCOPE;
 
 	class Scope : public CodeLine {
 	private:
+		ScopeType f_s_type;
 		SCOPE f_parent;
 		std::map<std::string, std::vector<Declaration>> f_public_accessibles, f_protected_accessibles, f_private_accessibles;
 		FileInterface* f_parent_interface;
 		std::vector<CODE> f_code;
 	public:
-		Scope() {}
-		Scope(SCOPE scope) {}
+		Scope() = delete;
+		Scope(SCOPE scope);
+		Scope(FileInterface* file);
 		inline SCOPE parent() { return f_parent; }
 		inline std::vector<CODE>& code() { return f_code; }
-		CodeType c_Type() { return CodeType::SCOPE };
 		Visibility visibilityOf(SCOPE scope);
 		Declaration* searchDeclaration(UnresolvedDeclaration* decl);
 		bool addDeclaration(std::string& name, Visibility visibility, Declaration* decl);
-	};
 
-	class Operation : public CodeLine, public ValueHolder {
-	public:
-		virtual OperationType o_Type() { return OperationType::NDEF; }
-	};
-
-	class FunctionCall : public Operation {
-
-	};
-
-	class AssignOperation : public Operation {
-
-	};
-
-	class MemberCall : public Operation {
-
+		CodeType c_Type() { return CodeType::SCOPE; }
+		virtual ScopeType s_Type() { return f_s_type; }
 	};
 
 	class Declaration : public ValueHolder {
 	public:
 		virtual DeclarationType d_Type() { return DeclarationType::NDEF; }
+	};
+
+	class Namespace : public Scope , public Declaration{
+	public:
+		ScopeType s_Type() { return ScopeType::NAMESPACE; }
+		DeclarationType d_Type() { return DeclarationType::NAMESPACE; }
+	};
+
+	class Operation : public CodeLine, public ValueHolder {
+	private:
+		Declaration* f_target;
+	public:
+		virtual OperationType o_Type() { return OperationType::NDEF; }
+		inline Declaration* target() { return f_target; }
+	};
+
+	class MemberCall : public Operation {
+	public:
+		virtual OperationType o_Type() { return OperationType::MEMBER_CALL; }
+	};
+
+	class FunctionCall : public Operation {
+	private:
+		std::vector<ValueHolder*> f_arguments;
+	public:
+		inline std::vector<ValueHolder*> arguments() { return f_arguments; }
+
+		OperationType o_Type() { return OperationType::FUNCTION_CALL; }
+	};
+
+	class AssignOperation : public Operation {
+	private:
+		ValueHolder* f_source;
+	public:
+		inline ValueHolder* source() { return f_source; }
+
+		OperationType o_Type() { return OperationType::ASSIGN; }
 	};
 
 	class TypeDeclaration : public Declaration {
@@ -148,8 +194,6 @@ namespace nylium {
 	class UnresolvedDeclaration : public Declaration {
 
 	};
-
-	typedef std::vector<Type*> Specification;
 
 	class Type : public TypeDeclaration{
 	private:
