@@ -85,7 +85,7 @@ namespace nylium {
 		NAMESPACE
 	};
 
-	enum CodeObjectType {
+	/*enum CodeObjectType {
 		NDEF = 0x0,
 		CODE_LINE = 0x1,
 		VALUE_HOLDER = 0x2
@@ -105,7 +105,7 @@ namespace nylium {
 		virtual CodeType c_Type() { return CodeType::NDEF; }
 	};
 
-	typedef CodeLine* CODE;
+	typedef CodeLine* CODE;*/
 
 	class ValueHolder : public CodeObject {
 	protected:

@@ -13,8 +13,12 @@
 * See the License for the specific language governing permissionsand
 * limitations under the License.
 */
-#include "CodeObject.hpp"
+#pragma once
 
-nylium::CodeObject* nylium::CodeObject::convert(LL ll) {
-	//TODO
+namespace nylium{
+
+    class DeclarationSearch{
+        //TODO
+    };
+
 }
