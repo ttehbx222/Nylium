@@ -21,7 +21,7 @@
 namespace nylium{
 
     struct CodeObject {
-		virtual CodeObject* convert(LoadLayer* ll);
+		virtual CodeObject* convert(LoadLayer* ll); //TODO make static
         //TODO add precompile function
 	};
 
