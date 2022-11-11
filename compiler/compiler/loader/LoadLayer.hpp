@@ -17,11 +17,15 @@
 
 #include <string>
 #include <vector>
+#include "BodyMatcher.hpp"
+#include "../../datautils/linked_tree.hpp"
 
 namespace nylium {
 	
 	class Scope;
 	typedef Scope* SCOPE;
+
+	struct BodyMatcher {};
 
 	enum SCOPE_DEPTH {
 		MAIN,
@@ -31,9 +35,11 @@ namespace nylium {
 	struct LL_info {
 		size_t vb_open = 0, sb_open = 0;
 		SCOPE scope;
+		Node<BodyMatcher*>* local_tree;
 	};
 
 	struct LoadLayer {
+		Node<BodyMatcher*>* original_tree;
 		std::vector<LL_info> memory;
 		LL_info info;
 		size_t  line = 0, character = 0;

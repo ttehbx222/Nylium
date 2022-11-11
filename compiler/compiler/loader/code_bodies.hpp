@@ -94,7 +94,8 @@ namespace nylium {
 	class CodeObject {
 	public:
 		virtual CodeObjectType co_Type() { return CodeObjectType::NDEF; }
-		virtual CodeObject* next(LoadLayer* ll); //TODO move to other classes
+		virtual CodeObject* convert(LoadLayer* ll); //TODO move to other classes
+		virtual Node<BodyMatcher*>* load(); //TODO move to other classes
 	};
 
 	class CodeLine : public CodeObject {

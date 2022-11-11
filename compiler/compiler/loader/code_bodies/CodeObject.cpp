@@ -19,3 +19,11 @@
 nylium::CodeObject* nylium::CodeObject::next(LL ll) {
 	//TODO
 }
+
+struct CodeObjectBM : public nylium::BodyMatcher{
+
+};
+
+Node<nylium::BodyMatcher*>* nylium::CodeObject::load() {
+	//TODO
+}
