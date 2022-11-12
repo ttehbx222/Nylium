@@ -14,7 +14,3 @@
 * limitations under the License.
 */
 #include "CodeObject.hpp"
-
-nylium::CodeObject* nylium::CodeObject::convert(LL ll) {
-	//TODO
-}
