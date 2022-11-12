@@ -20,7 +20,7 @@
 namespace nylium{
 
     struct Operator : public CharSequence {
-
+        CharSequenceType getType(){ return CharSequenceType::OPERATOR; }
     };
 
 }

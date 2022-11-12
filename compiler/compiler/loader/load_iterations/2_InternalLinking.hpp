@@ -14,10 +14,3 @@
  * limitations under the License.
  */
 #pragma once
-
-namespace nylium{
-
-    struct CodeObject {
-	};
-
-}

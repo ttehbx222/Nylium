@@ -15,9 +15,12 @@
  */
 #pragma once
 
+#include "NyliumCharSequence.hpp"
+
 namespace nylium{
 
-    struct CodeObject {
-	};
+    struct EndIndicator : public CharSequence { // = ';'
+        CharSequenceType getType(){ return CharSequenceType::END; }
+    };
 
 }

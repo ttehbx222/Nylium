@@ -19,8 +19,18 @@
 
 namespace nylium{
 
-    struct Bracket : public CharSequence {
+    enum class BracketType{
+        VALUE_BRACKET,
+        SCOPE_BRACKET,
+        SPECIFIER_BRACKET, // possible converted to operator later
+        INDEX // later converted to operator
+    };
 
+    struct Bracket : public CharSequence {
+        BracketType type;
+        bool open; //true = '(<{[', false = ']}>)'
+
+        CharSequenceType getType(){ return CharSequenceType::BRACKET; }
     };
 
 }

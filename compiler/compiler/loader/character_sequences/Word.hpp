@@ -20,7 +20,7 @@
 namespace nylium{
 
     struct Word : public CharSequence {
-
+        
     };
 
 }

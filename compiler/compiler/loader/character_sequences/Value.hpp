@@ -16,11 +16,16 @@
 #pragma once
 
 #include "Word.hpp"
+#include "../code_bodies/Type.hpp"
 
 namespace nylium{
 
     struct Value : public Word {
+        void* value_data;
+        size_t value_length;
+        Type cb_type;
 
+        CharSequenceType getType(){ return CharSequenceType::VALUE; }
     };
 
 }

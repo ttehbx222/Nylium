@@ -15,10 +15,25 @@
  */
 #pragma once
 
+#include <string>
+
 namespace nylium{
 
-    struct CharSequence {
+    enum class CharSequenceType{
+        BRACKET,
+        NAME,
+        OPERATOR,
+        VALUE,
+        END,
+        LIST_SEPARATOR,
+        EMPTY_SEPARATOR
+    };
 
+    struct CharSequence {
+        std::string chars;
+        size_t line, coloumn, length;
+
+        virtual CharSequenceType getType() = 0;
     };
 
 }

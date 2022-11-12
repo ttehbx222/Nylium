@@ -15,9 +15,4 @@
  */
 #pragma once
 
-namespace nylium{
-
-    struct CodeObject {
-	};
-
-}
+#include "0_CharSequences.hpp"

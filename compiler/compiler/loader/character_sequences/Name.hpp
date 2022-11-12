@@ -20,7 +20,7 @@
 namespace nylium{
 
     struct Name : public Word {
-
+        CharSequenceType getType(){ return CharSequenceType::NAME; }
     };
 
 }

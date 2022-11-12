@@ -15,9 +15,12 @@
  */
 #pragma once
 
+#include "NyliumCharSequence.hpp"
+
 namespace nylium{
 
-    struct CodeObject {
-	};
+    struct EmptySeparator : public CharSequence {
+        CharSequenceType getType(){ return CharSequenceType::EMPTY_SEPARATOR; }
+    };
 
 }

@@ -15,9 +15,14 @@
  */
 #pragma once
 
+#include <vector>
+#include "../character_sequences/NyliumCharSequence.hpp"
+#include "../project/Interface.hpp"
+
 namespace nylium{
 
-    struct CodeObject {
-	};
+    typedef std::vector<CharSequence> Text;
+
+    Text* loadCharSequences(FileInterface* fInterface);
 
 }
