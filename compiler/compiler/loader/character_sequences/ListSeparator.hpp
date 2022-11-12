@@ -20,6 +20,7 @@
 namespace nylium{
 
     struct ListSeparator : public CharSequence {
+        ListSeparator(std::string& content, size_t line_number, size_t coloumn) : CharSequence(content, line_number, coloumn) {}
         CharSequenceType getType(){ return CharSequenceType::LIST_SEPARATOR; }
     };
 

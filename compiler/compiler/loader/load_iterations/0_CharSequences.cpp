@@ -13,7 +13,12 @@
  * See the License for the specific language governing permissionsand
  * limitations under the License.
  */
+#include <string>
 #include "0_CharSequences.hpp"
+
+#include "../character_sequences/EmptySeparator.hpp"
+
+using namespace nylium;
 
 const char regex_bracket[] = "[\\(\\)<>{}\\[\\]]";
 const char regex_empty_separator[] = "[ \t]+";
@@ -29,6 +34,28 @@ const char regex_value_int_dec[] = "[0-9]+";
 const char regex_value_char[] = "'[^'\\\\]'|'[\\\\].'";
 const char regex_value_str[] = "\"([^\"\\\\]|[\\\\].)*\"";
 
-nylium::Text* nylium::loadCharSequences(nylium::FileInterface* fInterface){
-    
+void processLine(Text* text, std::string line, size_t line_number){
+    size_t coloumn = 0;
+    while(!line.empty()){
+        switch(line[0]){
+            //TODO sequenceType detection
+        }
+    }
+    text->push_back(new EmptySeparator(line, line_number, coloumn));
 }
+
+Text* nylium::loadCharSequences(FileInterface* fInterface){
+    Text* text = new Text();
+
+    size_t line_number = 0;
+    std::string line;
+    std::ifstream& istream = fInterface->file->ifstream();
+
+    while (std::getline(istream, line)){
+        line_number++;
+        processLine(text, line, line_number);
+    }
+
+    return text;
+}
+

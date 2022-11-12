@@ -15,10 +15,32 @@
  */
 #pragma once
 
+#include <string>
+#include <vector>
+#include "../code_bodies/compilable/Scope.hpp"
+#include "../utils/DeclarationSearch.hpp"
+#include "../../../fileutils/file_io.hpp"
+#include "Project.hpp"
+
+
 namespace nylium{
 
-    class FileInterface{
-        //TODO
+    class Text; //defined in 0_CharSequences.hpp
+
+    struct FileInterface : ProjectContent {
+        const DeclarationSearch f_accessibles;
+        std::string name, import_path;
+        const std::vector<FileInterface*> imports;
+
+        const Scope main_scope;
+
+        io::File* file;
+
+        Package* parent;
+        Project* project;
+
+        Text* f_text;
+
     };
 
 }

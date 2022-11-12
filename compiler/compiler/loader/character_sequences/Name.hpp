@@ -20,6 +20,7 @@
 namespace nylium{
 
     struct Name : public Word {
+        Name(std::string& content, size_t line_number, size_t coloumn) : Word(content, line_number, coloumn) {}
         CharSequenceType getType(){ return CharSequenceType::NAME; }
     };
 

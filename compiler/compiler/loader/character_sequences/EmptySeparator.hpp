@@ -20,6 +20,7 @@
 namespace nylium{
 
     struct EmptySeparator : public CharSequence {
+        EmptySeparator(std::string& content, size_t line_number, size_t coloumn) : CharSequence(content, line_number, coloumn) {}
         CharSequenceType getType(){ return CharSequenceType::EMPTY_SEPARATOR; }
     };
 

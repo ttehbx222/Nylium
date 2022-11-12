@@ -23,7 +23,9 @@ namespace nylium{
     struct Value : public Word {
         void* value_data;
         size_t value_length;
-        Type cb_type;
+        Type* cb_type;
+
+        Value(std::string& content, size_t line_number, size_t coloumn, Type* type);
 
         CharSequenceType getType(){ return CharSequenceType::VALUE; }
     };

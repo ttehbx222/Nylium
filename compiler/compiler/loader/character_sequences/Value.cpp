@@ -13,26 +13,8 @@
  * See the License for the specific language governing permissionsand
  * limitations under the License.
  */
-#pragma once
+#include "Value.hpp"
 
-#include "NyliumCharSequence.hpp"
-
-namespace nylium{
-
-    enum class BracketType{
-        VALUE_BRACKET,
-        SCOPE_BRACKET,
-        SPECIFIER_BRACKET, // possible converted to operator later
-        INDEX // later converted to operator
-    };
-
-    struct Bracket : public CharSequence {
-        BracketType type;
-        bool open; //true = '(<{[', false = ']}>)'
-
-        Bracket(std::string& content, size_t line_number, size_t coloumn);
-
-        CharSequenceType getType(){ return CharSequenceType::BRACKET; }
-    };
-
+nylium::Value::Value(std::string& content, size_t line_number, size_t coloumn, Type* type) : Word(content, line_number, coloumn) {
+    //TODO convert content to data
 }

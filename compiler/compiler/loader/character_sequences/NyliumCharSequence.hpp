@@ -33,6 +33,13 @@ namespace nylium{
         std::string chars;
         size_t line, coloumn, length;
 
+        CharSequence(std::string& content, size_t line_number, size_t coloumn){
+            chars = content;
+            line = line_number;
+            this->coloumn = coloumn;
+            length = chars.length(); // check for importance
+        }
+
         virtual CharSequenceType getType() = 0;
     };
 

@@ -14,3 +14,26 @@
  * limitations under the License.
  */
 #pragma once
+
+#include <string>
+#include <vector>
+
+namespace nylium{
+
+    struct ProjectContent{
+        virtual bool isInterface() = 0;
+    };
+
+    struct Package : public ProjectContent {
+        std::string location;
+        const std::vector<ProjectContent*> contents;
+
+        bool isInterface(){ return false; }
+    };
+
+    struct Project : public Package {
+        std::string name;
+        std::vector<ProjectContent*> interfaces;
+    };
+
+}

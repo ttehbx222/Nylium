@@ -20,7 +20,7 @@
 namespace nylium{
 
     struct Word : public CharSequence {
-        
+        Word(std::string& content, size_t line_number, size_t coloumn) : CharSequence(content, line_number, coloumn) {}
     };
 
 }

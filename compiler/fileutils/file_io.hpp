@@ -47,14 +47,5 @@ namespace io {
 	};
 
 	std::string local_path();
-	/*class TextFile : public File {
-	private:
-		std::string file_content;
-	public:
-		TextFile(std::string path);
-		inline std::string& content() {
-			return file_content;
-		}
-		void save();
-	};*/
+	
 }
