@@ -21,7 +21,7 @@
 
 namespace nylium{
 
-    typedef std::vector<CharSequence*> Text;
+    struct Text : public std::vector<CharSequence*>{};
 
     Text* loadCharSequences(FileInterface* fInterface);
 

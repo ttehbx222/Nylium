@@ -15,6 +15,6 @@
  */
 #include "Value.hpp"
 
-nylium::Value::Value(std::string& content, size_t line_number, size_t coloumn, Type* type) : Word(content, line_number, coloumn) {
+nylium::Value::Value(std::string& content, size_t line_number, size_t coloumn, ValueType type) : Word(content, line_number, coloumn) {
     //TODO convert content to data
 }

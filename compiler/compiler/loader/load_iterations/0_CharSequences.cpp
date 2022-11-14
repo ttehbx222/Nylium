@@ -14,31 +14,118 @@
  * limitations under the License.
  */
 #include <string>
+#include <regex>
+
 #include "0_CharSequences.hpp"
 
+#include "../character_sequences/Bracket.hpp"
 #include "../character_sequences/EmptySeparator.hpp"
+#include "../character_sequences/End.hpp"
+#include "../character_sequences/ListSeparator.hpp"
+#include "../character_sequences/Name.hpp"
+#include "../character_sequences/Operator.hpp"
+#include "../character_sequences/Value.hpp"
 
 using namespace nylium;
 
-const char regex_bracket[] = "[\\(\\)<>{}\\[\\]]";
-const char regex_empty_separator[] = "[ \t]+";
-const char regex_end[] = ";";
-const char regex_list_separator[] = ",";
-const char regex_name[] = "[A-Za-z_][A-Za-z0-9]*";
-const char regex_operator[] = "[\\+\\-\\*\\/\\&\\|\\^\\!\\=]";
+const char bracket[] = "^[\\(\\)<>{}\\[\\]]";
+const char empty_separator[] = "^[ \t]+";
+const char end[] = "^;";
+const char list_separator[] = "^,";
+const char name[] = "^[A-Za-z_][A-Za-z0-9]*";
+const char operator_[] = "^[\\+\\-\\*\\/\\&\\|\\^\\!\\=]";
 
-const char regex_value_int_hex[] = "0x[A-Fa-f0-9]+";
-const char regex_value_int_bin[] = "0b[01]+";
-const char regex_value_int_dec[] = "[0-9]+";
+const char value_int_hex[] = "^0x[A-Fa-f0-9]+";
+const char value_int_bin[] = "^0b[01]+";
+const char value_int_dec[] = "^[0-9]+";
 
-const char regex_value_char[] = "'[^'\\\\]'|'[\\\\].'";
-const char regex_value_str[] = "\"([^\"\\\\]|[\\\\].)*\"";
+const char value_char[] = "^'[^'\\\\]'|'[\\\\].'";
+const char value_str[] = "^\"([^\"\\\\]|[\\\\].)*\"";
+
+const std::regex regex_text(std::string("(")
+    +bracket+")|("
+    +empty_separator+")|("
+    +end+")|("
+    +list_separator+")|("
+    +name+")|("
+    +operator_+")|("
+    +value_int_hex+")|("
+    +value_int_bin+")|("
+    +value_int_dec+")|("
+    +value_char+")|("
+    +value_str+")");
 
 void processLine(Text* text, std::string line, size_t line_number){
     size_t coloumn = 0;
     while(!line.empty()){
-        switch(line[0]){
-            //TODO sequenceType detection
+        std::smatch results;
+        if (!std::regex_search(line, results, regex_text)){
+            //TODO invalid character
+        }
+        char group;
+        char len;
+        for (char i = 1; i<12; i++){
+            if (len = results[i].length()){
+                group = i;
+                break;
+            }
+        }
+        switch(group){
+            case 1:
+            {
+                text->push_back(new Bracket(line, line_number, coloumn));
+                break;  
+            }
+            case 2:
+            {
+                text->push_back(new EmptySeparator(line, line_number, coloumn));
+                break;  
+            }
+            case 3:
+            {
+                text->push_back(new EndIndicator(line, line_number, coloumn));
+                break;  
+            }
+            case 4:
+            {
+                text->push_back(new ListSeparator(line, line_number, coloumn));
+                break;  
+            }
+            case 5:
+            {
+                text->push_back(new Name(line, line_number, coloumn));
+                break;  
+            }
+            case 6:
+            {
+                text->push_back(new Operator(line, line_number, coloumn));
+                break;  
+            }
+            case 7:
+            {
+                text->push_back(new Value(line, line_number, coloumn, ValueType::INT_HEX));
+                break;  
+            }
+            case 8:
+            {
+                text->push_back(new Value(line, line_number, coloumn, ValueType::INT_BIN));
+                break;  
+            }
+            case 9:
+            {
+                text->push_back(new Value(line, line_number, coloumn, ValueType::INT_DEC));
+                break;  
+            }
+            case 10:
+            {
+                text->push_back(new Value(line, line_number, coloumn, ValueType::CHAR));
+                break;  
+            }
+            case 11:
+            {
+                text->push_back(new Value(line, line_number, coloumn, ValueType::STRING));
+                break;  
+            }
         }
     }
     text->push_back(new EmptySeparator(line, line_number, coloumn));

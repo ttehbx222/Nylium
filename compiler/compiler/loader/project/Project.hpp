@@ -34,6 +34,7 @@ namespace nylium{
     struct Project : public Package {
         std::string name;
         std::vector<ProjectContent*> interfaces;
+        Project();
     };
 
 }

@@ -25,7 +25,7 @@
 
 namespace nylium{
 
-    class Text; //defined in 0_CharSequences.hpp
+    struct Text; //defined in 0_CharSequences.hpp
 
     struct FileInterface : ProjectContent {
         const DeclarationSearch f_accessibles;
@@ -41,6 +41,7 @@ namespace nylium{
 
         Text* f_text;
 
+        
     };
 
 }

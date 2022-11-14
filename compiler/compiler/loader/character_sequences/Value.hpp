@@ -20,12 +20,20 @@
 
 namespace nylium{
 
+    enum class ValueType{
+        INT_HEX,
+        INT_BIN,
+        INT_DEC,
+        CHAR,
+        STRING
+    };
+
     struct Value : public Word {
         void* value_data;
         size_t value_length;
-        Type* cb_type;
+        ValueType* cb_type;
 
-        Value(std::string& content, size_t line_number, size_t coloumn, Type* type);
+        Value(std::string& content, size_t line_number, size_t coloumn, ValueType type);
 
         CharSequenceType getType(){ return CharSequenceType::VALUE; }
     };

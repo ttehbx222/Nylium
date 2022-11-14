@@ -17,12 +17,13 @@
 
 #include <vector>
 #include "../CodeLine.hpp"
-#include "../../project/Interface.hpp"
 #include "../PendingDeclaration.hpp"
 #include "../../utils/DeclarationSearch.hpp"
 
 
 namespace nylium{
+
+	struct FileInterface;
 
     struct Scope : public CodeLine {
 		    Scope* f_parent;
@@ -33,9 +34,9 @@ namespace nylium{
 			Scope(){}
 	    	Scope(Scope* scope);
 	    	Scope(FileInterface* file);
-	    	inline SCOPE parent() { return f_parent; }
+	    	inline Scope* parent() { return f_parent; }
 	    	inline std::vector<CODE>& code() { return f_code; }
-	    	Visibility visibilityOf(SCOPE scope);
+	    	Visibility visibilityOf(Scope* scope);
 	      	Declaration* searchDeclaration(PendingDeclaration* decl);
 	    	bool addDeclaration(std::string& name, Visibility visibility, Declaration* decl);
 	};
