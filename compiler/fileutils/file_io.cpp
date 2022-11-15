@@ -29,12 +29,12 @@ namespace io {
 		absolute_parent_path = std::filesystem::path(path).parent_path().string();
 	}
 
-	std::string localPath() {
+	std::string local_path() {
 		if (local == "") {
-			local = std::filesystem::current_path().parent_path().string();
-			if (local.find_last_of('/') == local.size() - 1) {				//removes / at end if there is one
+			local = std::filesystem::current_path().string();
+			/*if (local.find_last_of('/') == local.size() - 1) {				//removes / at end if there is one
 				local = local.substr(0, local.size() - 1);
-			}
+			}*/
 		}
 		return local;
 	}

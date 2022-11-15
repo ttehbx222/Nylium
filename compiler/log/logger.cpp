@@ -13,62 +13,47 @@
 * See the License for the specific language governing permissionsand
 * limitations under the License.
 */
-#include "logger.h"
+#include "logger.hpp"
 #include <vector>
 #include <iostream>
 
 namespace nlog {
 
-	
+	const char PREFIX[] = "[Nylium] ";
 
 	std::vector<std::pair<io::File*, LOGLEVEL>> log_files;
 	LOGLEVEL console = LOGLEVEL::INFO;
 
+	LOGLEVEL lowest = console;
+
 	void nlog::addLogFile(io::File* file, LOGLEVEL level) { //TODO log level
 		log_files.push_back(std::pair<io::File*, LOGLEVEL>(file, level));
+		if (level > lowest){
+			lowest = level;
+		}
 	}
 
-	void nlog::logToConsole(LOGLEVEL level) { //TODO log level
+	void nlog::ConsoleLogFilter(LOGLEVEL level) {
 		console = level;
-		//TODO add colors
+		if (level > lowest){
+			lowest = level;
+		}
 	}
 
-	std::pair<std::string, std::string>* log_unexpected_char(TextBlock& location, LOGLEVEL level, std::vector<std::string>& arguments);
-	std::pair<std::string, std::string>* log_unknown_error(TextBlock& location, LOGLEVEL level, CODE code);
-
-	void nlog::log(TextBlock& location, LOGLEVEL level, std::vector<std::string>& arguments, CODE code = 0) {
-		std::pair<std::string, std::string>* content = nullptr;
-		switch (code) {
-		case CODE::UNEXPECTED_CHAR:
-		{
-			content = log_unexpected_char(location, level, arguments);
-			break;
+	void nlog::log(LOGLEVEL level, std::string& console_out, std::string& file_out) {
+		if (level > lowest){
+			return;
 		}
-		default:
-		{
-			content = log_unknown_error(location, level, code);
+		if (file_out.length() == 0){
+			file_out = console_out;
 		}
+		if (console >= level){
+			std::cout << PREFIX << console_out << std::endl;
 		}
-		
-		if (content) {
-			std::cout << content->first << std::endl;
-			for (auto log_file : log_files) {
-				if (log_file.second >= level) {
-
-				}
+		for (auto log_file : log_files) {
+			if (log_file.second >= level) {
+				log_file.first->ofstream() << PREFIX << file_out << std::endl;
 			}
-			delete content;
 		}
 	}
-
-	std::pair<std::string, std::string>* log_unexpected_char(TextBlock& location, LOGLEVEL level, std::vector<std::string>& arguments) {
-		//TODO
-		return nullptr;
-	}
-
-	std::pair<std::string, std::string>* log_unknown_error(TextBlock& location, LOGLEVEL level, CODE code) {
-		//TODO
-		return nullptr;
-	}
-
 }

@@ -17,6 +17,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 namespace nylium{
 
@@ -24,17 +25,22 @@ namespace nylium{
         virtual bool isInterface() = 0;
     };
 
+    struct Project;
+
     struct Package : public ProjectContent {
         std::string location;
-        const std::vector<ProjectContent*> contents;
+        std::map<std::string, ProjectContent*> contents;
 
+        Package(std::string& location);
+        void loadPackage(std::string& path, Project* project);
         bool isInterface(){ return false; }
     };
 
     struct Project : public Package {
         std::string name;
+        std::string file_path;
         std::vector<ProjectContent*> interfaces;
-        Project();
+        Project(std::string& name);
     };
 
 }

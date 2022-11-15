@@ -28,9 +28,9 @@ namespace nylium{
     struct Text; //defined in 0_CharSequences.hpp
 
     struct FileInterface : ProjectContent {
-        const DeclarationSearch f_accessibles;
+        DeclarationSearch f_accessibles;
         std::string name, import_path;
-        const std::vector<FileInterface*> imports;
+        std::vector<FileInterface*> imports;
 
         const Scope main_scope;
 
@@ -41,7 +41,9 @@ namespace nylium{
 
         Text* f_text;
 
-        
+        FileInterface(std::string& name, std::string& file_path, std::string& import_path, Project* project, Package* parent);
+
+        bool isInterface(){ return true; }
     };
 
 }

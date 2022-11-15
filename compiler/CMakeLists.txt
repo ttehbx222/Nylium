@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.19)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 project(NyliumCompiler)
@@ -14,6 +14,11 @@ add_executable(NyliumCompiler "nylium.cpp"
 #compiler.loader.native.keywords
 #compiler.loader.native.types
 #compiler.loader.project
+"compiler/loader/project/Interface.cpp" "compiler/loader/project/Project.cpp"
 #compiler.loader.utils
 #compiler.loader
+#fileutils
+"fileutils/file_io.cpp"
+#log
+"log/logger.cpp"
 )

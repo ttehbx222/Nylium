@@ -14,13 +14,15 @@
 * limitations under the License.
 */
 
-namespace nylium {
-	namespace compiler {
-		int compile(/*TODO params*/);
+#include "log/logger.hpp"
+#include "compiler/loader/load_iterations/0_CharSequences.hpp"
+
+using namespace nylium;
+
+int main(/*TODO params*/) { //TEST RUN
+	nlog::ConsoleLogFilter(nlog::LOGLEVEL::DEBUG_3);
+	Project* testProject = new Project(std::string("NyliumTestRun"));
+	for (auto fint : testProject->interfaces){
+		nylium::loadCharSequences((FileInterface*)fint);
 	}
 }
-#ifndef NYLIUM_MAIN
-int main(/*TODO params*/) {
-	
-}
-#endif
