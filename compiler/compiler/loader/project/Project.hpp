@@ -36,10 +36,12 @@ namespace nylium{
         bool isInterface(){ return false; }
     };
 
+    struct FileInterface;
+
     struct Project : public Package {
         std::string name;
         std::string file_path;
-        std::vector<ProjectContent*> interfaces;
+        std::vector<FileInterface*> interfaces;
         Project(std::string& name);
     };
 

@@ -13,16 +13,24 @@
  * See the License for the specific language governing permissionsand
  * limitations under the License.
  */
-#pragma once
+#include "Loader.hpp"
 
-#include <vector>
-#include "../character_sequences/NyliumCharSequence.hpp"
-#include "../project/Interface.hpp"
+#include "load_iterations/0_CharSequences.hpp"
+#include "load_iterations/1_CodeBodies.hpp"
+#include "load_iterations/2_InternalLinking.hpp"
 
-namespace nylium{
+#include "project/Interface.hpp"
 
-    struct Text : public std::vector<CharSequence*>{};
+using namespace nylium;
 
-    void loadCharSequences(FileInterface* fInterface);
-
+Project* nylium::loadProject(std::string& name){
+    Project* project = new Project(name);
+    for (FileInterface* fInterface : project->interfaces){
+        loadCharSequences(fInterface);
+    }
+    for (FileInterface* fInterface : project->interfaces){
+        loadBodies(fInterface);
+    }
+    linkBodies(project);
+    return project;
 }

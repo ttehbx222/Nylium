@@ -154,7 +154,7 @@ void processLine(Text* text, std::string line, size_t line_number){
     nlog::log(nlog::LOGLEVEL::DEBUG_3, std::string("DEBUG: Empty: "));
 }
 
-Text* nylium::loadCharSequences(FileInterface* fInterface){
+void nylium::loadCharSequences(FileInterface* fInterface){
     Text* text = new Text();
     size_t line_number = 0;
     std::string line;
@@ -168,6 +168,6 @@ Text* nylium::loadCharSequences(FileInterface* fInterface){
 
     nlog::log(nlog::LOGLEVEL::DEBUG_2, std::string("DEBUG: End of file '") + fInterface->name + "'");
 
-    return text;
+    fInterface->f_text = text;
 }
 

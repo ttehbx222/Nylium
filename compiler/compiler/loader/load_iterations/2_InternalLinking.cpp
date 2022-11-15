@@ -13,16 +13,10 @@
  * See the License for the specific language governing permissionsand
  * limitations under the License.
  */
-#pragma once
+#include "2_InternalLinking.hpp"
 
-#include <vector>
-#include "../character_sequences/NyliumCharSequence.hpp"
-#include "../project/Interface.hpp"
+using namespace nylium;
 
-namespace nylium{
-
-    struct Text : public std::vector<CharSequence*>{};
-
-    void loadCharSequences(FileInterface* fInterface);
-
+void nylium::linkBodies(Project* fInterface){
+    
 }

@@ -15,14 +15,11 @@
 */
 
 #include "log/logger.hpp"
-#include "compiler/loader/load_iterations/0_CharSequences.hpp"
+#include "compiler/loader/Loader.hpp"
 
 using namespace nylium;
 
 int main(/*TODO params*/) { //TEST RUN
 	nlog::ConsoleLogFilter(nlog::LOGLEVEL::DEBUG_3);
-	Project* testProject = new Project(std::string("NyliumTestRun"));
-	for (auto fint : testProject->interfaces){
-		nylium::loadCharSequences((FileInterface*)fint);
-	}
+	Project* project = loadProject(std::string("TestRun"));
 }

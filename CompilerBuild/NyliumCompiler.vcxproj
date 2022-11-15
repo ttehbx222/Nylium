@@ -310,8 +310,11 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\character_sequences\Value.cpp" />
     <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\code_bodies\CodeObject.cpp" />
     <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\load_iterations\0_CharSequences.cpp" />
+    <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\load_iterations\1_CodeBodies.cpp" />
+    <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\load_iterations\2_InternalLinking.cpp" />
     <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\project\Interface.cpp" />
     <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\project\Project.cpp" />
+    <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\Loader.cpp" />
     <ClCompile Include="D:\Matura\Nylium\compiler\fileutils\file_io.cpp" />
     <ClCompile Include="D:\Matura\Nylium\compiler\log\logger.cpp" />
   </ItemGroup>

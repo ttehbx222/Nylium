@@ -15,4 +15,10 @@
  */
 #pragma once
 
-#include "0_CharSequences.hpp"
+#include "../project/Interface.hpp"
+
+namespace nylium{
+
+    void loadBodies(FileInterface* fInterface);
+
+}

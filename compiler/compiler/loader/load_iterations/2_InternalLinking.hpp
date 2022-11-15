@@ -14,3 +14,11 @@
  * limitations under the License.
  */
 #pragma once
+
+#include "../project/Project.hpp"
+
+namespace nylium{
+
+    void linkBodies(Project* fInterface);
+
+}

@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 #pragma once
+#include "project/Project.hpp"
 
-#include <vector>
-#include "../character_sequences/NyliumCharSequence.hpp"
-#include "../project/Interface.hpp"
+namespace nylium {
 
-namespace nylium{
-
-    struct Text : public std::vector<CharSequence*>{};
-
-    void loadCharSequences(FileInterface* fInterface);
+	Project* loadProject(std::string& name);
 
 }

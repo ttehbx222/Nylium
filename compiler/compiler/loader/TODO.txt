@@ -1,7 +1,0 @@
-3 Iterations
-	1. Iteration:
-		split Words, Brackets, Lists
-	2. Iteration:
-		Determine Bodytypes/Structures
-	3. Iteration:
-		resolve PendingDeclarations

@@ -15,7 +15,7 @@
 */
 #pragma once
 
-#include "file_io.h"
+#include "file_io.hpp"
 #include "serializer.h"
 #include <map>
 
@@ -82,9 +82,9 @@ namespace yaml {
 	};
 	class Config : public Table{
 	private:
-		io::TextFile* config_file;
+		io::File* config_file;
 	public:
-		Config(io::TextFile& file);
+		Config(io::File& file);
 		Config(std::string& file);
 		void save();
 	};

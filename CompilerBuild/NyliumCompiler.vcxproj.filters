@@ -16,10 +16,19 @@
     <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\load_iterations\0_CharSequences.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\load_iterations\1_CodeBodies.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\load_iterations\2_InternalLinking.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\project\Interface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\project\Project.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\Loader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D:\Matura\Nylium\compiler\fileutils\file_io.cpp">
