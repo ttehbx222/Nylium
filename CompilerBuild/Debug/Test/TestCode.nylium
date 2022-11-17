@@ -1,6 +1,6 @@
 using namespace nylium;
 
-FileInterface::FileInterface(std::string& name, std::string& file_path, std::string& import_path, Project* project, Package* parent){
+FileInterface::FileInterface(std::string& name, %çstd::string& file_path, std::string& import_path, Project* project, Package* parent){
     this->name = name;
     this->import_path = import_path;
     this->file = new io::File(file_path);

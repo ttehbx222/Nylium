@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 #pragma once
+#include <string>
 
 namespace nylium{
+
+    enum class ERROR_CODE{
+        LS001 //IllegalCharSequence
+    };
 
     struct FileInterface;
     struct CharSequence;
@@ -23,7 +28,11 @@ namespace nylium{
     struct CompileError{
         FileInterface* file;
         CharSequence* location;
-        //TODO error code
+        std::string console_message;
+        std::string file_message;
+        ERROR_CODE code;
+        CompileError(FileInterface* file, CharSequence* location, std::string& message, ERROR_CODE code);
+        void print();
     };
 
 }

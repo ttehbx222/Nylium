@@ -34,8 +34,6 @@ namespace nylium{
         ValueType* cb_type;
 
         Value(std::string& content, size_t line_number, size_t coloumn, ValueType type);
-
-        CharSequenceType getType(){ return CharSequenceType::VALUE; }
     };
 
 }

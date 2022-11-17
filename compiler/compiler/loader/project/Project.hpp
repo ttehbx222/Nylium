@@ -17,7 +17,9 @@
 
 #include <string>
 #include <vector>
+#include <queue>
 #include <map>
+#include "../../error_handling/CompileError.hpp"
 
 namespace nylium{
 
@@ -42,7 +44,13 @@ namespace nylium{
         std::string name;
         std::string file_path;
         std::vector<FileInterface*> interfaces;
+
+        bool error = false;
+        std::queue<CompileError*> errors;
+
         Project(std::string& name);
+        
+        void flushErrors();
     };
 
 }

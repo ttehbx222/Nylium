@@ -15,8 +15,22 @@
  */
 #include "1_CodeBodies.hpp"
 
+#include "../../../datautils/linked_tree.hpp"
+#include "../code_bodies/CodeObject.hpp"
+#include "../character_sequences/NyliumCharSequence.hpp"
+
 using namespace nylium;
 
-void nylium::loadBodies(FileInterface* fInterface){
+bool isInit = false;
+Tree<CharSequenceType, BodyMatcher*>* body_determ = new Tree<CharSequenceType, BodyMatcher*>(nullptr);
+
+void init(){
     
+    isInit = true;
+}
+
+void nylium::loadBodies(FileInterface* fInterface){
+    if (!isInit){
+        init();
+    }
 }

@@ -31,8 +31,6 @@ namespace nylium{
         bool open; //true = '(<{[', false = ']}>)'
 
         Bracket(std::string& content, size_t line_number, size_t coloumn);
-
-        CharSequenceType getType(){ return CharSequenceType::BRACKET; }
     };
 
 }

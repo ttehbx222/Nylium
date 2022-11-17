@@ -20,6 +20,7 @@
 using namespace nylium;
 
 int main(/*TODO params*/) { //TEST RUN
+	nlog::init();
 	nlog::ConsoleLogFilter(nlog::LOGLEVEL::DEBUG_3);
 	Project* project = loadProject(std::string("TestRun"));
 }

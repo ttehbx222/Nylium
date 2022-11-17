@@ -20,8 +20,7 @@
 namespace nylium{
 
     struct EndIndicator : public CharSequence { // = ';'
-        EndIndicator(std::string& content, size_t line_number, size_t coloumn) : CharSequence(content, line_number, coloumn) {}
-        CharSequenceType getType(){ return CharSequenceType::END; }
+        EndIndicator(std::string& content, size_t line_number, size_t coloumn) : CharSequence(content, line_number, coloumn, CharSequenceType::END) {}
     };
 
 }

@@ -28,9 +28,12 @@ Project* nylium::loadProject(std::string& name){
     for (FileInterface* fInterface : project->interfaces){
         loadCharSequences(fInterface);
     }
+    project->flushErrors();
     for (FileInterface* fInterface : project->interfaces){
         loadBodies(fInterface);
     }
+    project->flushErrors();
     linkBodies(project);
+    project->flushErrors();
     return project;
 }

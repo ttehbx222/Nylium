@@ -4,10 +4,19 @@
     <ClCompile Include="D:\Matura\Nylium\compiler\nylium.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="D:\Matura\Nylium\compiler\compiler\error_handling\CompileError.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\character_sequences\Bracket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\character_sequences\Value.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\character_sequences\NyliumCharSequence.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\character_sequences\IllegalCharSequence.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\code_bodies\CodeObject.cpp">

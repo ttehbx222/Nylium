@@ -26,21 +26,25 @@ namespace nylium{
         VALUE,
         END,
         LIST_SEPARATOR,
-        EMPTY_SEPARATOR
+        EMPTY_SEPARATOR,
+        ILLEGAL
     };
 
     struct CharSequence {
         std::string chars;
         size_t line, coloumn, length;
+        CharSequenceType type;
 
-        CharSequence(std::string& content, size_t line_number, size_t coloumn){
+        void debug_log();
+
+        CharSequence(std::string& content, size_t line_number, size_t coloumn, CharSequenceType type){
             chars = content;
             line = line_number;
             this->coloumn = coloumn;
             length = chars.length(); // check for importance
+            this->type = type;
+            debug_log();
         }
-
-        virtual CharSequenceType getType() = 0;
     };
 
 }

@@ -63,3 +63,10 @@ Project::Project(std::string& name) : Package(std::string("")){
     file_path = io::local_path();
     loadPackage(file_path, this);
 }
+
+void Project::flushErrors(){
+    while(!errors.empty()){
+        errors.front()->print();
+        errors.pop();
+    }
+}

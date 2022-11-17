@@ -29,8 +29,11 @@ class Tree : public Node<T>{
 private:
 	std::map<T, Node<T>*> next_by_value;
 	std::vector<Node<T>*> owned;
-	V& f_value;
+	V f_value;
 public:
+	Tree(V value){
+		this->value = value;
+	}
 	Tree(V& value){
 		this->value = value;
 	}

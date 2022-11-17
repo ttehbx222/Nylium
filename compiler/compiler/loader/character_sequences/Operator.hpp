@@ -20,8 +20,7 @@
 namespace nylium{
 
     struct Operator : public CharSequence {
-        Operator(std::string& content, size_t line_number, size_t coloumn) : CharSequence(content, line_number, coloumn) {}
-        CharSequenceType getType(){ return CharSequenceType::OPERATOR; }
+        Operator(std::string& content, size_t line_number, size_t coloumn) : CharSequence(content, line_number, coloumn, CharSequenceType::OPERATOR) {}
     };
 
 }

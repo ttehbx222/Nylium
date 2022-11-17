@@ -5,8 +5,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 project(NyliumCompiler)
 add_executable(NyliumCompiler "nylium.cpp"
+#compiler.error_handling
+"compiler/error_handling/CompileError.cpp"
 #compiler.loader.character_sequences
 "compiler/loader/character_sequences/Bracket.cpp" "compiler/loader/character_sequences/Value.cpp"
+"compiler/loader/character_sequences/NyliumCharSequence.cpp" "compiler/loader/character_sequences/IllegalCharSequence.cpp"
 #compiler.loader.code_bodies
 "compiler/loader/code_bodies/CodeObject.cpp"
 #compiler.loader.load_iterations

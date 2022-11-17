@@ -26,6 +26,8 @@
 #include "../character_sequences/Operator.hpp"
 #include "../character_sequences/Value.hpp"
 
+#include "../character_sequences/IllegalCharSequence.hpp"
+
 #include "../../../log/logger.hpp"
 
 using namespace nylium;
@@ -44,6 +46,8 @@ const char value_int_dec[] = "^[0-9]+";
 const char value_char[] = "^'[^'\\\\]'|'[\\\\].'";
 const char value_str[] = "^\"([^\"\\\\]|[\\\\].)*\"";
 
+const char first_chars[] = "[]()<>{} \t;,ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_+-*/&|^!=:.0123456789'\"";
+
 const std::regex regex_text(std::string("(")
     +bracket+")|("
     +empty_separator+")|("
@@ -59,99 +63,89 @@ const std::regex regex_text(std::string("(")
 
 //TODO create regex without start of line condition
 
-void processLine(Text* text, std::string line, size_t line_number){
+void processLine(FileInterface* fInterface, Text* text, std::string line, size_t line_number){
     size_t coloumn = 0;
     while(!line.empty()){
         std::smatch results;
         std::regex_search(line, results, regex_text);
         char group = -1;
         char len;
+        std::string chars;
         for (char i = 1; i<12; i++){
             if (len = results[i].length()){
                 group = i;
+                chars = results[i].str();
                 break;
             }
         }
         if (group == -1){
-            //TODO invalid character
+            size_t error_size = line.find_first_of(first_chars);
+            new IllegalCharSequence(line.substr(0,error_size), line_number, coloumn, fInterface);
+            line = line.substr(error_size, line.length() - error_size);
+            coloumn += error_size;
+            continue;
         }
         switch(group){
             case 1:
             {
-                text->push_back(new Bracket(line, line_number, coloumn));
-                nlog::log(nlog::LOGLEVEL::DEBUG_3, std::string("DEBUG: Bracket: ") + line.substr(0, len));
+                text->push_back(new Bracket(chars, line_number, coloumn));
                 break;  
             }
             case 2:
             {
-                text->push_back(new EmptySeparator(line, line_number, coloumn));
-                nlog::log(nlog::LOGLEVEL::DEBUG_3, std::string("DEBUG: Empty: ") + line.substr(0, len));
+                text->push_back(new EmptySeparator(chars, line_number, coloumn));
                 break;  
             }
             case 3:
             {
-                text->push_back(new EndIndicator(line, line_number, coloumn));
-                nlog::log(nlog::LOGLEVEL::DEBUG_3, std::string("DEBUG: End: ") + line.substr(0, len));
+                text->push_back(new EndIndicator(chars, line_number, coloumn));
                 break;  
             }
             case 4:
             {
-                text->push_back(new ListSeparator(line, line_number, coloumn));
-                nlog::log(nlog::LOGLEVEL::DEBUG_3, std::string("DEBUG: Separator: ") + line.substr(0, len));
+                text->push_back(new ListSeparator(chars, line_number, coloumn));
                 break;  
             }
             case 5:
             {
-                text->push_back(new Name(line, line_number, coloumn));
-                nlog::log(nlog::LOGLEVEL::DEBUG_3, std::string("DEBUG: Name: ") + line.substr(0, len));
+                text->push_back(new Name(chars, line_number, coloumn));
                 break;  
             }
             case 6:
             {
-                text->push_back(new Operator(line, line_number, coloumn));
-                nlog::log(nlog::LOGLEVEL::DEBUG_3, std::string("DEBUG: Operator: ") + line.substr(0, len));
+                text->push_back(new Operator(chars, line_number, coloumn));
                 break;  
             }
             case 7:
             {
-                text->push_back(new Value(line, line_number, coloumn, ValueType::INT_HEX));
-                nlog::log(nlog::LOGLEVEL::DEBUG_3, std::string("DEBUG: Vlaue: ") + line.substr(0, len));
+                text->push_back(new Value(chars, line_number, coloumn, ValueType::INT_HEX));
                 break;  
             }
             case 8:
             {
-                text->push_back(new Value(line, line_number, coloumn, ValueType::INT_BIN));
-                nlog::log(nlog::LOGLEVEL::DEBUG_3, std::string("DEBUG: Value: ") + line.substr(0, len));
+                text->push_back(new Value(chars, line_number, coloumn, ValueType::INT_BIN));
                 break;  
             }
             case 9:
             {
-                text->push_back(new Value(line, line_number, coloumn, ValueType::INT_DEC));
-                nlog::log(nlog::LOGLEVEL::DEBUG_3, std::string("DEBUG: Value: ") + line.substr(0, len));
+                text->push_back(new Value(chars, line_number, coloumn, ValueType::INT_DEC));
                 break;  
             }
             case 10:
             {
-                text->push_back(new Value(line, line_number, coloumn, ValueType::CHAR));
-                nlog::log(nlog::LOGLEVEL::DEBUG_3, std::string("DEBUG: Value: ") + line.substr(0, len));
+                text->push_back(new Value(chars, line_number, coloumn, ValueType::CHAR));
                 break;  
             }
             case 11:
             {
-                text->push_back(new Value(line, line_number, coloumn, ValueType::STRING));
-                nlog::log(nlog::LOGLEVEL::DEBUG_3, std::string("DEBUG: Value: ") + line.substr(0, len));
+                text->push_back(new Value(chars, line_number, coloumn, ValueType::STRING));
                 break;  
-            }
-            case -1:
-            {
-                goto pl_error_exit;
             }
         }
         line = line.substr(len, line.size()-len);
+        coloumn += len;
     }
-    pl_error_exit:
     text->push_back(new EmptySeparator(line, line_number, coloumn));
-    nlog::log(nlog::LOGLEVEL::DEBUG_3, std::string("DEBUG: Empty: "));
 }
 
 void nylium::loadCharSequences(FileInterface* fInterface){
@@ -160,13 +154,14 @@ void nylium::loadCharSequences(FileInterface* fInterface){
     std::string line;
     std::ifstream& istream = fInterface->file->ifstream();
 
+    nlog::log(nlog::LOGLEVEL::DEBUG_2, std::string("DEBUG: Processing file '") + fInterface->name + ".nylium'");
+
     while (std::getline(istream, line)){
         line_number++;
-        nlog::log(nlog::LOGLEVEL::DEBUG_2, std::string("DEBUG: Processing line ") + std::to_string(line_number) + " in '" + fInterface->name + "'");
-        processLine(text, line, line_number);
+        processLine(fInterface, text, line, line_number);
     }
 
-    nlog::log(nlog::LOGLEVEL::DEBUG_2, std::string("DEBUG: End of file '") + fInterface->name + "'");
+    nlog::log(nlog::LOGLEVEL::DEBUG_2, std::string("DEBUG: End of file '") + fInterface->name + ".nylium'");
 
     fInterface->f_text = text;
 }

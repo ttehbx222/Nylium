@@ -20,4 +20,6 @@ namespace nylium{
     struct CodeObject {
 	};
 
+    struct BodyMatcher{};
+
 }
