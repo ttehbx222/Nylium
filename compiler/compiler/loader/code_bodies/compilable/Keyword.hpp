@@ -19,6 +19,8 @@
 
 namespace nylium{
 
+    //TODO check for importance
+
     struct Keyword : public CodeObject {
         //TODO
     };

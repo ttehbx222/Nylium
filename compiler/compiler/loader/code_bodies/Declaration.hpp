@@ -19,14 +19,53 @@
 
 namespace nylium{
 
-    enum Visibility {
+    enum class Visibility {
 		PRIVATE = 0x0,
 		PROTECTED = 0x1,
-		PUBLIC = 0x2
+		PUBLIC = 0x2,
+        DEFAULT
 	};
 
+    enum class DeclarationType {
+        CLASS,
+        STRUCT,
+        ENUM,
+        FIELD,
+        FUNCTION,
+        REFERENCE,
+        NAMESPACE
+    };
+
+    enum class Boolean{
+        TRUE,
+        FALSE,
+        DEFAULT
+    };
+
+    struct DeclarationAttributes {
+        Visibility f_visibility = Visibility::DEFAULT;
+        DeclarationType f_dtype;
+        Boolean f_final = Boolean::DEFAULT;
+        Boolean f_static = Boolean::DEFAULT;
+    };
+
     struct Declaration : public ValueHolder {
+        DeclarationAttributes* f_attributes;
         std::string f_key;
+    };
+
+    struct TypeDeclarationBodyMatcher;
+    struct FunctionDeclarationBodyMatcher;
+    struct FieldDeclarationBodyMatcher;
+    struct NamespaceDeclarationBodyMatcher;
+
+    struct DeclarationBodyMatcher {
+        TypeDeclarationBodyMatcher* typeDeclarationBM;
+        FunctionDeclarationBodyMatcher* functionDeclarationBM;
+        FieldDeclarationBodyMatcher* fieldDeclarationBM;
+        NamespaceDeclarationBodyMatcher* namespaceDeclarationBM;
+        Scope* next(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes = new DeclarationAttributes());
+        DeclarationBodyMatcher();
     };
 
 }

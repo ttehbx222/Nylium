@@ -15,10 +15,8 @@
  */
 #include "IllegalCharSequence.hpp"
 
-#include "../../error_handling/CompileError.hpp"
-#include "../../../log/ansi.h"
+#include "../../error_handling/errors/LS001.hpp"
 
 nylium::IllegalCharSequence::IllegalCharSequence(std::string& content, size_t line_number, size_t coloumn, FileInterface* fInterface) : CharSequence(content, line_number, coloumn, CharSequenceType::ILLEGAL) {
-    std::string message = std::string(": IllegalCharSequence \"") + ANSI::YELLOW + content + ANSI::RED + "\"";
-    new CompileError(fInterface, this, message, ERROR_CODE::LS001);
+    LS001::throwError(this, fInterface);
 }

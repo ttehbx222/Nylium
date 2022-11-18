@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\Matura\Nylium\compiler\nylium.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Matura\Nylium\compiler\compiler\error_handling\CompileError.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\character_sequences\Bracket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\character_sequences\Value.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\character_sequences\NyliumCharSequence.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\character_sequences\IllegalCharSequence.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\code_bodies\CodeObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\load_iterations\0_CharSequences.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\load_iterations\1_CodeBodies.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\load_iterations\2_InternalLinking.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\project\Interface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\project\Project.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\Loader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Matura\Nylium\compiler\fileutils\file_io.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Matura\Nylium\compiler\log\logger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\Matura\Nylium\compiler\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{8FFE77A4-AC55-3C38-B3FE-7D3DB26097C7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

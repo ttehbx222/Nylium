@@ -15,14 +15,14 @@
  */
 #pragma once
 
-#include "CodeLine.hpp"
-#include "ValueHolder.hpp"
-#include "compilable/FieldDeclaration.hpp"
+#include "../CompileError.hpp"
+#include "../../loader/character_sequences/IllegalCharSequence.hpp"
 
 namespace nylium{
-
-    struct Operation : public CodeLine, public ValueHolder {
-        FieldDeclaration* f_target;
-    };
-
+    namespace LS001{
+        void throwError(IllegalCharSequence* seq, FileInterface* fInterface){
+                std::string message = std::string(": illegal character sequence \"") + ANSI::YELLOW + seq->chars + ANSI::RED + "\"";
+                new CompileError(fInterface, seq, message, ERROR_CODE::LS001);
+        }
+    }
 }

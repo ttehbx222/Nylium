@@ -15,25 +15,39 @@
  */
 #include "1_CodeBodies.hpp"
 
-#include "../../../datautils/linked_tree.hpp"
-#include "../code_bodies/CodeObject.hpp"
+#include "../code_bodies/compilable/Scope.hpp"
 #include "../character_sequences/NyliumCharSequence.hpp"
+#include "0_CharSequences.hpp"
 
 #include "../../../log/logger.hpp"
 
 using namespace nylium;
 
-bool isInit = false;
+struct BodyMatcher{
+    virtual Scope* next(Scope* scope, Text* text, size_t* read_pos) = 0;
+};
 
-void init(){
-    
-    //MainScope
-    isInit = true;
+struct MainBodyMatcher : public BodyMatcher {
+    DeclarationBodyMatcher* declarationBM = new DeclarationBodyMatcher();
+    SCOPE next(SCOPE scope, Text* text, size_t* read_pos){
+        CharSequence* seq = text->at((*read_pos));
+        if (seq->type == CharSequenceType::END){
+            return scope;
+        }
+        return declarationBM->next(scope, text, read_pos);
+    }
+};
+
+MainBodyMatcher* mainBM = new MainBodyMatcher();
+
+BodyMatcher* bodyMatcherByLevel(SCOPE_LAYER layer){
+    switch(layer){
+        case SCOPE_LAYER::MAIN: return mainBM;
+    }
+    return mainBM;
 }
 
-void nylium::loadBodies(FileInterface* fInterface){
-    if (!isInit){
-        init();
-    }
+void loadBodies(FileInterface* fInterface){
+
     nlog::log(nlog::LOGLEVEL::INFO, fInterface->name + ".nylium");
 }

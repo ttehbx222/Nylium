@@ -20,15 +20,13 @@ namespace nylium{
     struct CodeObject {
 	};
 
-    struct Scope;
+    enum class SCOPE_LAYER{
+		MAIN,
+		CLASS,
+		FUNCTION
+	};
+
     struct Text;
-
-    struct BodyMatcher{
-        virtual BodyMatcher* next(Text* sequence, Scope* currentScope) = 0;
-    };
-
-    BodyMatcher* MainScopeBodyMatcher();
-    /*BodyMatcher* ClassScopeBodyMatcher();
-    BodyMatcher* ExecutableScopeBodyMatcher();*/
+    struct Scope;
 
 }

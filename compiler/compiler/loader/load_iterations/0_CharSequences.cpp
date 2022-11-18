@@ -91,8 +91,8 @@ void processLine(FileInterface* fInterface, Text* text, std::string line, size_t
             }
             case 2:
             {
-                text->push_back(new EmptySeparator(chars, line_number, coloumn));
-                break;  
+                /*text->push_back(new EmptySeparator(chars, line_number, coloumn));
+                break;  */ //TODO Check for importance
             }
             case 3:
             {
@@ -143,7 +143,7 @@ void processLine(FileInterface* fInterface, Text* text, std::string line, size_t
         line = line.substr(len, line.size()-len);
         coloumn += len;
     }
-    text->push_back(new EmptySeparator(line, line_number, coloumn));
+    //text->push_back(new EmptySeparator(line, line_number, coloumn)); //TODO check for importance
 }
 
 void nylium::loadCharSequences(FileInterface* fInterface){

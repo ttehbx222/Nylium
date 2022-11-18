@@ -16,10 +16,15 @@
 #pragma once
 #include <string>
 
+#include "../../log/ansi.h"
+
 namespace nylium{
 
     enum class ERROR_CODE{
-        LS001 //IllegalCharSequence
+        LS001, //IllegalCharSequence
+        CB001, //unexpected char
+        CB002, //keyword multi-use
+        CB003, //visibility multi-declaration
     };
 
     struct FileInterface;

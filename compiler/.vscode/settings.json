@@ -65,6 +65,8 @@
         "xtree": "cpp",
         "xutility": "cpp",
         "regex": "cpp",
-        "array": "cpp"
+        "array": "cpp",
+        "deque": "cpp",
+        "queue": "cpp"
     }
 }
