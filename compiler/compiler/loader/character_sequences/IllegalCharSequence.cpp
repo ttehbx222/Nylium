@@ -19,6 +19,6 @@
 #include "../../../log/ansi.h"
 
 nylium::IllegalCharSequence::IllegalCharSequence(std::string& content, size_t line_number, size_t coloumn, FileInterface* fInterface) : CharSequence(content, line_number, coloumn, CharSequenceType::ILLEGAL) {
-    std::string message = std::string(ANSI::RED) + "ERROR: " + ANSI::BRIGHT_RED + "LS001" + ANSI::RED + ": IllegalCharSequence \"" + ANSI::YELLOW + content + ANSI::RED + "\"";
+    std::string message = std::string(": IllegalCharSequence \"") + ANSI::YELLOW + content + ANSI::RED + "\"";
     new CompileError(fInterface, this, message, ERROR_CODE::LS001);
 }

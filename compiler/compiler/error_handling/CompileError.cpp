@@ -18,6 +18,7 @@
 #include "../loader/project/Interface.hpp"
 #include "../loader/character_sequences/NyliumCharSequence.hpp"
 #include "../../log/logger.hpp"
+#include "../../log/ansi.h"
 
 #include <regex>
 
@@ -27,6 +28,16 @@ nylium::CompileError::CompileError(FileInterface* file, CharSequence* location, 
     this->file = file;
     this->location = location;
     this->console_message = message + " [" + file->file->path() + "(" + std::to_string(location->line) + ":" + std::to_string(location->coloumn) + ")]";
+    
+    std::string error_code_str = "";
+    switch(code){
+        case ERROR_CODE::LS001:{
+            error_code_str = "LS001: ";
+        }
+    }
+
+    console_message = std::string(ANSI::BRIGHT_RED) + error_code_str + ANSI::RED + console_message;
+    
     this->code = code;
     this->file_message = std::regex_replace(console_message, ansi_color_regex, "");
     file->project->error = true;

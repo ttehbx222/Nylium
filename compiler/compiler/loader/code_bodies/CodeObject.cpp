@@ -14,3 +14,20 @@
 * limitations under the License.
 */
 #include "CodeObject.hpp"
+
+#include "../load_iterations/0_CharSequences.hpp"
+#include "compilable/Scope.hpp"
+
+using namespace nylium;
+
+struct MainBodyMatcher : public BodyMatcher {
+    BodyMatcher* next(Text* sequence, Scope* currentScope){
+            
+    }
+};
+
+MainBodyMatcher* mainBM = new MainBodyMatcher();
+
+BodyMatcher* nylium::MainScopeBodyMatcher(){
+    return mainBM;
+}

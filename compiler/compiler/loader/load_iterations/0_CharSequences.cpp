@@ -36,7 +36,7 @@ const char bracket[] = "^[\\(\\)<>{}\\[\\]]";
 const char empty_separator[] = "^[ \t]+";
 const char end[] = "^;";
 const char list_separator[] = "^,";
-const char name[] = "^[A-Za-z_][A-Za-z0-9]*";
+const char name[] = "^[A-Za-z_][A-Za-z0-9_]*";
 const char operator_[] = "^[\\+\\-\\*\\/\\&\\|\\^\\!\\=\\:\\.]";
 
 const char value_int_hex[] = "^0x[A-Fa-f0-9]+";
@@ -60,8 +60,6 @@ const std::regex regex_text(std::string("(")
     +value_int_dec+")|("
     +value_char+")|("
     +value_str+")");
-
-//TODO create regex without start of line condition
 
 void processLine(FileInterface* fInterface, Text* text, std::string line, size_t line_number){
     size_t coloumn = 0;
@@ -154,14 +152,14 @@ void nylium::loadCharSequences(FileInterface* fInterface){
     std::string line;
     std::ifstream& istream = fInterface->file->ifstream();
 
-    nlog::log(nlog::LOGLEVEL::DEBUG_2, std::string("DEBUG: Processing file '") + fInterface->name + ".nylium'");
+    nlog::log(nlog::LOGLEVEL::DEBUG_2, std::string("Processing file '") + fInterface->name + ".nylium'");
 
     while (std::getline(istream, line)){
         line_number++;
         processLine(fInterface, text, line, line_number);
     }
 
-    nlog::log(nlog::LOGLEVEL::DEBUG_2, std::string("DEBUG: End of file '") + fInterface->name + ".nylium'");
+    nlog::log(nlog::LOGLEVEL::DEBUG_3, std::string("End of file '") + fInterface->name + ".nylium'");
 
     fInterface->f_text = text;
 }

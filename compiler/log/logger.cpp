@@ -52,12 +52,46 @@ namespace nlog {
 		if (file_out.length() == 0){
 			file_out = console_out;
 		}
+		std::string color_string = "";
+		std::string level_string = "";
+		switch(level){
+			case LOGLEVEL::DEBUG_0:
+			{
+				color_string = ANSI::BRIGHT_CYAN;
+				level_string = "DEBUG: ";
+				break;
+			}
+			case LOGLEVEL::DEBUG_1:
+			case LOGLEVEL::DEBUG_2:
+			case LOGLEVEL::DEBUG_3:
+			{
+				color_string = ANSI::CYAN;
+				level_string = "DEBUG: ";
+				break;
+			}
+			case LOGLEVEL::ERROR:
+			{
+				color_string = ANSI::RED;
+				level_string = "ERROR: ";
+				break;
+			}
+			case LOGLEVEL::INFO:
+			{
+				level_string = "INFO: ";
+				break;
+			}
+			case LOGLEVEL::NONE:
+			{
+				color_string = ANSI::GREY;
+				break;
+			}
+		}
 		if (console >= level){
-			std::cout << ANSI::RESET << PREFIX << console_out << std::endl;
+			std::cout << ANSI::RESET << PREFIX << color_string << level_string << console_out << ANSI::RESET << std::endl;
 		}
 		for (auto log_file : log_files) {
 			if (log_file.second >= level) {
-				log_file.first->ofstream() << PREFIX << file_out << std::endl;
+				log_file.first->ofstream() << PREFIX << level_string << file_out << std::endl;
 			}
 		}
 	}

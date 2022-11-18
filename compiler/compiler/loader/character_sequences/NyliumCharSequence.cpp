@@ -21,7 +21,7 @@ void nylium::CharSequence::debug_log(){
     if (nlog::lowestRelevantLogLevel() < nlog::LOGLEVEL::DEBUG_3){
         return;
     }
-    std::string message = "DEBUG : [" + std::to_string(line) + ":" + std::to_string(coloumn) + "] ";
+    std::string message = "(" + std::to_string(line) + ":" + std::to_string(coloumn) + ") ";
 
 
 

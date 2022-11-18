@@ -19,13 +19,15 @@
 #include "../code_bodies/CodeObject.hpp"
 #include "../character_sequences/NyliumCharSequence.hpp"
 
+#include "../../../log/logger.hpp"
+
 using namespace nylium;
 
 bool isInit = false;
-Tree<CharSequenceType, BodyMatcher*>* body_determ = new Tree<CharSequenceType, BodyMatcher*>(nullptr);
 
 void init(){
     
+    //MainScope
     isInit = true;
 }
 
@@ -33,4 +35,5 @@ void nylium::loadBodies(FileInterface* fInterface){
     if (!isInit){
         init();
     }
+    nlog::log(nlog::LOGLEVEL::INFO, fInterface->name + ".nylium");
 }

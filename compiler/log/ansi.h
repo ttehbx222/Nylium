@@ -26,7 +26,15 @@ namespace ANSI{
     //GREEN
     constexpr char YELLOW[] = "\033[33m";
 
+    constexpr char CYAN[] = "\033[36m";
+    constexpr char GREY[] = "\033[37m";
+
 
     constexpr char BRIGHT_RED[] = "\033[91m";
+
+    constexpr char BRIGHT_CYAN[] = "\033[96m";
+    
+
+
 
 }
