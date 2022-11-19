@@ -18,24 +18,30 @@
 #include "../character_sequences/NyliumCharSequence.hpp"
 #include "../load_iterations/0_CharSequences.hpp"
 #include "compilable/Scope.hpp"
+#include "compilable/FunctionDeclaration.hpp"
+
+#include "../../error_handling/errors/CB001.hpp"
+#include "../../error_handling/errors/CB002.hpp"
+#include "../../error_handling/errors/CB003.hpp"
+#include "../../error_handling/errors/CB004.hpp"
 
 using namespace nylium;
 
-Scope* fieldOrFunctionBodyMatcher(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, std::string& pending, DeclarationBodyMatcher* matcher){
+Scope* buildFDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, std::string& pending){ //Field or Function declaration
     CharSequence* seq = text->at((*read_pos)++);
     if (seq->type != CharSequenceType::NAME){
-        //TODO unexpected char
-        return fieldOrFunctionBodyMatcher(scope, text, read_pos, attributes, pending, matcher);
+        CB001::throwError(seq, scope->f_parent_interface);
+        return buildFDeclaration(scope, text, read_pos, attributes, pending);
     }
     std::string name = seq->chars;
     seq = text->at((*read_pos)++);
     //no specifier brackets yet
     if (seq->type == CharSequenceType::BRACKET){
         if (seq->chars == "("){
-            //continue to function declaration
+            return nylium::buildFunctionDeclaration(scope, text, read_pos, attributes, new PendingDeclaration(pending), name);
         }
-        //TODO unexpected char
-        return fieldOrFunctionBodyMatcher(scope, text, read_pos, attributes, pending, matcher);
+        CB001::throwError(seq, scope->f_parent_interface);
+        return buildFDeclaration(scope, text, read_pos, attributes, pending);
     }
     if (seq->type == CharSequenceType::END){
         //return field declaration
@@ -45,19 +51,19 @@ Scope* fieldOrFunctionBodyMatcher(Scope* scope, Text* text, size_t* read_pos, De
             //continue to AssignOperation declaration with FieldDeclaration target
         }
     }
-    //TODO unexpected char
-    return fieldOrFunctionBodyMatcher(scope, text, read_pos, attributes, pending, matcher);
+    CB001::throwError(seq, scope->f_parent_interface);
+    return buildFDeclaration(scope, text, read_pos, attributes, pending);
 }
 
-Scope* DeclarationBodyMatcher::next(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes){
+Scope* nylium::buildDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes){
     CharSequence* seq = text->at((*read_pos)++);
     if (seq->type == CharSequenceType::END){
-        //TODO unexpected abort of declaration
+        CB004::throwError(seq, scope->f_parent_interface);
         return scope;
     }
     if (seq->type != CharSequenceType::NAME){
-        //TODO unexpected char
-        return this->next(scope, text, read_pos, attributes);
+        CB001::throwError(seq, scope->f_parent_interface);
+        return buildDeclaration(scope, text, read_pos, attributes);
     }
     if (seq->chars == "namespace"){
         //continue to namespace declaration
@@ -76,41 +82,41 @@ Scope* DeclarationBodyMatcher::next(Scope* scope, Text* text, size_t* read_pos, 
     }*/
     if (seq->chars == "static"){
         if (attributes->f_static == Boolean::TRUE){
-            //TODO error multi "static"
+            CB002::throwError(seq, scope->f_parent_interface);
         }
         attributes->f_static = Boolean::TRUE;
-        return this->next(scope, text, read_pos, attributes);
+        return buildDeclaration(scope, text, read_pos, attributes);
     }
     if (seq->chars == "final"){
         if (attributes->f_final == Boolean::TRUE){
-            //TODO error multi "final"
+            CB002::throwError(seq, scope->f_parent_interface);
         }
         attributes->f_final = Boolean::TRUE;
-        return this->next(scope, text, read_pos, attributes);
+        return buildDeclaration(scope, text, read_pos, attributes);
     }
     if (seq->chars == "public"){
         if (attributes->f_visibility != Visibility::DEFAULT){
-            //TODO error multi definition of visibility
+            CB003::throwError(seq, scope->f_parent_interface);
         }
         attributes->f_visibility = Visibility::PUBLIC;
-        return this->next(scope, text, read_pos, attributes);
+        return buildDeclaration(scope, text, read_pos, attributes);
     }
     if (seq->chars == "protected"){
         if (attributes->f_visibility != Visibility::DEFAULT){
-            //TODO error multi definition of visibility
+            CB003::throwError(seq, scope->f_parent_interface);
         }
         attributes->f_visibility = Visibility::PROTECTED;
-        return this->next(scope, text, read_pos, attributes);
+        return buildDeclaration(scope, text, read_pos, attributes);
     }
     if (seq->chars == "private"){
         if (attributes->f_visibility != Visibility::DEFAULT){
-            //TODO error multi definition of visibility
+            CB003::throwError(seq, scope->f_parent_interface);
         }
         attributes->f_visibility = Visibility::PRIVATE;
-        return this->next(scope, text, read_pos, attributes);
+        return buildDeclaration(scope, text, read_pos, attributes);
     }
     //non of the above true
     {
-        return fieldOrFunctionBodyMatcher(scope, text, read_pos, attributes, seq->chars, this);
+        return buildFDeclaration(scope, text, read_pos, attributes, seq->chars);
     }
 }

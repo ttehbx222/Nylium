@@ -22,7 +22,7 @@ namespace nylium{
     struct PendingDeclaration : public Declaration {
         //TODO resolve
         PendingDeclaration() {};
-        inline PendingDeclaration(std::string label){ this->f_key = label; }
+        inline PendingDeclaration(std::string& label){ this->f_key = label; }
     };
 
 }

@@ -28,13 +28,12 @@ struct BodyMatcher{
 };
 
 struct MainBodyMatcher : public BodyMatcher {
-    DeclarationBodyMatcher* declarationBM = new DeclarationBodyMatcher();
     SCOPE next(SCOPE scope, Text* text, size_t* read_pos){
         CharSequence* seq = text->at((*read_pos));
         if (seq->type == CharSequenceType::END){
             return scope;
         }
-        return declarationBM->next(scope, text, read_pos);
+        return buildDeclaration(scope, text, read_pos);
     }
 };
 

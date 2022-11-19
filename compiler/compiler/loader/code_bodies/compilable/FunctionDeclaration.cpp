@@ -13,18 +13,10 @@
  * See the License for the specific language governing permissionsand
  * limitations under the License.
  */
-#pragma once
+#include "FunctionDeclaration.hpp"
 
-#include <vector>
-#include "NamespaceDeclaration.hpp"
-#include "FieldDeclaration.hpp"
+using namespace nylium;
 
-namespace nylium{
-
-    struct FunctionDeclaration : public Namespace {
-        std::vector<FieldDeclaration*> f_parameters;
-    };
-
-    Scope* buildFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, PendingDeclaration* return_type, std::string& name);
+Scope* nylium::buildFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, PendingDeclaration* return_type, std::string& name){
 
 }

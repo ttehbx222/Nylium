@@ -15,16 +15,14 @@
  */
 #pragma once
 
-#include <vector>
-#include "NamespaceDeclaration.hpp"
-#include "FieldDeclaration.hpp"
+#include "../CompileError.hpp"
+#include "../../loader/character_sequences/NyliumCharSequence.hpp"
 
 namespace nylium{
-
-    struct FunctionDeclaration : public Namespace {
-        std::vector<FieldDeclaration*> f_parameters;
-    };
-
-    Scope* buildFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, PendingDeclaration* return_type, std::string& name);
-
+    namespace CB004{
+        void throwError(CharSequence* seq, FileInterface* fInterface){
+                std::string message = std::string("unexpected end of declaration");
+                new CompileError(fInterface, seq, message, ERROR_CODE::CB004);
+        }
+    }
 }

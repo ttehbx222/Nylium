@@ -25,6 +25,7 @@ namespace nylium{
         CB001, //unexpected char
         CB002, //keyword multi-use
         CB003, //visibility multi-declaration
+        CB004, //unexpected end of declaration
     };
 
     struct FileInterface;

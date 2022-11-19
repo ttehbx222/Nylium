@@ -21,7 +21,7 @@
 namespace nylium{
     namespace LS001{
         void throwError(IllegalCharSequence* seq, FileInterface* fInterface){
-                std::string message = std::string(": illegal character sequence \"") + ANSI::YELLOW + seq->chars + ANSI::RED + "\"";
+                std::string message = std::string("illegal character sequence \"") + ANSI::YELLOW + seq->chars + ANSI::RED + "\"";
                 new CompileError(fInterface, seq, message, ERROR_CODE::LS001);
         }
     }

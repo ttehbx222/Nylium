@@ -26,6 +26,9 @@ namespace nylium{
 	struct FileInterface;
 
     struct Scope : public CodeLine {
+
+			SCOPE_LAYER f_layer = SCOPE_LAYER::MAIN;
+
 		    Scope* f_parent;
 		    DeclarationSearch f_accessibles;
 		    FileInterface* f_parent_interface;

@@ -54,18 +54,6 @@ namespace nylium{
         std::string f_key;
     };
 
-    struct TypeDeclarationBodyMatcher;
-    struct FunctionDeclarationBodyMatcher;
-    struct FieldDeclarationBodyMatcher;
-    struct NamespaceDeclarationBodyMatcher;
-
-    struct DeclarationBodyMatcher {
-        TypeDeclarationBodyMatcher* typeDeclarationBM;
-        FunctionDeclarationBodyMatcher* functionDeclarationBM;
-        FieldDeclarationBodyMatcher* fieldDeclarationBM;
-        NamespaceDeclarationBodyMatcher* namespaceDeclarationBM;
-        Scope* next(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes = new DeclarationAttributes());
-        DeclarationBodyMatcher();
-    };
+    Scope* buildDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes = new DeclarationAttributes());
 
 }
