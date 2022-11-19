@@ -93,6 +93,7 @@ void processLine(FileInterface* fInterface, Text* text, std::string line, size_t
             {
                 /*text->push_back(new EmptySeparator(chars, line_number, coloumn));
                 break;  */ //TODO Check for importance
+                break;
             }
             case 3:
             {
@@ -162,5 +163,14 @@ void nylium::loadCharSequences(FileInterface* fInterface){
     nlog::log(nlog::LOGLEVEL::DEBUG_3, std::string("End of file '") + fInterface->name + ".nylium'");
 
     fInterface->f_text = text;
+}
+
+CharSequence* Text::read(size_t* read_pos){
+    if ((*read_pos) < this->size()){
+        return this->at((*read_pos)++);
+    }else{
+        CharSequence* last_element = this->back();
+        return new EndIndicator(std::string(""), last_element->line, last_element->coloumn + last_element->length);
+    }
 }
 

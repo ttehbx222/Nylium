@@ -20,10 +20,10 @@
 
 namespace nylium{
 
-    struct Type; //Type.hpp
+    struct PendingDeclaration;
 
     struct ValueHolder : public CodeObject {
-		Type* f_type;
-	};
+		    PendingDeclaration* f_type;
+	  };
 
 }

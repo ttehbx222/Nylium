@@ -46,7 +46,12 @@ BodyMatcher* bodyMatcherByLevel(SCOPE_LAYER layer){
     return mainBM;
 }
 
-void loadBodies(FileInterface* fInterface){
-
+void nylium::loadBodies(FileInterface* fInterface){
     nlog::log(nlog::LOGLEVEL::INFO, fInterface->name + ".nylium");
+    size_t read_pos = 0;
+    size_t text_size = fInterface->f_text->size();
+    Scope* scope = fInterface->main_scope;
+    while (read_pos < text_size){
+        scope = bodyMatcherByLevel(scope->f_layer)->next(scope, fInterface->f_text, &read_pos);
+    }
 }

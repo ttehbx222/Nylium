@@ -32,7 +32,7 @@ namespace nylium{
         std::string name, import_path;
         std::vector<FileInterface*> imports;
 
-        const Scope main_scope;
+        Scope* main_scope = new Scope();
 
         io::File* file;
 

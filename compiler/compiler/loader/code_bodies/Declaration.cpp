@@ -28,17 +28,18 @@
 using namespace nylium;
 
 Scope* buildFDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, std::string& pending){ //Field or Function declaration
-    CharSequence* seq = text->at((*read_pos)++);
+    CharSequence* seq = text->read(read_pos);
     if (seq->type != CharSequenceType::NAME){
         CB001::throwError(seq, scope->f_parent_interface);
         return buildFDeclaration(scope, text, read_pos, attributes, pending);
     }
     std::string name = seq->chars;
-    seq = text->at((*read_pos)++);
+    seq = text->read(read_pos);
     //no specifier brackets yet
     if (seq->type == CharSequenceType::BRACKET){
         if (seq->chars == "("){
-            return nylium::buildFunctionDeclaration(scope, text, read_pos, attributes, new PendingDeclaration(pending), name);
+            attributes->f_dtype = DeclarationType::FUNCTION;
+            return nylium::buildFunctionDeclaration(scope, text, read_pos, attributes, new PendingDeclaration(pending), name, new Parameters());
         }
         CB001::throwError(seq, scope->f_parent_interface);
         return buildFDeclaration(scope, text, read_pos, attributes, pending);
@@ -48,7 +49,7 @@ Scope* buildFDeclaration(Scope* scope, Text* text, size_t* read_pos, Declaration
     }
     if (seq->type == CharSequenceType::OPERATOR){
         if (seq->chars == "="){
-            //continue to AssignOperation declaration with FieldDeclaration target
+            //continue to FieldDeclaration with init value
         }
     }
     CB001::throwError(seq, scope->f_parent_interface);
@@ -56,7 +57,7 @@ Scope* buildFDeclaration(Scope* scope, Text* text, size_t* read_pos, Declaration
 }
 
 Scope* nylium::buildDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes){
-    CharSequence* seq = text->at((*read_pos)++);
+    CharSequence* seq = text->read(read_pos);
     if (seq->type == CharSequenceType::END){
         CB004::throwError(seq, scope->f_parent_interface);
         return scope;

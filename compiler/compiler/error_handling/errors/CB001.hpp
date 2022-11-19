@@ -20,9 +20,6 @@
 
 namespace nylium{
     namespace CB001{
-        void throwError(CharSequence* seq, FileInterface* fInterface){
-                std::string message = std::string("unexpected character(s) \"") + ANSI::YELLOW + seq->chars + ANSI::RED + "\"";
-                new CompileError(fInterface, seq, message, ERROR_CODE::CB001);
-        }
+        void throwError(CharSequence* seq, FileInterface* fInterface);
     }
 }

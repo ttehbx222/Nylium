@@ -7,11 +7,13 @@ project(NyliumCompiler)
 add_executable(NyliumCompiler "nylium.cpp"
 #compiler.error_handling
 "compiler/error_handling/CompileError.cpp"
+"compiler/error_handling/errors/CB001.cpp"
 #compiler.loader.character_sequences
 "compiler/loader/character_sequences/Bracket.cpp" "compiler/loader/character_sequences/Value.cpp"
 "compiler/loader/character_sequences/NyliumCharSequence.cpp" "compiler/loader/character_sequences/IllegalCharSequence.cpp"
 #compiler.loader.code_bodies
-"compiler/loader/code_bodies/CodeObject.cpp"
+"compiler/loader/code_bodies/CodeObject.cpp" "compiler/loader/code_bodies/Declaration.cpp" 
+"compiler/loader/code_bodies/compilable/FunctionDeclaration.cpp" 
 #compiler.loader.load_iterations
 "compiler/loader/load_iterations/0_CharSequences.cpp" "compiler/loader/load_iterations/1_CodeBodies.cpp" "compiler/loader/load_iterations/2_InternalLinking.cpp"
 #compiler.loader.native.keywords

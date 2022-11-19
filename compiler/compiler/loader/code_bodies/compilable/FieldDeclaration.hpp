@@ -23,4 +23,9 @@ namespace nylium{
 
     };
 
+    namespace silent{
+        FieldDeclaration buildFieldDeclaration();
+    }
+    Scope* buildFieldDeclaration();
+
 }

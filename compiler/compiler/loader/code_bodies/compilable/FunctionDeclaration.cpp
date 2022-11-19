@@ -15,8 +15,66 @@
  */
 #include "FunctionDeclaration.hpp"
 
+#include "../../load_iterations/0_CharSequences.hpp"
+
+#include "../../../error_handling/errors/CB001.hpp"
+#include "../../../../log/logger.hpp"
+
 using namespace nylium;
 
-Scope* nylium::buildFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, PendingDeclaration* return_type, std::string& name){
+Scope* nylium::buildFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, PendingDeclaration* return_type, std::string& name, Parameters* parameters){
+    {
+        if (attributes->f_visibility == Visibility::DEFAULT){
+            attributes->f_visibility = Visibility::PROTECTED;
+        }
+        if (attributes->f_static == Boolean::DEFAULT){
+            if (scope->f_layer == SCOPE_LAYER::MAIN){
+                attributes->f_static = Boolean::TRUE;
+            }else{
+                attributes->f_static = Boolean::FALSE;
+            }
+        }
+        if (attributes->f_final == Boolean::DEFAULT){
+            attributes->f_final = Boolean::FALSE;
+        }
+    }
+    CharSequence* seq = text->read(read_pos);
+    if (seq->type == CharSequenceType::BRACKET){
+        if (seq->chars == ")"){
+            seq = text->read(read_pos);
+            if (seq->type == CharSequenceType::BRACKET){
+                if (seq->chars == "{"){
+                    FunctionDeclaration* function_decl = new FunctionDeclaration(scope, attributes, return_type, name, parameters);
+                    return function_decl;
+                }
+            }
+        }
+        CB001::throwError(seq, scope->f_parent_interface);
+    }
+    //TODO params
+    return scope; //unfinished placeholder
+}
+
+FunctionDeclaration::FunctionDeclaration(Scope* scope, DeclarationAttributes* attributes, PendingDeclaration* return_type, std::string& name, Parameters* parameters){
+    f_parent = scope;
+    f_attributes = attributes;
+    f_parameters = parameters;
+    f_type = return_type;
+    f_key = name;
+    f_layer = SCOPE_LAYER::FUNCTION;
+    f_parent_interface = scope->f_parent_interface;
+
+    std::string message = "function ";
+    message += return_type->f_key + " " + name + "(";
+    if (!parameters->empty()){
+        FieldDeclaration* field = parameters->at(0);
+        message += field->f_type->f_key + " " + field->f_key;
+        for (size_t i = 1; i < parameters->size(); i++){
+            field = parameters->at(i);
+            message += ", " + field->f_type->f_key + " " + field->f_key;
+        }
+    }
+    message += ")";
+    nlog::log(nlog::LOGLEVEL::DEBUG_0, message);
 
 }

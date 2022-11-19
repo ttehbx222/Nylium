@@ -15,6 +15,8 @@
  */
 #pragma once
 
+#include <vector>
+
 #include "CallOperation.hpp"
 #include "../Declaration.hpp"
 

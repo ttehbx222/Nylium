@@ -21,10 +21,13 @@
 
 namespace nylium{
 
+    typedef std::vector<FieldDeclaration*> Parameters;
+
     struct FunctionDeclaration : public Namespace {
-        std::vector<FieldDeclaration*> f_parameters;
+        Parameters* f_parameters;
+        FunctionDeclaration(Scope* scope, DeclarationAttributes* attributes, PendingDeclaration* return_type, std::string& name, Parameters* parameters);
     };
 
-    Scope* buildFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, PendingDeclaration* return_type, std::string& name);
+    Scope* buildFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, PendingDeclaration* return_type, std::string& name, Parameters* parameters);
 
 }
