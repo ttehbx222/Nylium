@@ -16,11 +16,11 @@
 #pragma once
 
 #include "../CompileError.hpp"
-#include "../../loader/character_sequences/NyliumCharSequence.hpp"
+#include "../../loader/character_sequences/IllegalCharSequence.hpp"
 
 namespace nylium{
     namespace LS001{
-        void throwError(CharSequence* seq, FileInterface* fInterface){
+        void throwError(IllegalCharSequence* seq, FileInterface* fInterface){
                 std::string message = std::string("illegal character sequence \"") + ANSI::YELLOW + seq->chars + ANSI::RED + "\"";
                 new CompileError(fInterface, seq, message, ERROR_CODE::LS001);
         }

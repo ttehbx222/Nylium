@@ -32,6 +32,8 @@
 #include "../../error_handling/errors/LS003.hpp"
 #include "../../error_handling/errors/LS004.hpp"
 #include "../../error_handling/errors/LS005.hpp"
+#include "../../error_handling/errors/LS006.hpp"
+#include "../../error_handling/errors/LS007.hpp"
 
 #include "../../../log/logger.hpp"
 
@@ -66,7 +68,7 @@ const std::regex regex_text(std::string("(")
     +value_char+")|("
     +value_str+")");
 
-void processLine(FileInterface* fInterface, Text* text, std::string line, size_t line_number){
+void processLine(FileInterface* fInterface, Text* text, std::string line, size_t line_number, CharSequence** last){
     size_t coloumn = 0;
     while(!line.empty()){
         std::smatch results;
@@ -149,6 +151,7 @@ void processLine(FileInterface* fInterface, Text* text, std::string line, size_t
         }
         if (sequence){
             text->f_current_target->push(sequence, text);
+            (*last) = sequence;
         }
         line = line.substr(len, line.size()-len);
         coloumn += len;
@@ -164,14 +167,42 @@ void nylium::loadCharSequences(FileInterface* fInterface){
 
     nlog::log(nlog::LOGLEVEL::DEBUG_2, std::string("Processing file '") + fInterface->name + ".nylium'");
 
+    CharSequence* last;
+
     while (std::getline(istream, line)){
         line_number++;
-        processLine(fInterface, text, line, line_number);
+        processLine(fInterface, text, line, line_number, &last);
     }
 
-    nlog::log(nlog::LOGLEVEL::DEBUG_3, std::string("End of file '") + fInterface->name + ".nylium'");
+    while(text->f_current_target->f_parent != &(text->f_scope)){
+        switch(text->f_current_target->f_parent->elementType()){
+            case ElementType::SCOPE:
+            {
+                SequenceScope* parent = (SequenceScope*) text->f_current_target->f_parent;
+                if (parent->f_stype == ScopeListType::INITIALIZER_LIST 
+                || parent->f_stype == ScopeListType::SINGLE 
+                || text->f_current_target->f_elements.empty() 
+                || (text->f_current_target->f_elements.back()->elementType() == ElementType::SCOPE 
+                    && (((SequenceScope*)text->f_current_target->f_elements.back())->f_stype == ScopeListType::SCOPE || ((SequenceScope*)text->f_current_target->f_elements.back())->f_stype == ScopeListType::SINGLE)
+                )){
+                    LS007::throwError(last, text->f_interface, "}");
+                }else{
+                    LS007::throwError(last, text->f_interface, ";}");
+                }
+                text->f_current_target = (SequenceLine*)parent->f_parent;
+                break;
+            }
+            case ElementType::BRACKET:
+            {
+                LS007::throwError(last, text->f_interface, ")");
+                text->f_current_target = (SequenceLine*)text->f_current_target->f_parent->f_parent;
+            }
+        }
+    }
 
     fInterface->f_text = text;
+
+    text->log();
 }
 
 /*
@@ -193,7 +224,7 @@ void SequenceLine::push(CharSequence* in, Text* text){
                 {
                     SequenceBracket* parent = ((SequenceBracket*)f_parent);
                     switch(parent->f_btype){
-                        case BracketListType::OPERN_LINE_LIST:
+                        case BracketListType::OPEN_LINE_LIST:
                         {
                             LS002::throwError(in, text->f_interface);
                             return;
@@ -205,7 +236,7 @@ void SequenceLine::push(CharSequence* in, Text* text){
                         }
                         case BracketListType::ENDED_LINE_LIST:
                         {
-                            this->f_elements.push_back(in);
+                            //this->f_elements.push_back(in);
                             SequenceLine* line = new SequenceLine(parent);
                             parent->f_contents.push_back(line);
                             text->f_current_target = line;
@@ -217,10 +248,6 @@ void SequenceLine::push(CharSequence* in, Text* text){
                 case ElementType::SCOPE:
                 {
                     SequenceScope* parent = ((SequenceScope*)f_parent);
-                    if (parent == &(text->f_scope)){
-                        LS005::throwError(in, text->f_interface);
-                        return;
-                    }
                     switch(parent->f_stype){
                         case ScopeListType::INITIALIZER_LIST:
                         {
@@ -229,12 +256,12 @@ void SequenceLine::push(CharSequence* in, Text* text){
                         }
                         case ScopeListType::SINGLE:
                         {
-                            parent->f_stype = ScopeListType::SCOPE;
+                            parent->f_stype = ScopeListType::SCOPE; //unreachable
                             //continue at case SCOPE
                         }
                         case ScopeListType::SCOPE:
                         {
-                            this->f_elements.push_back(in);
+                            //this->f_elements.push_back(in);
                             SequenceLine* line = new SequenceLine(parent);
                             parent->f_contents.push_back(line);
                             text->f_current_target = line;
@@ -264,12 +291,20 @@ void SequenceLine::push(CharSequence* in, Text* text){
                         LS003::throwError(in, text->f_interface);
                         return;
                     }
+                    if (f_elements.empty()){
+                        ((SequenceBracket*)f_parent)->f_contents.pop_back();
+                    }
                     text->f_current_target = (SequenceLine*)f_parent->f_parent;
                     return;
                 }
                 case '{':
                 {
                     SequenceScope* scope = new SequenceScope(this);
+                    if (f_parent->elementType() == ElementType::BRACKET){
+                        scope->f_stype = ScopeListType::INITIALIZER_LIST;
+                    }else{
+                        scope->f_stype = ((SequenceScope*)f_parent)->f_stype;
+                    }
                     SequenceLine* line = new SequenceLine(scope);
                     f_elements.push_back(scope);
                     scope->f_contents.push_back(line);
@@ -282,10 +317,33 @@ void SequenceLine::push(CharSequence* in, Text* text){
                         LS003::throwError(in, text->f_interface);
                         return;
                     }
-                    text->f_current_target = (SequenceLine*) f_parent->f_parent;
+                    SequenceScope* parent = (SequenceScope*)f_parent;
+
+                    switch(parent->f_stype){
+                        case ScopeListType::SINGLE:
+                        {
+                            //parent->f_stype = ScopeListType::INITIALIZER_LIST; //might cause confusing error if semicolon is missing in single line scopes
+                        }
+                        case ScopeListType::INITIALIZER_LIST:
+                        {
+                            break;
+                        }
+                        case ScopeListType::SCOPE:
+                        {
+                            if (f_elements.empty()){
+                                ((SequenceScope*)f_parent)->f_contents.pop_back();
+                            }else if(f_elements.back()->elementType() == ElementType::SCOPE && ((SequenceScope*)f_elements.back())->f_stype == ScopeListType::SCOPE){
+                                //no error, rewrite if statement
+                            }else{
+                                LS006::throwError(in, text->f_interface);
+                            }
+                        }
+                    }
+
+                    text->f_current_target = (SequenceLine*) parent->f_parent;
                     if (!text->f_current_target){
                         LS004::throwError(in, text->f_interface);
-                        text->f_current_target = text->f_scope.f_contents.at(0);
+                        text->f_current_target = text->f_scope.f_contents.front();
                     }
                     return;
                 }
@@ -313,12 +371,12 @@ void SequenceLine::push(CharSequence* in, Text* text){
                         }
                         case BracketListType::SINGLE:
                         {
-                            parent->f_btype = BracketListType::OPERN_LINE_LIST;
+                            parent->f_btype = BracketListType::OPEN_LINE_LIST;
                             //continue at case OPEN_LINE_LIST
                         }
-                        case BracketListType::OPERN_LINE_LIST:
+                        case BracketListType::OPEN_LINE_LIST:
                         {
-                            this->f_elements.push_back(in);
+                            //this->f_elements.push_back(in);
                             SequenceLine* line = new SequenceLine(parent);
                             parent->f_contents.push_back(line);
                             text->f_current_target = line;
@@ -338,12 +396,12 @@ void SequenceLine::push(CharSequence* in, Text* text){
                         }
                         case ScopeListType::SINGLE:
                         {
-                            parent->f_stype = ScopeListType::INITIALIZER_LIST;
+                            parent->f_stype = ScopeListType::INITIALIZER_LIST; //unreachable
                             //continue at case INITIALIZER_LIST
                         }
                         case ScopeListType::INITIALIZER_LIST:
                         {
-                            this->f_elements.push_back(in);
+                            //this->f_elements.push_back(in);
                             SequenceLine* line = new SequenceLine(parent);
                             parent->f_contents.push_back(line);
                             text->f_current_target = line;
@@ -360,4 +418,80 @@ void SequenceLine::push(CharSequence* in, Text* text){
             this->f_elements.push_back(in);
         }
     }
+}
+
+size_t spaces = 0;
+const char space_chars[] = "    ";
+
+std::string prefix(){
+    std::string prefix = "";
+    for (size_t i = spaces; i > 0; --i){
+        prefix += space_chars;
+    }
+    return prefix;
+}
+
+void logBracket(SequenceBracket*);
+void logScope(SequenceScope*);
+
+void logLine(SequenceLine* line){
+    std::string out = "";
+    for (Element* element : line->f_elements){
+        switch(element->elementType()){
+            case ElementType::SEQUENCE:
+            {
+                out += ((CharSequence*)element)->chars + " ";
+                break;
+            }
+            case ElementType::BRACKET:
+            {
+                if (out != ""){
+                    nlog::log(nlog::LOGLEVEL::DEBUG_3, prefix() + out);
+                    out = "";
+                }
+                logBracket((SequenceBracket*)element);
+                break;
+            }
+            case ElementType::SCOPE:
+            {
+                if (out != ""){
+                    nlog::log(nlog::LOGLEVEL::DEBUG_3, prefix() + out);
+                    out = "";
+                }
+                logScope((SequenceScope*)element);
+                break;
+            }
+        }
+    }
+    if (out != ""){
+        nlog::log(nlog::LOGLEVEL::DEBUG_3, prefix() + out);
+    }
+}
+
+void logBracket(SequenceBracket* bracket){
+    nlog::log(nlog::LOGLEVEL::DEBUG_3, prefix() + "(");
+    ++spaces;
+    for(SequenceLine* line : bracket->f_contents){
+        logLine(line);
+    }
+    --spaces;
+    nlog::log(nlog::LOGLEVEL::DEBUG_3, prefix() + ")");
+}
+
+void logScope(SequenceScope* scope){
+    nlog::log(nlog::LOGLEVEL::DEBUG_3, prefix() + "{");
+    ++spaces;
+    for(SequenceLine* line : scope->f_contents){
+        logLine(line);
+    }
+    --spaces;
+    nlog::log(nlog::LOGLEVEL::DEBUG_3, prefix() + "}");
+}
+
+void Text::log(){
+    if (nlog::lowestRelevantLogLevel() < nlog::LOGLEVEL::DEBUG_3){
+        return;
+    }
+    logScope(&f_scope);
+    nlog::log(nlog::LOGLEVEL::DEBUG_3, std::string("End of file '") + f_interface->name + ".nylium'");
 }

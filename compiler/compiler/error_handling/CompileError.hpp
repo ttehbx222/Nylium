@@ -25,6 +25,9 @@ namespace nylium{
         LS002, //illegal listing char
         LS003, //illegal bracket used
         LS004, //closing non-existent scope
+        LS005, //unexpected end of line
+        LS006, //missing end of line
+        LS007, //missing characters
         CB001, //unexpected char
         CB002, //keyword multi-use
         CB003, //visibility multi-declaration

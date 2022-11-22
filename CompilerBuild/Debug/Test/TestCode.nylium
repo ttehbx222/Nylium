@@ -1,1 +1,9 @@
-name;
+public class ActualClass {
+	void functionInsideClass(ActualClass param, ActualClass param2){
+		
+	}
+}
+
+ActualClass functionOutsideClass(){
+
+}

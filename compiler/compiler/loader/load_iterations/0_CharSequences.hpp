@@ -31,7 +31,7 @@ namespace nylium{
     };
 
     enum class BracketListType {
-        OPERN_LINE_LIST,
+        OPEN_LINE_LIST,
         SINGLE,
         ENDED_LINE_LIST
     };
@@ -47,11 +47,11 @@ namespace nylium{
     enum class ScopeListType {
         SCOPE,
         INITIALIZER_LIST,
-        SINGLE
+        SINGLE //unused
     };
 
     struct SequenceScope : public ContainerElement{
-        ScopeListType f_stype = ScopeListType::SINGLE;
+        ScopeListType f_stype = ScopeListType::SCOPE;
         std::vector<SequenceLine*> f_contents;
 
         inline SequenceScope(ContainerElement* parent) { f_parent = parent; }
@@ -65,6 +65,7 @@ namespace nylium{
         FileInterface* f_interface;
 
         inline Text(FileInterface* fInterface) { f_interface = fInterface; f_scope.f_contents.push_back(f_current_target); }
+        void log();
     };
 
     void loadCharSequences(FileInterface* fInterface);

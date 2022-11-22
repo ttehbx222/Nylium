@@ -27,7 +27,7 @@
 
 using namespace nylium;
 
-Scope* buildFDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, std::string& pending){ //Field or Function declaration
+/*Scope* buildFDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, std::string& pending){ //Field or Function declaration
     CharSequence* seq = text->read(read_pos);
     if (seq->type == CharSequenceType::END){
         CB004::throwError(seq, scope->f_parent_interface);
@@ -85,7 +85,7 @@ Scope* nylium::buildDeclaration(Scope* scope, Text* text, size_t* read_pos, Decl
         attributes->f_dtype = DeclarationType::ENUM;
         //continue to TypeDeclaration
     }*/
-    if (seq->chars == "static"){
+    /*if (seq->chars == "static"){
         if (attributes->f_static == Boolean::TRUE){
             CB002::throwError(seq, scope->f_parent_interface);
         }
@@ -124,4 +124,4 @@ Scope* nylium::buildDeclaration(Scope* scope, Text* text, size_t* read_pos, Decl
     {
         return buildFDeclaration(scope, text, read_pos, attributes, seq->chars);
     }
-}
+}*/

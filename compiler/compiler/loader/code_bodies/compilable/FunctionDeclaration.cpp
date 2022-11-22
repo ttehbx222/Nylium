@@ -23,7 +23,7 @@
 
 using namespace nylium;
 
-Scope* buildParameter(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, PendingDeclaration* return_type, std::string& name, Parameters* parameters, PendingDeclaration* param_type){
+/*Scope* buildParameter(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, PendingDeclaration* return_type, std::string& name, Parameters* parameters, PendingDeclaration* param_type){
     CharSequence* seq = text->read(read_pos);
     if (seq->type == CharSequenceType::END){
         CB004::throwError(seq, scope->f_parent_interface);
@@ -142,4 +142,4 @@ FunctionDeclaration::FunctionDeclaration(Scope* scope, DeclarationAttributes* at
         message += ")";
         nlog::log(nlog::LOGLEVEL::DEBUG_0, message);
     }
-}
+}*/

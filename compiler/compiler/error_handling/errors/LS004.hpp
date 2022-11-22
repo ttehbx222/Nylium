@@ -19,10 +19,10 @@
 #include "../../loader/character_sequences/NyliumCharSequence.hpp"
 
 namespace nylium{
-    namespace LS003{
+    namespace LS004{
         void throwError(CharSequence* seq, FileInterface* fInterface){
                 std::string message = std::string("closing non-existent scope");
-                new CompileError(fInterface, seq, message, ERROR_CODE::LS003);
+                new CompileError(fInterface, seq, message, ERROR_CODE::LS004);
         }
     }
 }

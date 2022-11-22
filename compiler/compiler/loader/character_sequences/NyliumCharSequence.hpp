@@ -55,15 +55,12 @@ namespace nylium{
         size_t line, coloumn, length;
         CharSequenceType type;
 
-        void debug_log();
-
         CharSequence(std::string& content, size_t line_number, size_t coloumn, CharSequenceType type){
             chars = content;
             line = line_number;
             this->coloumn = coloumn;
             length = chars.length(); // check for importance
             this->type = type;
-            debug_log();
         }
         ElementType elementType() { return ElementType::SEQUENCE; }
     };
