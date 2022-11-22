@@ -22,6 +22,9 @@ namespace nylium{
 
     enum class ERROR_CODE{
         LS001, //IllegalCharSequence
+        LS002, //illegal listing char
+        LS003, //illegal bracket used
+        LS004, //closing non-existent scope
         CB001, //unexpected char
         CB002, //keyword multi-use
         CB003, //visibility multi-declaration

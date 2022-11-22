@@ -19,10 +19,10 @@
 #include "../../loader/character_sequences/NyliumCharSequence.hpp"
 
 namespace nylium{
-    namespace LS001{
+    namespace LS002{
         void throwError(CharSequence* seq, FileInterface* fInterface){
-                std::string message = std::string("illegal character sequence \"") + ANSI::YELLOW + seq->chars + ANSI::RED + "\"";
-                new CompileError(fInterface, seq, message, ERROR_CODE::LS001);
+                std::string message = std::string("illegal listing character \"") + ANSI::YELLOW + seq->chars + ANSI::RED + "\"";
+                new CompileError(fInterface, seq, message, ERROR_CODE::LS002);
         }
     }
 }

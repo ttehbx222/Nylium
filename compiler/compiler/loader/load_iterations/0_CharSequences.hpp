@@ -21,8 +21,46 @@
 
 namespace nylium{
 
-    struct Text : public std::vector<CharSequence*>{
-        CharSequence* read(size_t* read_pos);
+    struct SequenceLine : public ContainerElement{
+        std::vector<Element*> f_elements;
+
+        inline SequenceLine(ContainerElement* parent) { f_parent = parent; }
+        
+        void push(CharSequence* in, Text* text);
+        ElementType elementType() { return ElementType::LINE; }
+    };
+
+    enum class BracketListType {
+        OPERN_LINE_LIST,
+        SINGLE,
+        ENDED_LINE_LIST,
+        EMPTY
+    };
+
+    struct SequenceBracket : public ContainerElement{
+        BracketListType f_btype = BracketListType::EMPTY;
+        std::vector<SequenceLine*> f_contents;
+
+        inline SequenceBracket(ContainerElement* parent) { f_parent = parent; }
+
+        void push(CharSequence* in, Text* text);
+        ElementType elementType() { return ElementType::BRACKET; }
+    };
+
+    struct SequenceScope : public ContainerElement{
+        std::vector<SequenceLine*> f_contents;
+
+        inline SequenceScope(ContainerElement* parent) { f_parent = parent; }
+
+        void push(CharSequence* in, Text* text);
+        ElementType elementType() { return ElementType::SCOPE; }
+    };
+
+    struct Text {
+        SequenceScope f_scope;
+        ContainerElement* f_current_target = &f_scope;
+        FileInterface* f_interface;
+        inline Text(FileInterface* fInterface) { f_interface = fInterface; }
     };
 
     void loadCharSequences(FileInterface* fInterface);

@@ -30,7 +30,29 @@ namespace nylium{
         ILLEGAL
     };
 
-    struct CharSequence {
+    enum class ElementType{
+        SEQUENCE,
+        LINE,
+        BRACKET,
+        SCOPE
+    };
+
+    struct CharSequence;
+
+    struct ContainerElement;
+    struct Text;
+
+    struct Element{
+        ContainerElement* f_parent;
+        
+        virtual ElementType elementType() = 0;
+    };
+
+    struct ContainerElement : public Element {
+        virtual void push(CharSequence* in, Text* text) = 0;
+    };
+
+    struct CharSequence : public Element{
         std::string chars;
         size_t line, coloumn, length;
         CharSequenceType type;
@@ -45,6 +67,7 @@ namespace nylium{
             this->type = type;
             debug_log();
         }
+        ElementType elementType() { return ElementType::SEQUENCE; }
     };
 
 }

@@ -28,6 +28,10 @@
 
 #include "../character_sequences/IllegalCharSequence.hpp"
 
+#include "../../error_handling/errors/LS002.hpp"
+#include "../../error_handling/errors/LS003.hpp"
+#include "../../error_handling/errors/LS004.hpp"
+
 #include "../../../log/logger.hpp"
 
 using namespace nylium;
@@ -83,10 +87,11 @@ void processLine(FileInterface* fInterface, Text* text, std::string line, size_t
             coloumn += error_size;
             continue;
         }
+        CharSequence* sequence = nullptr;
         switch(group){
             case 1:
             {
-                text->push_back(new Bracket(chars, line_number, coloumn));
+                sequence = new Bracket(chars, line_number, coloumn);
                 break;  
             }
             case 2:
@@ -97,49 +102,52 @@ void processLine(FileInterface* fInterface, Text* text, std::string line, size_t
             }
             case 3:
             {
-                text->push_back(new EndIndicator(chars, line_number, coloumn));
+                sequence = new EndIndicator(chars, line_number, coloumn);
                 break;  
             }
             case 4:
             {
-                text->push_back(new ListSeparator(chars, line_number, coloumn));
+                sequence = new ListSeparator(chars, line_number, coloumn);
                 break;  
             }
             case 5:
             {
-                text->push_back(new Name(chars, line_number, coloumn));
+                sequence = new Name(chars, line_number, coloumn);
                 break;  
             }
             case 6:
             {
-                text->push_back(new Operator(chars, line_number, coloumn));
+                sequence = new Operator(chars, line_number, coloumn);
                 break;  
             }
             case 7:
             {
-                text->push_back(new Value(chars, line_number, coloumn, ValueType::INT_HEX));
+                sequence = new Value(chars, line_number, coloumn, ValueType::INT_HEX);
                 break;  
             }
             case 8:
             {
-                text->push_back(new Value(chars, line_number, coloumn, ValueType::INT_BIN));
+                sequence = new Value(chars, line_number, coloumn, ValueType::INT_BIN);
                 break;  
             }
             case 9:
             {
-                text->push_back(new Value(chars, line_number, coloumn, ValueType::INT_DEC));
+                sequence = new Value(chars, line_number, coloumn, ValueType::INT_DEC);
                 break;  
             }
             case 10:
             {
-                text->push_back(new Value(chars, line_number, coloumn, ValueType::CHAR));
+                sequence = new Value(chars, line_number, coloumn, ValueType::CHAR);
                 break;  
             }
             case 11:
             {
-                text->push_back(new Value(chars, line_number, coloumn, ValueType::STRING));
+                sequence = new Value(chars, line_number, coloumn, ValueType::STRING);
                 break;  
             }
+        }
+        if (sequence){
+            text->f_current_target->push(sequence, text);
         }
         line = line.substr(len, line.size()-len);
         coloumn += len;
@@ -148,7 +156,7 @@ void processLine(FileInterface* fInterface, Text* text, std::string line, size_t
 }
 
 void nylium::loadCharSequences(FileInterface* fInterface){
-    Text* text = new Text();
+    Text* text = new Text(fInterface);
     size_t line_number = 0;
     std::string line;
     std::ifstream& istream = fInterface->file->ifstream();
@@ -165,6 +173,7 @@ void nylium::loadCharSequences(FileInterface* fInterface){
     fInterface->f_text = text;
 }
 
+/*
 CharSequence* Text::read(size_t* read_pos){
     if ((*read_pos) < this->size()){
         return this->at((*read_pos)++);
@@ -172,5 +181,137 @@ CharSequence* Text::read(size_t* read_pos){
         CharSequence* last_element = this->back();
         return new EndIndicator(std::string(""), last_element->line, last_element->coloumn + last_element->length);
     }
+}*/
+
+void SequenceLine::push(CharSequence* in, Text* text){
+    switch(in->type){
+        case CharSequenceType::END:
+        {
+            switch(f_parent->elementType()){
+                case ElementType::BRACKET:
+                {
+                    SequenceBracket* parent = ((SequenceBracket*)f_parent);
+                    switch(parent->f_btype){
+                        case BracketListType::OPERN_LINE_LIST:
+                        {
+                            LS002::throwError(in, text->f_interface);
+                            return;
+                        }
+                        case BracketListType::SINGLE:
+                        {
+                            parent->f_btype = BracketListType::ENDED_LINE_LIST;
+                            //continue at case ENDED_LINE_LIST
+                        }
+                        case BracketListType::ENDED_LINE_LIST:
+                        {
+                            this->f_elements.push_back(in);
+                            SequenceLine* line = new SequenceLine(parent);
+                            parent->f_contents.push_back(line);
+                            text->f_current_target = line;
+                            return;
+                        }
+                    }
+                    return; //compiler reasons
+                }
+                case ElementType::SCOPE:
+                {
+                    SequenceScope* parent = ((SequenceScope*)f_parent);
+                    this->f_elements.push_back(in);
+                    SequenceLine* line = new SequenceLine(parent);
+                    parent->f_contents.push_back(line);
+                    text->f_current_target = line;
+                    return;
+                }
+            }
+            return; //compiler reasons
+        }
+        case CharSequenceType::BRACKET:
+        {
+            switch(in->chars[0]){
+                case '(':
+                {
+                    SequenceBracket* bracket = new SequenceBracket(this);
+                    text->f_current_target = bracket;
+                    f_elements.push_back(bracket);
+                    return;
+                }
+                case ')':
+                {
+                    if (f_parent->elementType() != ElementType::BRACKET){
+                        LS003::throwError(in, text->f_interface);
+                        return;
+                    }
+                    text->f_current_target = f_parent->f_parent;
+                    return;
+                }
+                case '{':
+                {
+                    SequenceScope* scope = new SequenceScope(this);
+                    text->f_current_target = scope;
+                    f_elements.push_back(scope);
+                    return;
+                }
+                case '}':
+                {
+                    if (f_parent->elementType() != ElementType::SCOPE){
+                        LS003::throwError(in, text->f_interface);
+                        return;
+                    }
+                    text->f_current_target = f_parent->f_parent;
+                    if (!text->f_current_target){
+                        LS004::throwError(in, text->f_interface);
+                        text->f_current_target = f_parent;
+                    }
+                    return;
+                }
+                case '<':
+                case '>':
+                {
+                    this->f_elements.push_back(in);
+                }
+            }
+            return; //compiler reasons
+        }
+        case CharSequenceType::LIST_SEPARATOR:
+        {
+            if (f_parent->elementType() != ElementType::BRACKET){
+                LS002::throwError(in, text->f_interface);
+                return;
+            }
+            SequenceBracket* parent = ((SequenceBracket*)f_parent);
+            switch(parent->f_btype){
+                case BracketListType::ENDED_LINE_LIST:
+                {
+                    LS002::throwError(in, text->f_interface);
+                    return;
+                }
+                case BracketListType::SINGLE:
+                {
+                    parent->f_btype = BracketListType::OPERN_LINE_LIST;
+                    //continue at case ENDED_LINE_LIST
+                }
+                case BracketListType::OPERN_LINE_LIST:
+                {
+                    this->f_elements.push_back(in);
+                    SequenceLine* line = new SequenceLine(parent);
+                    parent->f_contents.push_back(line);
+                    text->f_current_target = line;
+                    return;
+                }
+            }
+            return; //compiler reasons
+        }
+        default:
+        {
+            this->f_elements.push_back(in);
+        }
+    }
 }
 
+void SequenceBracket::push(CharSequence* in, Text* text){
+    
+}
+
+void SequenceScope::push(CharSequence* in, Text* text){
+    
+}
