@@ -31,6 +31,7 @@
 #include "../../error_handling/errors/LS002.hpp"
 #include "../../error_handling/errors/LS003.hpp"
 #include "../../error_handling/errors/LS004.hpp"
+#include "../../error_handling/errors/LS005.hpp"
 
 #include "../../../log/logger.hpp"
 
@@ -216,11 +217,31 @@ void SequenceLine::push(CharSequence* in, Text* text){
                 case ElementType::SCOPE:
                 {
                     SequenceScope* parent = ((SequenceScope*)f_parent);
-                    this->f_elements.push_back(in);
-                    SequenceLine* line = new SequenceLine(parent);
-                    parent->f_contents.push_back(line);
-                    text->f_current_target = line;
-                    return;
+                    if (parent == &(text->f_scope)){
+                        LS005::throwError(in, text->f_interface);
+                        return;
+                    }
+                    switch(parent->f_stype){
+                        case ScopeListType::INITIALIZER_LIST:
+                        {
+                            LS002::throwError(in, text->f_interface);
+                            return;
+                        }
+                        case ScopeListType::SINGLE:
+                        {
+                            parent->f_stype = ScopeListType::SCOPE;
+                            //continue at case SCOPE
+                        }
+                        case ScopeListType::SCOPE:
+                        {
+                            this->f_elements.push_back(in);
+                            SequenceLine* line = new SequenceLine(parent);
+                            parent->f_contents.push_back(line);
+                            text->f_current_target = line;
+                            return;
+                        }
+                    }
+                    return; //compiler reasons
                 }
             }
             return; //compiler reasons
@@ -231,8 +252,10 @@ void SequenceLine::push(CharSequence* in, Text* text){
                 case '(':
                 {
                     SequenceBracket* bracket = new SequenceBracket(this);
-                    text->f_current_target = bracket;
+                    SequenceLine* line = new SequenceLine(bracket);
                     f_elements.push_back(bracket);
+                    bracket->f_contents.push_back(line);
+                    text->f_current_target = line;
                     return;
                 }
                 case ')':
@@ -241,14 +264,16 @@ void SequenceLine::push(CharSequence* in, Text* text){
                         LS003::throwError(in, text->f_interface);
                         return;
                     }
-                    text->f_current_target = f_parent->f_parent;
+                    text->f_current_target = (SequenceLine*)f_parent->f_parent;
                     return;
                 }
                 case '{':
                 {
                     SequenceScope* scope = new SequenceScope(this);
-                    text->f_current_target = scope;
+                    SequenceLine* line = new SequenceLine(scope);
                     f_elements.push_back(scope);
+                    scope->f_contents.push_back(line);
+                    text->f_current_target = line;
                     return;
                 }
                 case '}':
@@ -257,13 +282,15 @@ void SequenceLine::push(CharSequence* in, Text* text){
                         LS003::throwError(in, text->f_interface);
                         return;
                     }
-                    text->f_current_target = f_parent->f_parent;
+                    text->f_current_target = (SequenceLine*) f_parent->f_parent;
                     if (!text->f_current_target){
                         LS004::throwError(in, text->f_interface);
-                        text->f_current_target = f_parent;
+                        text->f_current_target = text->f_scope.f_contents.at(0);
                     }
                     return;
                 }
+                case '[':
+                case ']':
                 case '<':
                 case '>':
                 {
@@ -274,29 +301,56 @@ void SequenceLine::push(CharSequence* in, Text* text){
         }
         case CharSequenceType::LIST_SEPARATOR:
         {
-            if (f_parent->elementType() != ElementType::BRACKET){
-                LS002::throwError(in, text->f_interface);
-                return;
-            }
-            SequenceBracket* parent = ((SequenceBracket*)f_parent);
-            switch(parent->f_btype){
-                case BracketListType::ENDED_LINE_LIST:
+            switch(f_parent->elementType()){
+                case ElementType::BRACKET:
                 {
-                    LS002::throwError(in, text->f_interface);
-                    return;
+                    SequenceBracket* parent = ((SequenceBracket*)f_parent);
+                    switch(parent->f_btype){
+                        case BracketListType::ENDED_LINE_LIST:
+                        {
+                            LS002::throwError(in, text->f_interface);
+                            return;
+                        }
+                        case BracketListType::SINGLE:
+                        {
+                            parent->f_btype = BracketListType::OPERN_LINE_LIST;
+                            //continue at case OPEN_LINE_LIST
+                        }
+                        case BracketListType::OPERN_LINE_LIST:
+                        {
+                            this->f_elements.push_back(in);
+                            SequenceLine* line = new SequenceLine(parent);
+                            parent->f_contents.push_back(line);
+                            text->f_current_target = line;
+                            return;
+                        }
+                    }
+                    return; //compiler reasons
                 }
-                case BracketListType::SINGLE:
+                case ElementType::SCOPE:
                 {
-                    parent->f_btype = BracketListType::OPERN_LINE_LIST;
-                    //continue at case ENDED_LINE_LIST
-                }
-                case BracketListType::OPERN_LINE_LIST:
-                {
-                    this->f_elements.push_back(in);
-                    SequenceLine* line = new SequenceLine(parent);
-                    parent->f_contents.push_back(line);
-                    text->f_current_target = line;
-                    return;
+                    SequenceScope* parent = ((SequenceScope*)f_parent);
+                    switch(parent->f_stype){
+                        case ScopeListType::SCOPE:
+                        {
+                            LS002::throwError(in, text->f_interface);
+                            return;
+                        }
+                        case ScopeListType::SINGLE:
+                        {
+                            parent->f_stype = ScopeListType::INITIALIZER_LIST;
+                            //continue at case INITIALIZER_LIST
+                        }
+                        case ScopeListType::INITIALIZER_LIST:
+                        {
+                            this->f_elements.push_back(in);
+                            SequenceLine* line = new SequenceLine(parent);
+                            parent->f_contents.push_back(line);
+                            text->f_current_target = line;
+                            return;
+                        }
+                    }
+                    return; //compiler reasons
                 }
             }
             return; //compiler reasons
@@ -306,12 +360,4 @@ void SequenceLine::push(CharSequence* in, Text* text){
             this->f_elements.push_back(in);
         }
     }
-}
-
-void SequenceBracket::push(CharSequence* in, Text* text){
-    
-}
-
-void SequenceScope::push(CharSequence* in, Text* text){
-    
 }

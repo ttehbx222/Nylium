@@ -47,6 +47,10 @@ nylium::CompileError::CompileError(FileInterface* file, CharSequence* location, 
             error_code_str = "LS004: ";
             break;
         }
+        case ERROR_CODE::LS005:{
+            error_code_str = "LS005: ";
+            break;
+        }
         case ERROR_CODE::CB001:{
             error_code_str = "CB001: ";
             break;

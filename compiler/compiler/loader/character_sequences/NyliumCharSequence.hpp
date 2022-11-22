@@ -43,13 +43,11 @@ namespace nylium{
     struct Text;
 
     struct Element{
-        ContainerElement* f_parent;
-        
         virtual ElementType elementType() = 0;
     };
 
     struct ContainerElement : public Element {
-        virtual void push(CharSequence* in, Text* text) = 0;
+        ContainerElement* f_parent;
     };
 
     struct CharSequence : public Element{
