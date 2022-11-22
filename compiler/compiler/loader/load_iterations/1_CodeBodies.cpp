@@ -54,13 +54,9 @@ BodyMatcher* bodyMatcherByLevel(SCOPE_LAYER layer){
 }
 
 namespace builder{
-
     Scope* buildMainScope(Scope* scope, Text* text);
-
     namespace declaration{
-
         Scope* buildDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos);
-
     }
 }
 
