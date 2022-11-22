@@ -20,9 +20,6 @@
 
 namespace nylium{
     namespace CB004{
-        void throwError(CharSequence* seq, FileInterface* fInterface){
-                std::string message = std::string("unexpected end of declaration");
-                new CompileError(fInterface, seq, message, ERROR_CODE::CB004);
-        }
+        void throwError(CharSequence* seq, FileInterface* fInterface);
     }
 }

@@ -29,19 +29,26 @@ struct BodyMatcher{
 
 struct MainBodyMatcher : public BodyMatcher {
     SCOPE next(SCOPE scope, Text* text, size_t* read_pos){
-        CharSequence* seq = text->at((*read_pos));
-        if (seq->type == CharSequenceType::END){
-            return scope;
-        }
-        return buildDeclaration(scope, text, read_pos);
+        
+    }
+};
+
+struct FunctionBodyMatcher : public BodyMatcher {
+    SCOPE next(SCOPE scope, Text* text, size_t* read_pos){
+        
     }
 };
 
 MainBodyMatcher* mainBM = new MainBodyMatcher();
+FunctionBodyMatcher* funcBM = new FunctionBodyMatcher();
 
 BodyMatcher* bodyMatcherByLevel(SCOPE_LAYER layer){
     switch(layer){
-        case SCOPE_LAYER::MAIN: return mainBM;
+        case SCOPE_LAYER::MAIN: 
+        case SCOPE_LAYER::CLASS:
+            return mainBM;
+        case SCOPE_LAYER::FUNCTION:
+            return funcBM;
     }
     return mainBM;
 }

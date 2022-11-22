@@ -20,12 +20,8 @@
 namespace nylium{
 
     struct FieldDeclaration : public PendingDeclaration {
-
+        FieldDeclaration(PendingDeclaration* type, std::string& label);
     };
-
-    namespace silent{
-        FieldDeclaration buildFieldDeclaration();
-    }
     Scope* buildFieldDeclaration();
 
 }

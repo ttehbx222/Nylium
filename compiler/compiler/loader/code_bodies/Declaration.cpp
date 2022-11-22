@@ -29,6 +29,10 @@ using namespace nylium;
 
 Scope* buildFDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, std::string& pending){ //Field or Function declaration
     CharSequence* seq = text->read(read_pos);
+    if (seq->type == CharSequenceType::END){
+        CB004::throwError(seq, scope->f_parent_interface);
+        return scope;
+    }
     if (seq->type != CharSequenceType::NAME){
         CB001::throwError(seq, scope->f_parent_interface);
         return buildFDeclaration(scope, text, read_pos, attributes, pending);
