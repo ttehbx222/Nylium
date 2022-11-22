@@ -22,6 +22,6 @@ namespace nylium{
     struct FieldDeclaration : public PendingDeclaration {
         FieldDeclaration(PendingDeclaration* type, std::string& label);
     };
-    Scope* buildFieldDeclaration();
+    //Scope* buildFieldDeclaration();
 
 }

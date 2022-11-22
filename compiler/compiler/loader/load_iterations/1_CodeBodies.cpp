@@ -53,12 +53,47 @@ BodyMatcher* bodyMatcherByLevel(SCOPE_LAYER layer){
     return mainBM;
 }
 
+namespace builder{
+
+    Scope* buildMainScope(Scope* scope, Text* text);
+
+    namespace declaration{
+
+        Scope* buildDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos);
+
+    }
+}
+
 void nylium::loadBodies(FileInterface* fInterface){
     nlog::log(nlog::LOGLEVEL::INFO, fInterface->name + ".nylium");
-    /*size_t read_pos = 0;
-    size_t text_size = fInterface->f_text->size();
-    Scope* scope = fInterface->main_scope;
-    while (read_pos < text_size){
-        scope = bodyMatcherByLevel(scope->f_layer)->next(scope, fInterface->f_text, &read_pos);
-    }*/
+    std::vector<size_t> read_pos;
+    read_pos.push_back(0);
+    read_pos.push_back(0);
+    Text* text = fInterface->f_text;
+
+    text->f_current_target = text->f_scope.f_contents.front();
+    fInterface->main_scope->text_code = &(text->f_scope);
+    //TODO
+}
+
+namespace builder{
+
+    Scope* buildMainScope(Scope* scope, Text* text){
+        size_t read_pos = 0;
+        return declaration::buildDeclaration(scope, text, new DeclarationAttributes(), &read_pos);
+    }
+
+    namespace declaration{
+
+        Scope* declaration::buildDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos){
+            Element* element = text->f_current_target->read(read_pos);
+            switch(element->elementType()){
+                case ElementType::BRACKET:
+                case ElementType::SCOPE:
+                case ElementType::SEQUENCE:
+            }
+        }
+
+    }
+
 }

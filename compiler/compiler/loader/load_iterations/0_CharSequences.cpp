@@ -322,7 +322,7 @@ void SequenceLine::push(CharSequence* in, Text* text){
                     switch(parent->f_stype){
                         case ScopeListType::SINGLE:
                         {
-                            //parent->f_stype = ScopeListType::INITIALIZER_LIST; //might cause confusing error if semicolon is missing in single line scopes
+                            //parent->f_stype = ScopeListType::INITIALIZER_LIST; //might cause confusing error if semicolon is missing in single line scopes //unreachable
                         }
                         case ScopeListType::INITIALIZER_LIST:
                         {
@@ -332,20 +332,28 @@ void SequenceLine::push(CharSequence* in, Text* text){
                         {
                             if (f_elements.empty()){
                                 ((SequenceScope*)f_parent)->f_contents.pop_back();
+                                
                             }else if(f_elements.back()->elementType() == ElementType::SCOPE && ((SequenceScope*)f_elements.back())->f_stype == ScopeListType::SCOPE){
-                                //no error, rewrite if statement
+                                //no error, rewrite if statement //unreachable
                             }else{
                                 LS006::throwError(in, text->f_interface);
                             }
                         }
+                        if (parent->f_parent){
+                            SequenceScope* ppparent = (SequenceScope*)f_parent->f_parent->f_parent;
+                            SequenceLine* line = new SequenceLine(ppparent);
+                            ppparent->f_contents.push_back(line);
+                            text->f_current_target = line;
+                        }else{
+                            LS004::throwError(in, text->f_interface);
+                            SequenceLine* line = new SequenceLine(&(text->f_scope));
+                            text->f_current_target = line;
+                            text->f_scope.f_contents.push_back(line);
+                        }
+                        return;
                     }
 
-                    text->f_current_target = (SequenceLine*) parent->f_parent;
-                    if (!text->f_current_target){
-                        LS004::throwError(in, text->f_interface);
-                        text->f_current_target = text->f_scope.f_contents.front();
-                    }
-                    return;
+                    
                 }
                 case '[':
                 case ']':

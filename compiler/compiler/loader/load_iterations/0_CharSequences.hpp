@@ -25,6 +25,7 @@ namespace nylium{
         std::vector<Element*> f_elements;
 
         inline SequenceLine(ContainerElement* parent) { f_parent = parent; }
+        inline Element* read(size_t* read_pos) { return f_elements.at((*read_pos)++); }
         
         void push(CharSequence* in, Text* text);
         ElementType elementType() { return ElementType::LINE; }

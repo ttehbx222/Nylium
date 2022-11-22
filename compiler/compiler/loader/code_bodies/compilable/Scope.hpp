@@ -19,6 +19,7 @@
 #include "../CodeLine.hpp"
 #include "../PendingDeclaration.hpp"
 #include "../../utils/DeclarationSearch.hpp"
+#include "../../load_iterations/0_CharSequences.hpp"
 
 
 namespace nylium{
@@ -33,6 +34,8 @@ namespace nylium{
 		    DeclarationSearch f_accessibles;
 		    FileInterface* f_parent_interface;
 	    	std::vector<CODE> f_code;
+
+			SequenceScope* text_code;
 
 			Scope(){}
 	    	Scope(Scope* scope);

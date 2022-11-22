@@ -54,6 +54,6 @@ namespace nylium{
         std::string f_key;
     };
 
-    Scope* buildDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes = new DeclarationAttributes());
+    //Scope* buildDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes = new DeclarationAttributes());
 
 }
