@@ -399,7 +399,14 @@ void SequenceLine::push(CharSequence* in, Text* text){
                     switch(parent->f_stype){
                         case ScopeListType::SCOPE:
                         {
-                            LS002::throwError(in, text->f_interface);
+                            if (parent->f_contents.size() == 1){
+                                parent->f_stype = ScopeListType::INITIALIZER_LIST;
+                                 SequenceLine* line = new SequenceLine(parent);
+                                parent->f_contents.push_back(line);
+                                text->f_current_target = line;
+                            }else{
+                                LS002::throwError(in, text->f_interface);
+                            }
                             return;
                         }
                         case ScopeListType::SINGLE:
