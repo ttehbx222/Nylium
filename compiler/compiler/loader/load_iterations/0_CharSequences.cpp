@@ -275,7 +275,7 @@ void SequenceLine::push(CharSequence* in, Text* text){
             switch(in->chars[0]){
                 case '(':
                 {
-                    SequenceBracket* bracket = new SequenceBracket(this);
+                    SequenceBracket* bracket = new SequenceBracket(this, in);
                     SequenceLine* line = new SequenceLine(bracket);
                     f_elements.push_back(bracket);
                     bracket->f_contents.push_back(line);
@@ -296,7 +296,7 @@ void SequenceLine::push(CharSequence* in, Text* text){
                 }
                 case '{':
                 {
-                    SequenceScope* scope = new SequenceScope(this);
+                    SequenceScope* scope = new SequenceScope(this, in);
                     if (f_parent->elementType() == ElementType::BRACKET){
                         scope->f_stype = ScopeListType::INITIALIZER_LIST;
                     }else{

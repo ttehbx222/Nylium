@@ -19,6 +19,9 @@
 #include "../character_sequences/NyliumCharSequence.hpp"
 #include "0_CharSequences.hpp"
 
+#include "../../error_handling/errors/CB001.hpp"
+#include "../../error_handling/errors/CB005.hpp"
+
 #include "../../../log/logger.hpp"
 
 using namespace nylium;
@@ -80,10 +83,27 @@ namespace builder{
 
         Scope* declaration::buildDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos){
             Element* element = text->f_current_target->read(read_pos);
+            CharSequence* seq = element->f_sequence;
             switch(element->elementType()){
                 case ElementType::BRACKET:
+                {
+                    CB001::throwError(seq, text->f_interface);
+                    return;
+                }
                 case ElementType::SCOPE:
+                {
+                    CB005::throwError(seq, text->f_interface);
+                    return;
+                }
                 case ElementType::SEQUENCE:
+                {
+                    if (seq->type == CharSequenceType::END){
+                        //ERROR
+                    }
+                    if (seq->type != CharSequenceType::NAME){
+                        //ERROR
+                    }
+                }
             }
         }
 

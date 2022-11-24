@@ -41,7 +41,7 @@ namespace nylium{
         BracketListType f_btype = BracketListType::SINGLE;
         std::vector<SequenceLine*> f_contents;
 
-        inline SequenceBracket(ContainerElement* parent) { f_parent = parent; }
+        inline SequenceBracket(ContainerElement* parent, CharSequence* sequence) { f_parent = parent; f_sequence = sequence; }
         ElementType elementType() { return ElementType::BRACKET; }
     };
 
@@ -55,13 +55,13 @@ namespace nylium{
         ScopeListType f_stype = ScopeListType::SCOPE;
         std::vector<SequenceLine*> f_contents;
 
-        inline SequenceScope(ContainerElement* parent) { f_parent = parent; }
+        inline SequenceScope(ContainerElement* parent, CharSequence* sequence) { f_parent = parent; f_sequence = sequence; }
 
         ElementType elementType() { return ElementType::SCOPE; }
     };
 
     struct Text {
-        SequenceScope f_scope = SequenceScope(nullptr);
+        SequenceScope f_scope = SequenceScope(nullptr, nullptr);
         SequenceLine* f_current_target = new SequenceLine(&f_scope);
         FileInterface* f_interface;
 

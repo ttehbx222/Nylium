@@ -17,6 +17,3 @@
 /*
 * This file combines the nylium-compiler and nylium-runtime
 */
-
-#define NYLIUM_MAIN
-#include "compiler/nylium.h"
