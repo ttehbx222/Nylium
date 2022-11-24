@@ -62,9 +62,6 @@ namespace builder{
 
 void nylium::loadBodies(FileInterface* fInterface){
     nlog::log(nlog::LOGLEVEL::INFO, fInterface->name + ".nylium");
-    std::vector<size_t> read_pos;
-    read_pos.push_back(0);
-    read_pos.push_back(0);
     Text* text = fInterface->f_text;
 
     text->f_current_target = text->f_scope.f_contents.front();

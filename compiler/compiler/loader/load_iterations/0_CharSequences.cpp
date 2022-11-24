@@ -205,16 +205,6 @@ void nylium::loadCharSequences(FileInterface* fInterface){
     text->log();
 }
 
-/*
-CharSequence* Text::read(size_t* read_pos){
-    if ((*read_pos) < this->size()){
-        return this->at((*read_pos)++);
-    }else{
-        CharSequence* last_element = this->back();
-        return new EndIndicator(std::string(""), last_element->line, last_element->coloumn + last_element->length);
-    }
-}*/
-
 void SequenceLine::push(CharSequence* in, Text* text){
     switch(in->type){
         case CharSequenceType::END:
@@ -251,7 +241,14 @@ void SequenceLine::push(CharSequence* in, Text* text){
                     switch(parent->f_stype){
                         case ScopeListType::INITIALIZER_LIST:
                         {
-                            LS002::throwError(in, text->f_interface);
+                            if (parent->f_contents.size() == 1){
+                                parent->f_stype = ScopeListType::SCOPE;
+                                SequenceLine* line = new SequenceLine(parent);
+                                parent->f_contents.push_back(line);
+                                text->f_current_target = line;
+                            }else{
+                                LS002::throwError(in, text->f_interface);
+                            }
                             return;
                         }
                         case ScopeListType::SINGLE:
