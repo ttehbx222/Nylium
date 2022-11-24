@@ -20,4 +20,5 @@ using namespace nylium;
 void nylium::CB001::throwError(CharSequence* seq, FileInterface* fInterface){
     std::string message = std::string("unexpected character(s) \"") + ANSI::YELLOW + seq->chars + ANSI::RED + "\"";
     new CompileError(fInterface, seq, message, ERROR_CODE::CB001);
+    throw seq;
 }

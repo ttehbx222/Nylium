@@ -20,6 +20,9 @@
 #include "0_CharSequences.hpp"
 
 #include "../../error_handling/errors/CB001.hpp"
+#include "../../error_handling/errors/CB002.hpp"
+#include "../../error_handling/errors/CB003.hpp"
+#include "../../error_handling/errors/CB004.hpp"
 #include "../../error_handling/errors/CB005.hpp"
 
 #include "../../../log/logger.hpp"
@@ -98,11 +101,14 @@ namespace builder{
                 case ElementType::SEQUENCE:
                 {
                     if (seq->type == CharSequenceType::END){
-                        //ERROR
+                        CB004::throwError(seq, text->f_interface);
+                        return;
                     }
                     if (seq->type != CharSequenceType::NAME){
-                        //ERROR
+                        CB001::throwError(seq, text->f_interface);
+                        return;
                     }
+                    //TODO
                 }
             }
         }
