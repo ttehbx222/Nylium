@@ -34,38 +34,8 @@
 
 using namespace nylium;
 
-struct BodyMatcher{
-    virtual Scope* next(Scope* scope, Text* text, size_t* read_pos) = 0;
-};
-
-struct MainBodyMatcher : public BodyMatcher {
-    SCOPE next(SCOPE scope, Text* text, size_t* read_pos){
-        return nullptr;
-    }
-};
-
-struct FunctionBodyMatcher : public BodyMatcher {
-    SCOPE next(SCOPE scope, Text* text, size_t* read_pos){
-        return nullptr;
-    }
-};
-
-MainBodyMatcher* mainBM = new MainBodyMatcher();
-FunctionBodyMatcher* funcBM = new FunctionBodyMatcher();
-
-BodyMatcher* bodyMatcherByLevel(SCOPE_LAYER layer){
-    switch(layer){
-        case SCOPE_LAYER::MAIN: 
-        case SCOPE_LAYER::CLASS:
-            return mainBM;
-        case SCOPE_LAYER::FUNCTION:
-            return funcBM;
-    }
-    return mainBM;
-}
-
 namespace builder{
-    Scope* buildMainScope(Scope* scope, Text* text);
+    Scope* buildStart(Scope* scope, Text* text, size_t* read_pos);
     namespace declaration{
         Scope* buildDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos);
         Scope* buildNamespaceDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos);
@@ -85,12 +55,13 @@ void nylium::loadBodies(FileInterface* fInterface){
         for (Scope* scope : toBeLoaded){
             for (SequenceLine* line : scope->f_text_code->f_contents){
                 Scope* newScope = nullptr;
+                size_t read_pos = 0;
                 try{
                     switch(scope->f_layer){
                         case SCOPE_LAYER::MAIN:
                         {
                             text->f_current_target = line;
-                            newScope = builder::buildMainScope(scope, text);
+                            newScope = builder::buildStart(scope, text, &read_pos);
                             break;
                         }
                     }
@@ -112,9 +83,122 @@ std::vector<std::string>& operation_keywords = operationKeywords();
 
 namespace builder{
 
-    Scope* buildMainScope(Scope* scope, Text* text){
-        size_t read_pos = 0;
-        return declaration::buildDeclaration(scope, text, new DeclarationAttributes(), &read_pos);
+    Scope* builder::buildStart(Scope* scope, Text* text, size_t* read_pos){
+        SequenceLine* element = text->f_current_target->read(read_pos);
+        CharSequence* seq = element->f_sequence;
+        switch(element->elementType()){
+            case ElementType::BRACKET:
+            {
+                CB001::throwError(seq, text->f_interface);
+                return nullptr;
+            }
+            case ElementType::SCOPE:
+            {
+                CB005::throwError(seq, text->f_interface);
+                return nullptr;
+            }
+            case ElementType::SEQUENCE:
+            {
+                if (seq->type == CharSequenceType::END){ // check for importance
+                    CB004::throwError(seq, text->f_interface);
+                    return nullptr;
+                }
+                if (seq->type != CharSequenceType::NAME){
+                    CB001::throwError(seq, text->f_interface);
+                    return nullptr;
+                }
+                if (seq->chars == "public"){
+                    DeclarationAttributes* attributes = new DeclarationAttributes();
+                    if (attributes->f_visibility != Visibility::DEFAULT){
+                        CB003::throwError(seq, text->f_interface);
+                        return nullptr;
+                    }
+                    attributes->f_visibility = Visibility::PUBLIC;
+                    return declaration::buildDeclaration(scope, text, attributes, read_pos);
+                }
+                if (seq->chars == "protected"){
+                    DeclarationAttributes* attributes = new DeclarationAttributes();
+                    if (attributes->f_visibility != Visibility::DEFAULT){
+                        CB003::throwError(seq, text->f_interface);
+                        return nullptr;
+                    }
+                    attributes->f_visibility = Visibility::PROTECTED;
+                    return declaration::buildDeclaration(scope, text, attributes, read_pos);
+                }
+                if (seq->chars == "private"){
+                    DeclarationAttributes* attributes = new DeclarationAttributes();
+                    if (attributes->f_visibility != Visibility::DEFAULT){
+                        CB003::throwError(seq, text->f_interface);
+                        return nullptr;
+                    }
+                    attributes->f_visibility = Visibility::PRIVATE;
+                    return declaration::buildDeclaration(scope, text, attributes, read_pos);
+                }
+                if (seq->chars == "static"){
+                    DeclarationAttributes* attributes = new DeclarationAttributes();
+                    if (attributes->f_static != Boolean::DEFAULT){
+                        CB002::throwError(seq, text->f_interface);
+                        return nullptr;
+                    }
+                    attributes->f_static = Boolean::TRUE;
+                    return declaration::buildDeclaration(scope, text, attributes, read_pos);
+                }
+                if (seq->chars == "final"){
+                    DeclarationAttributes* attributes = new DeclarationAttributes();
+                    if (attributes->f_final != Boolean::DEFAULT){
+                        CB002::throwError(seq, text->f_interface);
+                        return nullptr;
+                    }
+                    attributes->f_final = Boolean::TRUE;
+                    return declaration::buildDeclaration(scope, text, attributes, read_pos);
+                }
+                if (seq->chars == "class" && ((int)scope->f_layer & ((int)SCOPE_LAYER::CLASS | (int)SCOPE_LAYER::MAIN))){
+                    DeclarationAttributes* attributes = new DeclarationAttributes();
+                    if (attributes->f_static == Boolean::TRUE){
+                        warn("\"static class\" is identical to \"namespace\"", seq, text->f_interface);
+                        if (attributes->f_final == Boolean::TRUE){
+                            warn("\"final\" has no effect on namespaces", seq, text->f_interface);
+                        }
+                        attributes->f_dtype = DeclarationType::NAMESPACE;
+                        return declaration::buildNamespaceDeclaration(scope, text, attributes, read_pos);
+                    }
+                    attributes->f_dtype = DeclarationType::CLASS;
+                    //TODO return buildTypeDeclaration
+                }
+                if (seq->chars == "struct" && ((int)scope->f_layer & ((int)SCOPE_LAYER::CLASS | (int)SCOPE_LAYER::MAIN))){
+                    DeclarationAttributes* attributes = new DeclarationAttributes();
+                    if (attributes->f_static == Boolean::TRUE){
+                        CB007::throwError(seq, text->f_interface);
+                        return nullptr;
+                    }
+                    attributes->f_dtype = DeclarationType::STRUCT;
+                    //TODO return buildTypeDeclaration
+                }
+                /*if (seq->chars == "enum"){
+                    attributes->f_dtype = DeclarationType::ENUM;
+                    //TODO return buildTypeDeclaration
+                }*/ //not implemented yet
+                if (seq->chars == "namespace" && ((int)scope->f_layer & (int)SCOPE_LAYER::MAIN)){
+                    DeclarationAttributes* attributes = new DeclarationAttributes();
+                    if (attributes->f_static == Boolean::TRUE){
+                        warn("\"static\" has no effect on namespaces", seq, text->f_interface);
+                    }
+                    if (attributes->f_final == Boolean::TRUE){
+                        warn("\"final\" has no effect on namespaces", seq, text->f_interface);
+                    }
+                    attributes->f_dtype = DeclarationType::NAMESPACE;
+                    return declaration::buildNamespaceDeclaration(scope, text, attributes, read_pos);
+                }
+
+                //TODO return buildFieldOrOperationOrFunctionDeclaration
+                
+                /*DeclarationAttributes* attributes = new DeclarationAttributes();
+                if (attributes->f_static == Boolean::TRUE && (int)scope->f_layer & (int)SCOPE_LAYER::MAIN){
+                    warn("Declaration must already be static", seq, text->f_interface);
+                }*/
+            }
+        }
+        return nullptr;
     }
 
     namespace declaration{
@@ -221,7 +305,7 @@ namespace builder{
                         CB006::throwError(seq, text->f_interface);
                         return nullptr;
                     }
-                    if (attributes->f_static == Boolean::TRUE && scope->f_layer == SCOPE_LAYER::MAIN){
+                    if (attributes->f_static == Boolean::TRUE && (int)scope->f_layer & (int)SCOPE_LAYER::MAIN){
                         warn("Declaration must already be static", seq, text->f_interface);
                     }
                     //TODO return buildFieldOrFunctionDeclaration
@@ -271,7 +355,7 @@ namespace builder{
                         return nullptr;
                     }
                     Namespace* namespace_decl = new Namespace(namespace_name, (SequenceScope*)element, attributes, scope);
-                    scope->addDeclaration(namespace_decl); //check for importance
+                    scope->addDeclaration(namespace_decl);
                     return namespace_decl;
                 }
             }

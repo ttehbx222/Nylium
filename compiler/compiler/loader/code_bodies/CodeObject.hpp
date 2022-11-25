@@ -21,9 +21,10 @@ namespace nylium{
 	};
 
     enum class SCOPE_LAYER{
-		MAIN,
-		CLASS,
-		FUNCTION
+		MAIN = 0x1,
+		CLASS = 0x2,
+		FUNCTION = 0x4,
+		UNKNOWN = 0x7
 	};
 
     struct Text;
