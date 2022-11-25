@@ -19,11 +19,11 @@
 #include "../../loader/character_sequences/NyliumCharSequence.hpp"
 
 namespace nylium{
-    namespace CB005{
+    namespace CB008{
         void throwError(CharSequence* seq, FileInterface* fInterface){
-                std::string message = "missing declaration attributes";
-                new CompileError(fInterface, seq, message, ERROR_CODE::CB005);
-                throw seq;
+                std::string message = std::string("unnamed namespace");
+                new CompileError(fInterface, seq, message, ERROR_CODE::CB008);
+                //intentionally not throwing
         }
     }
 }

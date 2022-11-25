@@ -21,8 +21,9 @@
 namespace nylium{
     namespace CB003{
         void throwError(CharSequence* seq, FileInterface* fInterface){
-                std::string message = std::string("repeated definition of visibility \"") + ANSI::YELLOW + seq->chars + ANSI::RED + "\"";
+                std::string message = std::string("repeated definition of visibility");
                 new CompileError(fInterface, seq, message, ERROR_CODE::CB003);
+                throw seq;
         }
     }
 }

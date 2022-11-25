@@ -21,8 +21,9 @@
 namespace nylium{
     namespace CB002{
         void throwError(CharSequence* seq, FileInterface* fInterface){
-                std::string message = std::string(": repeated use of keyword \"") + ANSI::YELLOW + seq->chars + ANSI::RED + "\"";
+                std::string message = std::string("repeated use of keyword \"") + ANSI::YELLOW + seq->chars + ANSI::RED + "\"";
                 new CompileError(fInterface, seq, message, ERROR_CODE::CB002);
+                throw seq;
         }
     }
 }

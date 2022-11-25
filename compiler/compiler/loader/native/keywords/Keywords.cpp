@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissionsand
  * limitations under the License.
  */
-#pragma once
+#include "Keywords.hpp"
 
-#include "../CompileError.hpp"
-#include "../../loader/character_sequences/NyliumCharSequence.hpp"
+std::vector<std::string> keywords = {"namespace", "class", "struct", "enum", "public", "private", "protected", "static", "final", "if", "while", "for", "instanceof"};
+std::vector<std::string> op_keywords = {"if", "while", "for", "instanceof"};
 
-namespace nylium{
-    namespace CB005{
-        void throwError(CharSequence* seq, FileInterface* fInterface){
-                std::string message = "missing declaration attributes";
-                new CompileError(fInterface, seq, message, ERROR_CODE::CB005);
-                throw seq;
-        }
-    }
+std::vector<std::string>& nylium::allKeywords(){
+    return keywords;
+}
+
+std::vector<std::string>& nylium::operationKeywords(){
+    return op_keywords;
 }

@@ -19,10 +19,10 @@
 #include "../../loader/character_sequences/NyliumCharSequence.hpp"
 
 namespace nylium{
-    namespace CB005{
+    namespace CB007{
         void throwError(CharSequence* seq, FileInterface* fInterface){
-                std::string message = "missing declaration attributes";
-                new CompileError(fInterface, seq, message, ERROR_CODE::CB005);
+                std::string message = std::string("static structs do not exist");
+                new CompileError(fInterface, seq, message, ERROR_CODE::CB007);
                 throw seq;
         }
     }

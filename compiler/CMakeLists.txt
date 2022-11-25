@@ -17,6 +17,7 @@ add_executable(NyliumCompiler "nylium.cpp"
 #compiler.loader.load_iterations
 "compiler/loader/load_iterations/0_CharSequences.cpp" "compiler/loader/load_iterations/1_CodeBodies.cpp" "compiler/loader/load_iterations/2_InternalLinking.cpp"
 #compiler.loader.native.keywords
+"compiler/loader/native/keywords/Keywords.cpp"
 #compiler.loader.native.types
 #compiler.loader.project
 "compiler/loader/project/Interface.cpp" "compiler/loader/project/Project.cpp"

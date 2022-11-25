@@ -44,6 +44,7 @@ namespace nylium{
 
     struct Element{
         CharSequence* f_sequence;
+        CharSequence* f_end_sequence;
         virtual ElementType elementType() = 0;
     };
 
@@ -58,6 +59,7 @@ namespace nylium{
 
         CharSequence(std::string& content, size_t line_number, size_t coloumn, CharSequenceType type){
             f_sequence = this;
+            f_end_sequence = this;
             chars = content;
             line = line_number;
             this->coloumn = coloumn;

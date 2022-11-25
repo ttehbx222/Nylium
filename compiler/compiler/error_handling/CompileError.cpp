@@ -92,3 +92,7 @@ nylium::CompileError::CompileError(FileInterface* file, CharSequence* location, 
 void nylium::CompileError::print(){
     nlog::log(nlog::LOGLEVEL::ERROR, console_message, file_message);
 }
+
+void nylium::warn(const char* message, CharSequence* seq, FileInterface* fInterface){
+    nlog::log(nlog::LOGLEVEL::WARNING, std::string(message) + " [" + fInterface->file->path() + "(" + std::to_string(seq->line) + ":" + std::to_string(seq->coloumn) + ")]");
+}

@@ -15,15 +15,12 @@
  */
 #pragma once
 
-#include "../CompileError.hpp"
-#include "../../loader/character_sequences/NyliumCharSequence.hpp"
+#include <vector>
+#include <string>
 
 namespace nylium{
-    namespace CB005{
-        void throwError(CharSequence* seq, FileInterface* fInterface){
-                std::string message = "missing declaration attributes";
-                new CompileError(fInterface, seq, message, ERROR_CODE::CB005);
-                throw seq;
-        }
-    }
+
+    std::vector<std::string>& allKeywords();
+    std::vector<std::string>& operationKeywords();
+
 }

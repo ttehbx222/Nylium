@@ -35,7 +35,7 @@ namespace nylium{
 		    FileInterface* f_parent_interface;
 	    	std::vector<CODE> f_code;
 
-			SequenceScope* text_code;
+			SequenceScope* f_text_code;
 
 			Scope(){}
 	    	Scope(Scope* scope);

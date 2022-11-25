@@ -190,11 +190,13 @@ void nylium::loadCharSequences(FileInterface* fInterface){
                     LS007::throwError(last, text->f_interface, ";}");
                 }
                 text->f_current_target = (SequenceLine*)parent->f_parent;
+                parent->f_end_sequence = last;
                 break;
             }
             case ElementType::BRACKET:
             {
                 LS007::throwError(last, text->f_interface, ")");
+                text->f_current_target->f_parent->f_end_sequence = last;
                 text->f_current_target = (SequenceLine*)text->f_current_target->f_parent->f_parent;
             }
         }
@@ -292,6 +294,7 @@ void SequenceLine::push(CharSequence* in, Text* text){
                         ((SequenceBracket*)f_parent)->f_contents.pop_back();
                     }
                     text->f_current_target = (SequenceLine*)f_parent->f_parent;
+                    f_parent->f_end_sequence = in;
                     return;
                 }
                 case '{':
@@ -347,6 +350,7 @@ void SequenceLine::push(CharSequence* in, Text* text){
                             text->f_current_target = line;
                             text->f_scope.f_contents.push_back(line);
                         }
+                        parent->f_end_sequence = in;
                         return;
                     }
 

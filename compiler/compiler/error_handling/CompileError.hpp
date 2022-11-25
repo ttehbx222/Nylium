@@ -33,6 +33,9 @@ namespace nylium{
         CB003, //visibility multi-declaration
         CB004, //unexpected end of declaration
         CB005, //missing declaration attributes
+        CB006, //unexpected keyword
+        CB007, //static struct
+        CB008, //unnamed namespace
     };
 
     struct FileInterface;
@@ -47,5 +50,6 @@ namespace nylium{
         CompileError(FileInterface* file, CharSequence* location, std::string& message, ERROR_CODE code);
         void print();
     };
+    void warn(const char* message, CharSequence* seq, FileInterface* fInterface);
 
 }

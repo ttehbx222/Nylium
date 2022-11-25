@@ -15,15 +15,19 @@
  */
 #include "1_CodeBodies.hpp"
 
-#include "../code_bodies/compilable/Scope.hpp"
+#include "../code_bodies/compilable/NamespaceDeclaration.hpp"
 #include "../character_sequences/NyliumCharSequence.hpp"
 #include "0_CharSequences.hpp"
+#include "../native/keywords/Keywords.hpp"
 
 #include "../../error_handling/errors/CB001.hpp"
 #include "../../error_handling/errors/CB002.hpp"
 #include "../../error_handling/errors/CB003.hpp"
 #include "../../error_handling/errors/CB004.hpp"
 #include "../../error_handling/errors/CB005.hpp"
+#include "../../error_handling/errors/CB006.hpp"
+#include "../../error_handling/errors/CB007.hpp"
+#include "../../error_handling/errors/CB008.hpp"
 
 #include "../../../log/logger.hpp"
 
@@ -63,6 +67,7 @@ namespace builder{
     Scope* buildMainScope(Scope* scope, Text* text);
     namespace declaration{
         Scope* buildDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos);
+        Scope* buildNamespaceDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos);
     }
 }
 
@@ -71,9 +76,12 @@ void nylium::loadBodies(FileInterface* fInterface){
     Text* text = fInterface->f_text;
 
     text->f_current_target = text->f_scope.f_contents.front();
-    fInterface->main_scope->text_code = &(text->f_scope);
+    fInterface->main_scope->f_text_code = &(text->f_scope);
     //TODO
 }
+
+std::vector<std::string>& keywords = allKeywords();
+std::vector<std::string>& operation_keywords = operationKeywords();
 
 namespace builder{
 
@@ -91,26 +99,145 @@ namespace builder{
                 case ElementType::BRACKET:
                 {
                     CB001::throwError(seq, text->f_interface);
-                    return;
+                    return nullptr;
                 }
                 case ElementType::SCOPE:
                 {
                     CB005::throwError(seq, text->f_interface);
-                    return;
+                    return nullptr;
                 }
                 case ElementType::SEQUENCE:
                 {
-                    if (seq->type == CharSequenceType::END){
+                    if (seq->type == CharSequenceType::END){ // check for importance
                         CB004::throwError(seq, text->f_interface);
-                        return;
+                        return nullptr;
                     }
                     if (seq->type != CharSequenceType::NAME){
                         CB001::throwError(seq, text->f_interface);
-                        return;
+                        return nullptr;
                     }
-                    //TODO
+                    if (seq->chars == "public"){
+                        if (attributes->f_visibility != Visibility::DEFAULT){
+                            CB003::throwError(seq, text->f_interface);
+                            return nullptr;
+                        }
+                        attributes->f_visibility = Visibility::PUBLIC;
+                        return buildDeclaration(scope, text, attributes, read_pos);
+                    }
+                    if (seq->chars == "protected"){
+                        if (attributes->f_visibility != Visibility::DEFAULT){
+                            CB003::throwError(seq, text->f_interface);
+                            return nullptr;
+                        }
+                        attributes->f_visibility = Visibility::PROTECTED;
+                        return buildDeclaration(scope, text, attributes, read_pos);
+                    }
+                    if (seq->chars == "private"){
+                        if (attributes->f_visibility != Visibility::DEFAULT){
+                            CB003::throwError(seq, text->f_interface);
+                            return nullptr;
+                        }
+                        attributes->f_visibility = Visibility::PRIVATE;
+                        return buildDeclaration(scope, text, attributes, read_pos);
+                    }
+                    if (seq->chars == "static"){
+                        if (attributes->f_static != Boolean::DEFAULT){
+                            CB002::throwError(seq, text->f_interface);
+                            return nullptr;
+                        }
+                        attributes->f_static = Boolean::TRUE;
+                        return buildDeclaration(scope, text, attributes, read_pos);
+                    }
+                    if (seq->chars == "final"){
+                        if (attributes->f_final != Boolean::DEFAULT){
+                            CB002::throwError(seq, text->f_interface);
+                            return nullptr;
+                        }
+                        attributes->f_final = Boolean::TRUE;
+                        return buildDeclaration(scope, text, attributes, read_pos);
+                    }
+                    if (seq->chars == "class"){
+                        if (attributes->f_static == Boolean::TRUE){
+                            warn("\"static class\" is identical to \"namespace\"", seq, text->f_interface);
+                            if (attributes->f_final == Boolean::TRUE){
+                                warn("\"final\" has no effect on namespaces", seq, text->f_interface);
+                            }
+                            attributes->f_dtype = DeclarationType::NAMESPACE;
+                            return buildNamespaceDeclaration(scope, text, attributes, read_pos);
+                        }
+                        attributes->f_dtype = DeclarationType::CLASS;
+                        //TODO return buildTypeDeclaration
+                    }
+                    if (seq->chars == "struct"){
+                        if (attributes->f_static == Boolean::TRUE){
+                            CB007::throwError(seq, text->f_interface);
+                            return nullptr;
+                        }
+                        attributes->f_dtype = DeclarationType::STRUCT;
+                        //TODO return buildTypeDeclaration
+                    }
+                    /*if (seq->chars == "enum"){
+                        attributes->f_dtype = DeclarationType::ENUM;
+                        //TODO return buildTypeDeclaration
+                    }*/ //not implemented yet
+                    if (seq->chars == "namespace"){
+                        if (attributes->f_static == Boolean::TRUE){
+                            warn("\"static\" has no effect on namespaces", seq, text->f_interface);
+                        }
+                        if (attributes->f_final == Boolean::TRUE){
+                            warn("\"final\" has no effect on namespaces", seq, text->f_interface);
+                        }
+                        attributes->f_dtype = DeclarationType::NAMESPACE;
+                        return buildNamespaceDeclaration(scope, text, attributes, read_pos);
+                    }
+                    if (std::find(operation_keywords.begin(), operation_keywords.end(), seq->chars) != operation_keywords.end()){
+                        CB006::throwError(seq, text->f_interface);
+                        return nullptr;
+                    }
+                    if (attributes->f_static == Boolean::TRUE && scope->f_layer == SCOPE_LAYER::MAIN){
+                        warn("Declaration must already be static", seq, text->f_interface);
+                    }
+                    //TODO return buildFieldOrFunctionDeclaration
                 }
             }
+            return nullptr; //compiler reasons
+        }
+
+        Scope* declaration::buildNamespaceDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos){
+            Element* element = text->f_current_target->read(read_pos);
+            CharSequence* seq = element->f_sequence;
+            switch(element->elementType()){
+                case ElementType::BRACKET:
+                {
+                    CB001::throwError(seq, text->f_interface);
+                    return nullptr;
+                }
+                case ElementType::SCOPE:
+                {
+                    CB008::throwError(seq, text->f_interface);
+                    Namespace* namespace_decl = new Namespace(std::string("$unnamed_namespace"), (SequenceScope*)element, attributes, scope);
+                    //scope->addDeclaration(namespace_decl); //check for importance
+                    return namespace_decl;
+                }
+                case ElementType::SEQUENCE:
+                {
+                    if (seq->type == CharSequenceType::END){ // check for importance
+                        CB004::throwError(seq, text->f_interface);
+                        return nullptr;
+                    }
+                    if (seq->type != CharSequenceType::NAME){
+                        CB001::throwError(seq, text->f_interface);
+                        return nullptr;
+                    }
+                    if (std::find(keywords.begin(), keywords.end(), seq->chars) != keywords.end()){
+                        CB006::throwError(seq, text->f_interface);
+                        return nullptr;
+                    }
+                    std::string namespace_name = seq->chars;
+                    //TODO read_next
+                }
+            }
+            return nullptr; //compiler reasons
         }
 
     }
