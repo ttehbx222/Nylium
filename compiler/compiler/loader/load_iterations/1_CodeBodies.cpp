@@ -120,7 +120,7 @@ namespace builder{
     namespace declaration{
 
         Scope* declaration::buildDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos){
-            Element* element = text->f_current_target->read(read_pos);
+            SequenceLine* element = text->f_current_target->read(read_pos);
             CharSequence* seq = element->f_sequence;
             switch(element->elementType()){
                 case ElementType::BRACKET:
@@ -231,7 +231,7 @@ namespace builder{
         }
 
         Scope* declaration::buildNamespaceDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos){
-            Element* element = text->f_current_target->read(read_pos);
+            SequenceLine* element = text->f_current_target->read(read_pos);
             CharSequence* seq = element->f_sequence;
             switch(element->elementType()){
                 case ElementType::BRACKET:

@@ -26,7 +26,7 @@ namespace nylium{
         std::vector<Element*> f_elements;
 
         inline SequenceLine(ContainerElement* parent) { f_parent = parent; }
-        inline Element* read(size_t* read_pos) { return f_elements.size() > (*read_pos) ? f_elements.at((*read_pos)++) : new EndIndicator(std::string(""), f_elements.back()->f_end_sequence->line, f_elements.back()->f_end_sequence->coloumn); }
+        inline SequenceLine* read(size_t* read_pos) { return (SequenceLine*)(f_elements.size() > (*read_pos) ? f_elements.at((*read_pos)++) : new EndIndicator(std::string(""), f_elements.back()->f_end_sequence->line, f_elements.back()->f_end_sequence->coloumn)); }
         
         void push(CharSequence* in, Text* text);
         ElementType elementType() { return ElementType::LINE; }

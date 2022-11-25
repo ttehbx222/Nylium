@@ -1,3 +1,9 @@
-namespace namespace{
-	
+namespace potato{
+	namespace gratin{
+		oven;
+	}
+	namespace {
+	}
+	namespace if{
+	}
 }
