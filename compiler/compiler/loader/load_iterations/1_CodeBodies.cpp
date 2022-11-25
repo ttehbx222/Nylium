@@ -28,6 +28,7 @@
 #include "../../error_handling/errors/CB006.hpp"
 #include "../../error_handling/errors/CB007.hpp"
 #include "../../error_handling/errors/CB008.hpp"
+#include "../../error_handling/errors/CB009.hpp"
 
 #include "../../../log/logger.hpp"
 
@@ -75,9 +76,35 @@ void nylium::loadBodies(FileInterface* fInterface){
     nlog::log(nlog::LOGLEVEL::INFO, fInterface->name + ".nylium");
     Text* text = fInterface->f_text;
 
-    text->f_current_target = text->f_scope.f_contents.front();
     fInterface->main_scope->f_text_code = &(text->f_scope);
-    //TODO
+
+    std::vector<Scope*> toBeLoaded = {fInterface->main_scope};
+    std::vector<Scope*> newToBeLoaded;
+
+    while(!toBeLoaded.empty()){
+        for (Scope* scope : toBeLoaded){
+            for (SequenceLine* line : scope->f_text_code->f_contents){
+                Scope* newScope = nullptr;
+                try{
+                    switch(scope->f_layer){
+                        case SCOPE_LAYER::MAIN:
+                        {
+                            text->f_current_target = line;
+                            newScope = builder::buildMainScope(scope, text);
+                            break;
+                        }
+                    }
+                }catch(CharSequence* seq){
+
+                }
+                if (newScope){
+                    newToBeLoaded.push_back(newScope);
+                }
+            }
+        }
+        toBeLoaded = newToBeLoaded;
+        newToBeLoaded.clear();
+    }
 }
 
 std::vector<std::string>& keywords = allKeywords();
@@ -215,9 +242,7 @@ namespace builder{
                 case ElementType::SCOPE:
                 {
                     CB008::throwError(seq, text->f_interface);
-                    Namespace* namespace_decl = new Namespace(std::string("$unnamed_namespace"), (SequenceScope*)element, attributes, scope);
-                    //scope->addDeclaration(namespace_decl); //check for importance
-                    return namespace_decl;
+                    return nullptr;
                 }
                 case ElementType::SEQUENCE:
                 {
@@ -234,7 +259,20 @@ namespace builder{
                         return nullptr;
                     }
                     std::string namespace_name = seq->chars;
-                    //TODO read_next
+
+                    element = text->f_current_target->read(read_pos);
+                    seq = element->f_sequence;
+                    if (element->elementType() != ElementType::SCOPE){
+                        CB001::throwError(seq, text->f_interface);
+                        return nullptr;
+                    }
+                    if (((SequenceScope*)element)->f_stype == ScopeListType::INITIALIZER_LIST){
+                        CB009::throwError(seq, text->f_interface);
+                        return nullptr;
+                    }
+                    Namespace* namespace_decl = new Namespace(namespace_name, (SequenceScope*)element, attributes, scope);
+                    scope->addDeclaration(namespace_decl); //check for importance
+                    return namespace_decl;
                 }
             }
             return nullptr; //compiler reasons

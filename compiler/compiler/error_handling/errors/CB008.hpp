@@ -23,7 +23,7 @@ namespace nylium{
         void throwError(CharSequence* seq, FileInterface* fInterface){
                 std::string message = std::string("unnamed namespace");
                 new CompileError(fInterface, seq, message, ERROR_CODE::CB008);
-                //intentionally not throwing
+                throw seq;
         }
     }
 }

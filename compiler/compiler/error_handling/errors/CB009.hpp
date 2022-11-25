@@ -15,12 +15,15 @@
  */
 #pragma once
 
-#include "FieldDeclaration.hpp"
+#include "../CompileError.hpp"
+#include "../../loader/character_sequences/NyliumCharSequence.hpp"
 
 namespace nylium{
-
-    struct ReferenceDeclaration : public FieldDeclaration { //check for importance
-        FieldDeclaration* f_source;
-    };
-
+    namespace CB009{
+        void throwError(CharSequence* seq, FileInterface* fInterface){
+                std::string message = std::string("unexpected initializer list");
+                new CompileError(fInterface, seq, message, ERROR_CODE::CB009);
+                throw seq;
+        }
+    }
 }

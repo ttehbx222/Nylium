@@ -85,6 +85,9 @@ void processLine(FileInterface* fInterface, Text* text, std::string line, size_t
         }
         if (group == -1){
             size_t error_size = line.find_first_of(first_chars);
+            if (error_size == std::string::npos){
+                error_size = line.length();
+            }
             new IllegalCharSequence(line.substr(0,error_size), line_number, coloumn, fInterface);
             line = line.substr(error_size, line.length() - error_size);
             coloumn += error_size;
@@ -172,6 +175,20 @@ void nylium::loadCharSequences(FileInterface* fInterface){
     while (std::getline(istream, line)){
         line_number++;
         processLine(fInterface, text, line, line_number, &last);
+    }
+
+    if (text->f_current_target->f_elements.empty()){
+        switch(text->f_current_target->f_parent->elementType()){
+        case ElementType::SCOPE:
+        {
+            ((SequenceScope*)text->f_current_target->f_parent)->f_contents.pop_back();
+            break;
+        }
+        case ElementType::BRACKET:
+        {
+            ((SequenceBracket*)text->f_current_target->f_parent)->f_contents.pop_back();
+        }
+        }
     }
 
     while(text->f_current_target->f_parent != &(text->f_scope)){
@@ -331,8 +348,7 @@ void SequenceLine::push(CharSequence* in, Text* text){
                         case ScopeListType::SCOPE:
                         {
                             if (f_elements.empty()){
-                                ((SequenceScope*)f_parent)->f_contents.pop_back();
-                                
+                                ((SequenceScope*)f_parent)->f_contents.pop_back();  
                             }else if(f_elements.back()->elementType() == ElementType::SCOPE && ((SequenceScope*)f_elements.back())->f_stype == ScopeListType::SCOPE){
                                 //no error, rewrite if statement //unreachable
                             }else{

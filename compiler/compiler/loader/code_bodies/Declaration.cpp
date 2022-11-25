@@ -20,9 +20,4 @@
 #include "compilable/Scope.hpp"
 #include "compilable/FunctionDeclaration.hpp"
 
-#include "../../error_handling/errors/CB001.hpp"
-#include "../../error_handling/errors/CB002.hpp"
-#include "../../error_handling/errors/CB003.hpp"
-#include "../../error_handling/errors/CB004.hpp"
-
 using namespace nylium;

@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissionsand
  * limitations under the License.
  */
-#pragma once
+#include "NamespaceDeclaration.hpp"
+#include "../../../../log/logger.hpp"
 
-#include "FieldDeclaration.hpp"
+using namespace nylium;
 
-namespace nylium{
-
-    struct ReferenceDeclaration : public FieldDeclaration { //check for importance
-        FieldDeclaration* f_source;
-    };
-
+Namespace::Namespace(std::string& name, SequenceScope* text_code, DeclarationAttributes* attributes, Scope* scope){
+    this->f_parent = scope;
+    this->f_parent_interface = scope->f_parent_interface;
+    this->f_attributes = attributes;
+    this->f_key = name;
+    this->f_text_code = text_code;
+    nlog::log(nlog::LOGLEVEL::DEBUG_0, std::string("namespace ") + name);
 }

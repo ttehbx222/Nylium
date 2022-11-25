@@ -36,6 +36,8 @@ namespace nylium{
         CB006, //unexpected keyword
         CB007, //static struct
         CB008, //unnamed namespace
+        CB009, //unexpected initializer list
+        CB010,
     };
 
     struct FileInterface;

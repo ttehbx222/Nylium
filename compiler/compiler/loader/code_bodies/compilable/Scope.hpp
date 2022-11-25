@@ -44,7 +44,7 @@ namespace nylium{
 	    	inline std::vector<CODE>& code() { return f_code; }
 	    	Visibility visibilityOf(Scope* scope);
 	      	Declaration* searchDeclaration(PendingDeclaration* decl);
-	    	bool addDeclaration(Declaration* decl);
+	    	void addDeclaration(Declaration* decl) {} //TODO
 	};
 
     typedef Scope* SCOPE;

@@ -79,6 +79,26 @@ nylium::CompileError::CompileError(FileInterface* file, CharSequence* location, 
             error_code_str = "CB005: ";
             break;
         }
+        case ERROR_CODE::CB006:{
+            error_code_str = "CB006: ";
+            break;
+        }
+        case ERROR_CODE::CB007:{
+            error_code_str = "CB007: ";
+            break;
+        }
+        case ERROR_CODE::CB008:{
+            error_code_str = "CB008: ";
+            break;
+        }
+        case ERROR_CODE::CB009:{
+            error_code_str = "CB009: ";
+            break;
+        }
+        case ERROR_CODE::CB010:{
+            error_code_str = "CB010: ";
+            break;
+        }
     }
 
     console_message = std::string(ANSI::BRIGHT_RED) + error_code_str + ANSI::RED + console_message;
@@ -94,5 +114,5 @@ void nylium::CompileError::print(){
 }
 
 void nylium::warn(const char* message, CharSequence* seq, FileInterface* fInterface){
-    nlog::log(nlog::LOGLEVEL::WARNING, std::string(message) + " [" + fInterface->file->path() + "(" + std::to_string(seq->line) + ":" + std::to_string(seq->coloumn) + ")]");
+    nlog::log(nlog::LOGLEVEL::WARNING, std::string(ANSI::YELLOW) + "WARNING: " + message + " [" + fInterface->file->path() + "(" + std::to_string(seq->line) + ":" + std::to_string(seq->coloumn) + ")]");
 }

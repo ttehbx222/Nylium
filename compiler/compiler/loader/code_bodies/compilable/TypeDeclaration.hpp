@@ -19,7 +19,7 @@
 namespace nylium{
 
     struct TypeDeclaration : public Namespace {
-        TypeDeclaration(){
+        TypeDeclaration(std::string& name, SequenceScope* text_code, DeclarationAttributes* attributes, Scope* scope) : Namespace(name, text_code, attributes, scope) {
             //TODO add default ValueHolder#type convert to Type
         }
     };

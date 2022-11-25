@@ -14,6 +14,7 @@ add_executable(NyliumCompiler "nylium.cpp"
 #compiler.loader.code_bodies
 "compiler/loader/code_bodies/CodeObject.cpp" "compiler/loader/code_bodies/Declaration.cpp" 
 "compiler/loader/code_bodies/compilable/FunctionDeclaration.cpp" "compiler/loader/code_bodies/compilable/FieldDeclaration.cpp"
+"compiler/loader/code_bodies/compilable/NamespaceDeclaration.cpp"
 #compiler.loader.load_iterations
 "compiler/loader/load_iterations/0_CharSequences.cpp" "compiler/loader/load_iterations/1_CodeBodies.cpp" "compiler/loader/load_iterations/2_InternalLinking.cpp"
 #compiler.loader.native.keywords

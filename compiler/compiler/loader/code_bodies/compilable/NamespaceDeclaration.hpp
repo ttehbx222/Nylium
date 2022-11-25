@@ -21,13 +21,7 @@
 namespace nylium{
 
     struct Namespace : public Scope, public PendingDeclaration {
-        inline Namespace(std::string& name, SequenceScope* text_code, DeclarationAttributes* attributes, Scope* scope){
-            this->f_parent = scope;
-            this->f_parent_interface = scope->f_parent_interface;
-            this->f_attributes = attributes;
-            this->f_key = name;
-            this->f_text_code = text_code;
-        }
+        Namespace(std::string& name, SequenceScope* text_code, DeclarationAttributes* attributes, Scope* scope);
     };
 
 }
