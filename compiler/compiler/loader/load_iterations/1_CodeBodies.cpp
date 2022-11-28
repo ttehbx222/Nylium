@@ -41,8 +41,13 @@ namespace builder{
     namespace declaration{
         Scope* buildDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos);
         Scope* buildNamespaceDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos);
-        Scope* buildTypeDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos);
-        Scope* buildFieldOrOperationOrFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, std::string& first_label);
+        Scope* buildTypeDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos); 
+    }
+    namespace misc{
+        Scope* buildFieldOrOperationOrFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, PendingDeclaration* first_label);
+    }
+    namespace operation{
+        Scope* operation::buildOperationArgument(Scope* scope, Text* text, size_t* read_pos, PendingDeclaration* target, std::string& operation);
     }
 }
 
@@ -215,7 +220,7 @@ namespace builder{
 
                 //TODO check for operation keywords
 
-                //TODO return buildFieldOrOperationOrFunctionDeclaration
+                return misc::buildFieldOrOperationOrFunctionDeclaration(scope, text, read_pos, new PendingDeclaration(seq->chars));
                 
                 /*DeclarationAttributes* attributes = new DeclarationAttributes();
                 if (attributes->f_static == Boolean::TRUE && (int)scope->f_layer & (int)SCOPE_LAYER::MAIN){
@@ -330,7 +335,6 @@ namespace builder{
                         attributes->f_dtype = DeclarationType::NAMESPACE;
                         return buildNamespaceDeclaration(scope, text, attributes, read_pos);
                     }
-                    //TODO operation keywords
                     if (std::find(operation_keywords.begin(), operation_keywords.end(), seq->chars) != operation_keywords.end()){
                         CB006::throwError(seq, text->f_interface);
                         return nullptr;
@@ -341,7 +345,7 @@ namespace builder{
                     if (attributes->f_static == Boolean::TRUE && (int)scope->f_layer & (int)SCOPE_LAYER::MAIN){
                         warn("\"static\" has no effect", seq, text->f_interface);
                     }
-                    //TODO return buildFieldOrFunctionDeclaration
+                    return misc::buildFieldOrOperationOrFunctionDeclaration(scope, text, read_pos, new PendingDeclaration(seq->chars));
                 }
             }
             return nullptr; //compiler reasons
@@ -386,7 +390,7 @@ namespace builder{
             return nullptr; //compiler reasons
         }
 
-        Scope* buildTypeDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos){
+        Scope* declaration::buildTypeDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos){
             Element* element = text->f_current_target->read(read_pos);
             CharSequence* seq = element->f_sequence;
 
@@ -424,8 +428,12 @@ namespace builder{
                 }
             }
         }
-    
-        Scope* buildFieldOrOperationOrFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, std::string& first_label){
+
+    }
+
+    namespace misc{
+
+        Scope* misc::buildFieldOrOperationOrFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, PendingDeclaration* first_label){
             Element* element = text->f_current_target->read(read_pos);
             CharSequence* seq = element->f_sequence;
 
@@ -439,16 +447,60 @@ namespace builder{
                 case ElementType::SEQUENCE:
                 {
                     if (seq->type == CharSequenceType::OPERATOR && (int)scope->f_layer & (int)SCOPE_LAYER::FUNCTION){
-                        //TODO return buildOperation
+                        return operation::buildOperationArgument(scope, text, read_pos, first_label, seq->chars);
                     }
                     if (!assertCustomLabels(seq, text)){
                         return nullptr;
                     }
-                    PendingDeclaration* value_type = new PendingDeclaration(first_label);
                     //TODO return buildFieldOrFunctionDeclaration
                 }
             }
         }
+
+    }
+
+    namespace operation{
+
+        Scope* operation::buildOperationArgument(Scope* scope, Text* text, size_t* read_pos, PendingDeclaration* target, std::string& operation){
+            Element* element = text->f_current_target->read(read_pos);
+            CharSequence* seq = element->f_sequence;
+
+            switch(element->elementType()){
+                case ElementType::BRACKET:
+                {
+                    switch(seq->chars[0]){
+                        case '(':
+                        {
+
+                        }
+                        case ')':
+                        {
+
+                        }
+                        default:
+                        {
+
+                        }
+                    }
+                }
+                case ElementType::SCOPE:
+                {
+                    CB001::throwError(seq, text->f_interface);
+                    return nullptr;
+                }
+                case ElementType::SEQUENCE:
+                {
+                    if (seq->type == CharSequenceType::OPERATOR){
+                        return buildOperationArgument(scope, text, read_pos, target, operation + seq->chars);
+                    }
+                    if (!assertCustomLabels(seq, text)){
+                        return nullptr;
+                    }
+                    
+                }
+            }
+        }
+
     }
 
 
