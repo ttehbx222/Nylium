@@ -21,6 +21,17 @@ namespace nylium{
     struct TypeDeclaration : public Namespace {
         TypeDeclaration(std::string& name, SequenceScope* text_code, DeclarationAttributes* attributes, Scope* scope) : Namespace(name, text_code, attributes, scope) {
             //TODO add default ValueHolder#type convert to Type
+            this->f_layer = SCOPE_LAYER::CLASS;
+
+            if (attributes->f_dtype == DeclarationType::CLASS){
+                nlog::log(nlog::LOGLEVEL::DEBUG_0, std::string("class ") + name);
+            }
+            if (attributes->f_dtype == DeclarationType::STRUCT){
+                nlog::log(nlog::LOGLEVEL::DEBUG_0, std::string("struct ") + name);
+            }
+            if (attributes->f_dtype == DeclarationType::ENUM){
+                nlog::log(nlog::LOGLEVEL::DEBUG_0, std::string("enum ") + name);
+            }
         }
     };
 

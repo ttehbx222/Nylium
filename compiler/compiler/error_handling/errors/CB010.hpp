@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissionsand
  * limitations under the License.
  */
-#include "Keywords.hpp"
+#pragma once
 
-std::vector<std::string> keywords = {"import", "namespace", "class", "struct", "enum", "public", "private", "protected", "static", "final", "if", "else", "while", "for", "instanceof"};
-std::vector<std::string> op_keywords = {"if", "else", "while", "for", "instanceof"};
+#include "../CompileError.hpp"
+#include "../../loader/character_sequences/NyliumCharSequence.hpp"
 
-std::vector<std::string>& nylium::allKeywords(){
-    return keywords;
-}
-
-std::vector<std::string>& nylium::operationKeywords(){
-    return op_keywords;
+namespace nylium{
+    namespace CB010{
+        void throwError(CharSequence* seq, FileInterface* fInterface){
+                std::string message = std::string("unnamed type");
+                new CompileError(fInterface, seq, message, ERROR_CODE::CB010);
+                throw seq;
+        }
+    }
 }

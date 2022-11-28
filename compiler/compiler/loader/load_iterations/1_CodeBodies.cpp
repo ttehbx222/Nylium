@@ -15,7 +15,7 @@
  */
 #include "1_CodeBodies.hpp"
 
-#include "../code_bodies/compilable/NamespaceDeclaration.hpp"
+#include "../code_bodies/compilable/TypeDeclaration.hpp"
 #include "../character_sequences/NyliumCharSequence.hpp"
 #include "0_CharSequences.hpp"
 #include "../native/keywords/Keywords.hpp"
@@ -29,6 +29,7 @@
 #include "../../error_handling/errors/CB007.hpp"
 #include "../../error_handling/errors/CB008.hpp"
 #include "../../error_handling/errors/CB009.hpp"
+#include "../../error_handling/errors/CB010.hpp"
 
 #include "../../../log/logger.hpp"
 
@@ -36,9 +37,12 @@ using namespace nylium;
 
 namespace builder{
     Scope* buildStart(Scope* scope, Text* text, size_t* read_pos);
+    void import(Scope* scope, Text* text, size_t* read_pos);
     namespace declaration{
         Scope* buildDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos);
         Scope* buildNamespaceDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos);
+        Scope* buildTypeDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos);
+        Scope* buildFieldOrOperationOrFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, std::string& first_label);
     }
 }
 
@@ -78,6 +82,22 @@ void nylium::loadBodies(FileInterface* fInterface){
     }
 }
 
+bool assertCustomLabels(CharSequence* seq, Text* text){
+    if (seq->type == CharSequenceType::END){ // check for importance
+        CB004::throwError(seq, text->f_interface);
+        return false;
+    }
+    if (seq->type != CharSequenceType::NAME){
+        CB001::throwError(seq, text->f_interface);
+        return false;                    
+    }
+    if (std::find(keywords.begin(), keywords.end(), seq->chars) != keywords.end()){
+        CB006::throwError(seq, text->f_interface);
+        return false;
+    }
+    return true;
+}
+
 std::vector<std::string>& keywords = allKeywords();
 std::vector<std::string>& operation_keywords = operationKeywords();
 
@@ -100,11 +120,14 @@ namespace builder{
             case ElementType::SEQUENCE:
             {
                 if (seq->type == CharSequenceType::END){ // check for importance
-                    CB004::throwError(seq, text->f_interface);
                     return nullptr;
                 }
                 if (seq->type != CharSequenceType::NAME){
                     CB001::throwError(seq, text->f_interface);
+                    return nullptr;
+                }
+                if (text->f_current_target->f_parent == &(text->f_scope) && seq->chars == "import"){
+                    builder::import(scope, text, read_pos);
                     return nullptr;
                 }
                 if (seq->chars == "public"){
@@ -163,7 +186,7 @@ namespace builder{
                         return declaration::buildNamespaceDeclaration(scope, text, attributes, read_pos);
                     }
                     attributes->f_dtype = DeclarationType::CLASS;
-                    //TODO return buildTypeDeclaration
+                    return declaration::buildTypeDeclaration(scope, text, attributes, read_pos);
                 }
                 if (seq->chars == "struct" && ((int)scope->f_layer & ((int)SCOPE_LAYER::CLASS | (int)SCOPE_LAYER::MAIN))){
                     DeclarationAttributes* attributes = new DeclarationAttributes();
@@ -172,11 +195,11 @@ namespace builder{
                         return nullptr;
                     }
                     attributes->f_dtype = DeclarationType::STRUCT;
-                    //TODO return buildTypeDeclaration
+                    return declaration::buildTypeDeclaration(scope, text, attributes, read_pos);
                 }
                 /*if (seq->chars == "enum"){
                     attributes->f_dtype = DeclarationType::ENUM;
-                    //TODO return buildTypeDeclaration
+                    return declaration::buildTypeDeclaration(scope, text, attributes, read_pos);
                 }*/ //not implemented yet
                 if (seq->chars == "namespace" && ((int)scope->f_layer & (int)SCOPE_LAYER::MAIN)){
                     DeclarationAttributes* attributes = new DeclarationAttributes();
@@ -190,6 +213,8 @@ namespace builder{
                     return declaration::buildNamespaceDeclaration(scope, text, attributes, read_pos);
                 }
 
+                //TODO check for operation keywords
+
                 //TODO return buildFieldOrOperationOrFunctionDeclaration
                 
                 /*DeclarationAttributes* attributes = new DeclarationAttributes();
@@ -199,6 +224,10 @@ namespace builder{
             }
         }
         return nullptr;
+    }
+
+    void import(Scope* scope, Text* text, size_t* read_pos){
+        //TODO import
     }
 
     namespace declaration{
@@ -277,7 +306,7 @@ namespace builder{
                             return buildNamespaceDeclaration(scope, text, attributes, read_pos);
                         }
                         attributes->f_dtype = DeclarationType::CLASS;
-                        //TODO return buildTypeDeclaration
+                        return declaration::buildTypeDeclaration(scope, text, attributes, read_pos);
                     }
                     if (seq->chars == "struct"){
                         if (attributes->f_static == Boolean::TRUE){
@@ -285,11 +314,11 @@ namespace builder{
                             return nullptr;
                         }
                         attributes->f_dtype = DeclarationType::STRUCT;
-                        //TODO return buildTypeDeclaration
+                        return declaration::buildTypeDeclaration(scope, text, attributes, read_pos);
                     }
                     /*if (seq->chars == "enum"){
                         attributes->f_dtype = DeclarationType::ENUM;
-                        //TODO return buildTypeDeclaration
+                        return declaration::buildTypeDeclaration(scope, text, attributes, read_pos);
                     }*/ //not implemented yet
                     if (seq->chars == "namespace"){
                         if (attributes->f_static == Boolean::TRUE){
@@ -301,12 +330,16 @@ namespace builder{
                         attributes->f_dtype = DeclarationType::NAMESPACE;
                         return buildNamespaceDeclaration(scope, text, attributes, read_pos);
                     }
+                    //TODO operation keywords
                     if (std::find(operation_keywords.begin(), operation_keywords.end(), seq->chars) != operation_keywords.end()){
                         CB006::throwError(seq, text->f_interface);
                         return nullptr;
                     }
                     if (attributes->f_static == Boolean::TRUE && (int)scope->f_layer & (int)SCOPE_LAYER::MAIN){
-                        warn("Declaration must already be static", seq, text->f_interface);
+                        warn("\"static\" has no effect", seq, text->f_interface);
+                    }
+                    if (attributes->f_static == Boolean::TRUE && (int)scope->f_layer & (int)SCOPE_LAYER::MAIN){
+                        warn("\"static\" has no effect", seq, text->f_interface);
                     }
                     //TODO return buildFieldOrFunctionDeclaration
                 }
@@ -330,16 +363,7 @@ namespace builder{
                 }
                 case ElementType::SEQUENCE:
                 {
-                    if (seq->type == CharSequenceType::END){ // check for importance
-                        CB004::throwError(seq, text->f_interface);
-                        return nullptr;
-                    }
-                    if (seq->type != CharSequenceType::NAME){
-                        CB001::throwError(seq, text->f_interface);
-                        return nullptr;
-                    }
-                    if (std::find(keywords.begin(), keywords.end(), seq->chars) != keywords.end()){
-                        CB006::throwError(seq, text->f_interface);
+                    if (!assertCustomLabels(seq, text)){
                         return nullptr;
                     }
                     std::string namespace_name = seq->chars;
@@ -362,6 +386,70 @@ namespace builder{
             return nullptr; //compiler reasons
         }
 
+        Scope* buildTypeDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos){
+            Element* element = text->f_current_target->read(read_pos);
+            CharSequence* seq = element->f_sequence;
+
+            switch(element->elementType()){
+                case ElementType::BRACKET:
+                {
+                    CB001::throwError(seq, text->f_interface);
+                    return nullptr;
+                }
+                case ElementType::SCOPE:
+                {
+                    CB010::throwError(seq, text->f_interface);
+                    return nullptr;
+                }
+                case ElementType::SEQUENCE:
+                {
+                    if (!assertCustomLabels(seq, text)){
+                        return nullptr;
+                    }
+                    std::string type_name = seq->chars;
+
+                    element = text->f_current_target->read(read_pos);
+                    seq = element->f_sequence;
+                    if (element->elementType() != ElementType::SCOPE){ //TODO inheritance
+                        CB001::throwError(seq, text->f_interface);
+                        return nullptr;
+                    }
+                    if (((SequenceScope*)element)->f_stype == ScopeListType::INITIALIZER_LIST){
+                        CB009::throwError(seq, text->f_interface);
+                        return nullptr;
+                    }
+                    TypeDeclaration* type_decl = new TypeDeclaration(type_name, (SequenceScope*)element, attributes, scope);
+                    scope->addDeclaration(type_decl);
+                    return type_decl;
+                }
+            }
+        }
+    
+        Scope* buildFieldOrOperationOrFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, std::string& first_label){
+            Element* element = text->f_current_target->read(read_pos);
+            CharSequence* seq = element->f_sequence;
+
+            switch(element->elementType()){
+                case ElementType::BRACKET:
+                case ElementType::SCOPE:
+                {
+                    CB001::throwError(seq, text->f_interface);
+                    return nullptr;
+                }
+                case ElementType::SEQUENCE:
+                {
+                    if (seq->type == CharSequenceType::OPERATOR && (int)scope->f_layer & (int)SCOPE_LAYER::FUNCTION){
+                        //TODO return buildOperation
+                    }
+                    if (!assertCustomLabels(seq, text)){
+                        return nullptr;
+                    }
+                    PendingDeclaration* value_type = new PendingDeclaration(first_label);
+                    //TODO return buildFieldOrFunctionDeclaration
+                }
+            }
+        }
     }
+
 
 }

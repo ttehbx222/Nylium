@@ -15,13 +15,13 @@
  */
 #pragma once
 
-#include "../CodeObject.hpp"
+#include "../Operation.hpp"
 
 namespace nylium{
 
     //TODO check for importance
 
-    struct Keyword : public CodeObject {
+    struct Keyword : public Operation {
         //TODO
     };
 

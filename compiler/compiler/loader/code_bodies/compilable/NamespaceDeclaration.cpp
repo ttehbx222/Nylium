@@ -24,5 +24,7 @@ Namespace::Namespace(std::string& name, SequenceScope* text_code, DeclarationAtt
     this->f_attributes = attributes;
     this->f_key = name;
     this->f_text_code = text_code;
-    nlog::log(nlog::LOGLEVEL::DEBUG_0, std::string("namespace ") + name);
+    if (attributes->f_dtype == DeclarationType::NAMESPACE){
+        nlog::log(nlog::LOGLEVEL::DEBUG_0, std::string("namespace ") + name);
+    }
 }
