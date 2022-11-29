@@ -22,7 +22,7 @@
 namespace nylium{
 
     struct Operation : public CodeLine, public ValueHolder {
-        FieldDeclaration* f_target;
+        PendingDeclaration* f_target;
     };
 
 }

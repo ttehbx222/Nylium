@@ -1,9 +1,6 @@
 namespace potato{
-	namespace gratin{
-		oven;
+	struct A{
+		int a;
 	}
-	namespace {
-	}
-	namespace if{
-	}
+	A a = {3};
 }

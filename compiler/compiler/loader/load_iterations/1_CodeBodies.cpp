@@ -16,6 +16,8 @@
 #include "1_CodeBodies.hpp"
 
 #include "../code_bodies/compilable/TypeDeclaration.hpp"
+#include "../code_bodies/compilable/FunctionCallOperation.hpp"
+#include "../code_bodies/Operation.hpp"
 #include "../character_sequences/NyliumCharSequence.hpp"
 #include "0_CharSequences.hpp"
 #include "../native/keywords/Keywords.hpp"
@@ -47,7 +49,8 @@ namespace builder{
         Scope* buildFieldOrOperationOrFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, PendingDeclaration* first_label);
     }
     namespace operation{
-        Scope* operation::buildOperationArgument(Scope* scope, Text* text, size_t* read_pos, PendingDeclaration* target, std::string& operation);
+        Operation* buildOperationStart(Scope* scope, Text* text, size_t* read_pos);
+        Operation* buildOperationArgument(Scope* scope, Text* text, size_t* read_pos, PendingDeclaration* target, std::string& operation, bool f_operator);
     }
 }
 
@@ -119,6 +122,7 @@ namespace builder{
             }
             case ElementType::SCOPE:
             {
+                //TODO nested function scope
                 CB005::throwError(seq, text->f_interface);
                 return nullptr;
             }
@@ -127,6 +131,7 @@ namespace builder{
                 if (seq->type == CharSequenceType::END){ // check for importance
                     return nullptr;
                 }
+                //TODO hadle ++$, --$ operators
                 if (seq->type != CharSequenceType::NAME){
                     CB001::throwError(seq, text->f_interface);
                     return nullptr;
@@ -221,11 +226,6 @@ namespace builder{
                 //TODO check for operation keywords
 
                 return misc::buildFieldOrOperationOrFunctionDeclaration(scope, text, read_pos, new PendingDeclaration(seq->chars));
-                
-                /*DeclarationAttributes* attributes = new DeclarationAttributes();
-                if (attributes->f_static == Boolean::TRUE && (int)scope->f_layer & (int)SCOPE_LAYER::MAIN){
-                    warn("Declaration must already be static", seq, text->f_interface);
-                }*/
             }
         }
         return nullptr;
@@ -447,7 +447,16 @@ namespace builder{
                 case ElementType::SEQUENCE:
                 {
                     if (seq->type == CharSequenceType::OPERATOR && (int)scope->f_layer & (int)SCOPE_LAYER::FUNCTION){
-                        return operation::buildOperationArgument(scope, text, read_pos, first_label, seq->chars);
+                        Operation* operation;
+                        if (seq->chars == "." || seq->chars == "::"){
+                            operation = operation::buildOperationArgument(scope, text, read_pos, first_label, std::string(""), false);
+                        }else{
+                            operation = operation::buildOperationArgument(scope, text, read_pos, first_label, std::string(""), true);
+                        }
+                        
+                        if (operation){
+                            scope->f_code.push_back(operation);
+                        }
                     }
                     if (!assertCustomLabels(seq, text)){
                         return nullptr;
@@ -461,7 +470,11 @@ namespace builder{
 
     namespace operation{
 
-        Scope* operation::buildOperationArgument(Scope* scope, Text* text, size_t* read_pos, PendingDeclaration* target, std::string& operation){
+        Operation* operation::buildOperationStart(Scope* scope, Text* text, size_t* read_pos){
+            //todo handle ++$, --$ operators
+        }
+
+        Operation* operation::buildOperationArgument(Scope* scope, Text* text, size_t* read_pos, PendingDeclaration* target, std::string& operation, bool f_operator){
             Element* element = text->f_current_target->read(read_pos);
             CharSequence* seq = element->f_sequence;
 
@@ -471,15 +484,35 @@ namespace builder{
                     switch(seq->chars[0]){
                         case '(':
                         {
-
+                            if (!f_operator){
+                                if (operation == ""){
+                                    //error 
+                                    return nullptr;
+                                }
+                                //return buildFunctionCallOperation
+                            }
+                            Operation* argument = buildOperationStart(scope, text, read_pos);
+                            if (argument){
+                                Operation* result = new FunctionCallOperation(target, operation, std::vector<ValueHolder*>({argument}));
+                                return result;
+                            }
+                            return nullptr;
                         }
                         case ')':
                         {
-
+                            if (f_operator){
+                                //return functioncalloperation, no argument
+                            }
+                            if (operation == ""){
+                                //error
+                                return nullptr;
+                            }
+                            //return calloperation
                         }
                         default:
                         {
-
+                            CB001::throwError(seq, text->f_interface);
+                            return nullptr;
                         }
                     }
                 }
@@ -491,12 +524,23 @@ namespace builder{
                 case ElementType::SEQUENCE:
                 {
                     if (seq->type == CharSequenceType::OPERATOR){
-                        return buildOperationArgument(scope, text, read_pos, target, operation + seq->chars);
+                        if (f_operator){
+                            return buildOperationArgument(scope, text, read_pos, target, operation + seq->chars, true);
+                        }else{
+                            //return call operation as source continuing with wrapped operation
+                        }
                     }
                     if (!assertCustomLabels(seq, text)){
                         return nullptr;
                     }
-                    
+                    if (f_operator){
+                        //return function call operation
+                    }
+                    if (operation == ""){
+                        return buildOperationArgument(scope, text, read_pos, target, seq->chars, false);
+                    }
+                    //error
+                    return nullptr;
                 }
             }
         }
