@@ -15,6 +15,7 @@
  */
 #pragma once
 #include "NamespaceDeclaration.hpp"
+#include "../../../../log/logger.hpp"
 
 namespace nylium{
 

@@ -90,6 +90,9 @@ void nylium::loadBodies(FileInterface* fInterface){
     }
 }
 
+std::vector<std::string>& keywords = allKeywords();
+std::vector<std::string>& operation_keywords = operationKeywords();
+
 bool assertCustomLabels(CharSequence* seq, Text* text){
     if (seq->type == CharSequenceType::END){ // check for importance
         CB004::throwError(seq, text->f_interface);
@@ -105,9 +108,6 @@ bool assertCustomLabels(CharSequence* seq, Text* text){
     }
     return true;
 }
-
-std::vector<std::string>& keywords = allKeywords();
-std::vector<std::string>& operation_keywords = operationKeywords();
 
 namespace builder{
 
@@ -472,6 +472,7 @@ namespace builder{
 
         Operation* operation::buildOperationStart(Scope* scope, Text* text, size_t* read_pos){
             //todo handle ++$, --$ operators
+            return nullptr;
         }
 
         Operation* operation::buildOperationArgument(Scope* scope, Text* text, size_t* read_pos, PendingDeclaration* target, std::string& operation, bool f_operator){
@@ -518,6 +519,7 @@ namespace builder{
                 }
                 case ElementType::SCOPE:
                 {
+                    //TODO initializer list
                     CB001::throwError(seq, text->f_interface);
                     return nullptr;
                 }
