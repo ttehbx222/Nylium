@@ -345,7 +345,7 @@ namespace builder{
                     if (attributes->f_static == Boolean::TRUE && (int)scope->f_layer & (int)SCOPE_LAYER::MAIN){
                         warn("\"static\" has no effect", seq, text->f_interface);
                     }
-                    return misc::buildFieldOrOperationOrFunctionDeclaration(scope, text, read_pos, new PendingDeclaration(seq->chars));
+                    //return buildFieldOrFunctionDeclaration
                 }
             }
             return nullptr; //compiler reasons
