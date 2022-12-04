@@ -26,7 +26,7 @@ namespace nylium{
         IMPOSSIBLE
     };
 
-    struct TypeDeclaration : public Namespace {
+    struct TypeDeclaration : public Namespace, public CompilableBody {
         TypeDeclaration(std::string& name, SequenceScope* text_code, DeclarationAttributes* attributes, Scope* scope) : Namespace(name, text_code, attributes, scope) {
             this->f_type = getClassType();
             this->f_layer = SCOPE_LAYER::CLASS;

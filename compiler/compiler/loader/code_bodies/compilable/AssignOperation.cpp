@@ -13,14 +13,18 @@
  * See the License for the specific language governing permissionsand
  * limitations under the License.
  */
-#pragma once
+#include "AssignOperation.hpp"
+#include "../../../preassembler/utils/Names.hpp"
 
-#include "FieldDeclaration.hpp"
+using namespace nylium;
 
-namespace nylium{
+void AssignOperation::compile(Assembly* assembly){
+    switch(this->f_vhtype){
+        case ValueHolderType::LITERAL:
+        {
+            
+        }
 
-    struct ReferenceDeclaration : public FieldDeclaration, public CompilableBody { //check for importance
-        FieldDeclaration* f_source;
-    };
-
+    }
+    //error
 }

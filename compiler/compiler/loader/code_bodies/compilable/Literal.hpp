@@ -19,7 +19,7 @@
 
 namespace nylium{
 
-    struct Literal : public ValueHolder {
+    struct Literal : public ValueHolder, public CompilableBody {
 
     };
 

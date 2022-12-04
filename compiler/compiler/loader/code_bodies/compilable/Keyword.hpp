@@ -21,7 +21,7 @@ namespace nylium{
 
     //TODO check for importance
 
-    struct Keyword : public Operation {
+    struct Keyword : public Operation, public CompilableBody {
         //TODO
     };
 

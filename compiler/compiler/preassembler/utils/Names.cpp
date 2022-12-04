@@ -4,7 +4,7 @@
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
 * You may obtain a copy of the License at
-* 
+*
 * http ://www.apache.org/licenses/LICENSE-2.0
 *
 * Unless required by applicable law or agreed to in writing, software
@@ -13,16 +13,13 @@
 * See the License for the specific language governing permissionsand
 * limitations under the License.
 */
-
-#include "log/logger.hpp"
-#include "compiler/loader/Loader.hpp"
-#include "compiler/preassembler/Preassembler.hpp"
+#include "Names.hpp"
 
 using namespace nylium;
 
-int main(/*TODO params*/) { //TEST RUN
-	nlog::init();
-	nlog::ConsoleLogFilter(nlog::LOGLEVEL::DEBUG_3);
-	Project* project = loadProject(std::string("TestRun"));
-	Assembly* assembly = preassembleProject(project);
+std::string unique_name_prefix = "$u_";
+size_t unique_name_index = 0x8000000000000000;
+
+std::string nylium::fetchUniqueName(){
+    return unique_name_prefix + std::to_string(unique_name_index++);
 }

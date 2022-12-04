@@ -26,22 +26,22 @@ namespace nylium{
 
 	struct FileInterface;
 
-    struct Scope : public CodeLine {
+    struct Scope : public CodeLine, public CompilableBody {
 
 			SCOPE_LAYER f_layer = SCOPE_LAYER::MAIN;
 
 		    Scope* f_parent;
 		    DeclarationSearch f_accessibles;
 		    FileInterface* f_parent_interface;
-	    	std::vector<CODE> f_code;
+	    	std::vector<CompilableBody*> f_code;
 
 			SequenceScope* f_text_code;
 
 			Scope(){}
-	    	Scope(Scope* scope);
+	    	Scope(Scope* scope, SequenceScope* seqScope);
 	    	Scope(FileInterface* file);
 	    	inline Scope* parent() { return f_parent; }
-	    	inline std::vector<CODE>& code() { return f_code; }
+	    	inline std::vector<CompilableBody*>& code() { return f_code; }
 	    	Visibility visibilityOf(Scope* scope);
 	      	Declaration* searchDeclaration(PendingDeclaration* decl);
 	    	void addDeclaration(Declaration* decl) {} //TODO

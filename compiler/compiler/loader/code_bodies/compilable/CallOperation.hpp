@@ -19,7 +19,7 @@
 
 namespace nylium{
 
-    struct CallOperation : public Operation {
+    struct CallOperation : public Operation, public CompilableBody {
         std::string f_key;
     };
 

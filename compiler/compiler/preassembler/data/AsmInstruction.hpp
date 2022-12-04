@@ -15,6 +15,12 @@
 */
 #pragma once
 
-namespace nylium {
+#include "AsmValue.hpp"
+
+namespace nylium{
+
+    struct AssemblyInstructionElement {
+        
+    };
 
 }

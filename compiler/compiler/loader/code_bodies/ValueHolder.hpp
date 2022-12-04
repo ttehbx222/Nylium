@@ -20,10 +20,18 @@
 
 namespace nylium{
 
+    enum class ValueHolderType{
+        LITERAL,
+        OPERATION,
+        FIELD,
+        OTHER
+    };
+
     struct PendingDeclaration;
 
     struct ValueHolder : public CodeObject {
-		    PendingDeclaration* f_type;
-	  };
+        ValueHolderType f_vhtype;
+		PendingDeclaration* f_type;
+	};
 
 }

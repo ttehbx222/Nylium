@@ -23,6 +23,4 @@ namespace nylium{
 
 	};
 
-    typedef CodeLine* CODE;
-
 }

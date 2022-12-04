@@ -23,7 +23,7 @@ namespace nylium{
 
     typedef std::vector<FieldDeclaration*> Parameters;
 
-    struct FunctionDeclaration : public Namespace {
+    struct FunctionDeclaration : public Namespace, public CompilableBody {
         Parameters* f_parameters;
         FunctionDeclaration(std::string& name, SequenceScope* text_code, DeclarationAttributes* attributes, Scope* scope, Parameters* parameters);
     };

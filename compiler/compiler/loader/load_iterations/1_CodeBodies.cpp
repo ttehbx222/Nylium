@@ -21,6 +21,7 @@
 #include "../character_sequences/NyliumCharSequence.hpp"
 #include "0_CharSequences.hpp"
 #include "../native/keywords/Keywords.hpp"
+#include "../native/keywords/IfKeyword.hpp"
 
 #include "../../error_handling/errors/CB001.hpp"
 #include "../../error_handling/errors/CB002.hpp"
@@ -53,6 +54,7 @@ namespace builder{
     }
     namespace misc{
         Scope* buildFieldOrOperationOrFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, PendingDeclaration* first_label);
+        Scope* buildValueHolder(Scope* scope, Text* text, size_t* read_pos);
     }
     namespace operation{
         Operation* buildOperationStart(Scope* scope, Text* text, size_t* read_pos);
@@ -292,6 +294,7 @@ namespace builder{
     }
 
     namespace keyword{
+
         Scope* buildIfKeyword(Scope* scope, Text* text, size_t* read_pos){
             Element* element = text->f_current_target->read(read_pos);
 
@@ -303,11 +306,30 @@ namespace builder{
             SequenceLine* temp = text->f_current_target;
             text->f_current_target = ((SequenceBracket*)element)->f_contents.front();
             size_t temp_read_pos = 0;
-            Operation* operation = operation::buildOperationStart(scope, text, &temp_read_pos);
+            ValueHolder* operation; //TODO = buildValueHolder
             text->f_current_target = temp;
             
             element = text->f_current_target->read(read_pos);
+
+            if (element->elementType() != ElementType::SCOPE || ((SequenceScope*)element)->f_stype != ScopeListType::SCOPE){
+                //error
+                return nullptr;
+            }
+
+            Scope* if_statement = new IfKeyword(operation, (SequenceScope*)element, scope);
+            scope->code().push_back(if_statement);
+            return if_statement;
         }
+
+        Scope* buildForKeyword(Scope* scope, Text* text, size_t* read_pos){
+            Element* element = text->f_current_target->read(read_pos);
+
+            if (element->elementType() != ElementType::BRACKET || ((SequenceBracket*)element)->f_btype != BracketListType::ENDED_LINE_LIST){
+                //error
+                return nullptr;
+            }
+        }
+
     }
 
     namespace declaration{
@@ -539,6 +561,13 @@ namespace builder{
                     //TODO return buildFieldOrFunctionDeclaration
                 }
             }
+        }
+
+        Scope* buildValueHolder(Scope* scope, Text* text, size_t* read_pos){
+            Element* element = text->f_current_target->read(read_pos);
+            CharSequence* seq = element->f_sequence;
+
+            
         }
 
     }

@@ -22,14 +22,14 @@
 namespace nylium{
 
     struct ConditionalScope : public Scope, public Keyword {
-        inline ConditionalScope(Scope* scope) : Scope(scope){};
+        inline ConditionalScope(Scope* scope, SequenceScope* text_code) : Scope(scope, text_code){};
     };
 
     struct IfKeyword : ConditionalScope{
-        Operation* f_condition;
-        ConditionalScope* following = nullptr;
-        ConditionalScope* last = this;
-        inline IfKeyword(Operation* condition, Scope* scope) : ConditionalScope(scope) { f_condition = condition; }; //TODO add SequenceScope
+        ValueHolder* f_condition;
+        ConditionalScope* f_following = nullptr;
+        ConditionalScope* f_last = this;
+        inline IfKeyword(ValueHolder* condition, SequenceScope* element, Scope* scope) : ConditionalScope(scope, element) { f_condition = condition;f_layer = SCOPE_LAYER::FUNCTION;  }; //TODO add SequenceScope
     };
 
 }

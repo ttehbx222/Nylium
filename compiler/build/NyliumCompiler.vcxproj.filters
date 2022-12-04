@@ -73,6 +73,9 @@
     <ClCompile Include="D:\Matura\Nylium\compiler\compiler\loader\Loader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="D:\Matura\Nylium\compiler\compiler\preassembler\Preassembler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="D:\Matura\Nylium\compiler\fileutils\file_io.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

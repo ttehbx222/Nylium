@@ -37,6 +37,8 @@ add_executable(NyliumCompiler "nylium.cpp"
 #compiler.loader.utils
 #compiler.loader
 "compiler/loader/Loader.cpp"
+#compiler.preassembler
+"compiler/preassembler/Preassembler.cpp"
 #fileutils
 "fileutils/file_io.cpp"
 #log

@@ -4,7 +4,7 @@
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
 * You may obtain a copy of the License at
-* 
+*
 * http ://www.apache.org/licenses/LICENSE-2.0
 *
 * Unless required by applicable law or agreed to in writing, software
@@ -13,16 +13,18 @@
 * See the License for the specific language governing permissionsand
 * limitations under the License.
 */
+#pragma once
 
-#include "log/logger.hpp"
-#include "compiler/loader/Loader.hpp"
-#include "compiler/preassembler/Preassembler.hpp"
+#include <vector>
 
-using namespace nylium;
+#include "AsmInstruction.hpp"
+#include "AsmStorage.hpp"
 
-int main(/*TODO params*/) { //TEST RUN
-	nlog::init();
-	nlog::ConsoleLogFilter(nlog::LOGLEVEL::DEBUG_3);
-	Project* project = loadProject(std::string("TestRun"));
-	Assembly* assembly = preassembleProject(project);
+namespace nylium {
+
+    struct Assembly{
+        std::vector<AssemblyInstructionElement*> f_instructions;
+        std::vector<AssemblyStorageElement*> f_data;
+    };
+
 }

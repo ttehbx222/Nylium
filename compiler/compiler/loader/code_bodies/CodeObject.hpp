@@ -15,6 +15,8 @@
  */
 #pragma once
 
+#include "../../preassembler/compilable/CompilableBody.hpp"
+
 namespace nylium{
 
     struct CodeObject {
