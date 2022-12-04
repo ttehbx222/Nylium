@@ -13,20 +13,23 @@
  * See the License for the specific language governing permissionsand
  * limitations under the License.
  */
-#pragma once
+#include "ClassType.hpp"
 
-#include "../../code_bodies/compilable/TypeDeclaration.hpp"
+using namespace nylium;
 
-namespace nylium{
+ClassType* self = nullptr;
 
-    struct ClassType : public TypeDeclaration {
-        ClassType();
+ClassType::ClassType() : TypeDeclaration(std::string("Class"), nullptr, nullptr, nullptr) {
+    self = this;
+    this->f_type = this;
+    DeclarationAttributes* attributes = new DeclarationAttributes();
+    attributes->f_final = Boolean::TRUE;
+    attributes->f_visibility = Visibility::PUBLIC;
+    attributes->f_static = Boolean::FALSE;
+    attributes->f_dtype = DeclarationType::CLASS;
+    this->f_attributes = attributes;
+}
 
-        Castable conversionTo(TypeDeclaration* declaration){
-            return Castable::IMPOSSIBLE;
-        }
-    };
-
-    ClassType* getClassType();
-
+ClassType* nylium::getClassType(){
+    return self;
 }

@@ -16,12 +16,19 @@
 #pragma once
 #include "NamespaceDeclaration.hpp"
 #include "../../../../log/logger.hpp"
+#include "../../native/types/ClassType.hpp"
 
 namespace nylium{
 
+    enum class Castable{
+        DIRECT,
+        CONDITIONAL,
+        IMPOSSIBLE
+    };
+
     struct TypeDeclaration : public Namespace {
         TypeDeclaration(std::string& name, SequenceScope* text_code, DeclarationAttributes* attributes, Scope* scope) : Namespace(name, text_code, attributes, scope) {
-            //TODO add default ValueHolder#type convert to Type
+            this->f_type = getClassType();
             this->f_layer = SCOPE_LAYER::CLASS;
 
             if (attributes->f_dtype == DeclarationType::CLASS){
@@ -34,6 +41,7 @@ namespace nylium{
                 nlog::log(nlog::LOGLEVEL::DEBUG_0, std::string("enum ") + name);
             }
         }
+        virtual Castable conversionTo(TypeDeclaration* declaration);
     };
 
 }

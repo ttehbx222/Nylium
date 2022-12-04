@@ -18,6 +18,7 @@
 #include "load_iterations/0_CharSequences.hpp"
 #include "load_iterations/1_CodeBodies.hpp"
 #include "load_iterations/2_InternalLinking.hpp"
+#include "native/types/Types.hpp"
 
 #include "project/Interface.hpp"
 
@@ -29,6 +30,7 @@ Project* nylium::loadProject(std::string& name){
         loadCharSequences(fInterface);
     }
     project->flushErrors();
+    initNativeTypes();
     for (FileInterface* fInterface : project->interfaces){
         loadBodies(fInterface);
     }

@@ -18,9 +18,7 @@
 
 using namespace nylium;
 
-Namespace::Namespace(std::string& name, SequenceScope* text_code, DeclarationAttributes* attributes, Scope* scope){
-    this->f_parent = scope;
-    this->f_parent_interface = scope->f_parent_interface;
+Namespace::Namespace(std::string& name, SequenceScope* text_code, DeclarationAttributes* attributes, Scope* scope) : Scope(scope) {
     this->f_attributes = attributes;
     this->f_key = name;
     this->f_text_code = text_code;

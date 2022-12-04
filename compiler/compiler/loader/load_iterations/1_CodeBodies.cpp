@@ -40,6 +40,12 @@ using namespace nylium;
 namespace builder{
     Scope* buildStart(Scope* scope, Text* text, size_t* read_pos);
     void import(Scope* scope, Text* text, size_t* read_pos);
+    namespace keyword{
+        Scope* buildIfKeyword(Scope* scope, Text* text, size_t* read_pos);
+        Scope* buildWhileKeyword(Scope* scope, Text* text, size_t* read_pos);
+        Scope* buildForKeyword(Scope* scope, Text* text, size_t* read_pos);
+        Scope* buildElseKeyword(Scope* scope, Text* text, size_t* read_pos/*,IfKeyword if_statement*/);
+    }
     namespace declaration{
         Scope* buildDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos);
         Scope* buildNamespaceDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos);
@@ -223,7 +229,22 @@ namespace builder{
                     return declaration::buildNamespaceDeclaration(scope, text, attributes, read_pos);
                 }
 
-                //TODO check for operation keywords
+                if (seq->chars == "if" && ((int)scope->f_layer & (int)SCOPE_LAYER::FUNCTION)){
+                    //return buildIfKeyoword
+                }
+
+                if (seq->chars == "while" && ((int)scope->f_layer & (int)SCOPE_LAYER::FUNCTION)){
+                    //return buildWhileKeyword
+                }
+
+                if (seq->chars == "for" && ((int)scope->f_layer & (int)SCOPE_LAYER::FUNCTION)){
+                    //return buildForKeyword
+                }
+
+                if (seq->chars == "else" && ((int)scope->f_layer & (int)SCOPE_LAYER::FUNCTION)){
+                    //TODO check if previous is if
+                    //return buildElseKeyword
+                }
 
                 return misc::buildFieldOrOperationOrFunctionDeclaration(scope, text, read_pos, new PendingDeclaration(seq->chars));
             }
@@ -232,7 +253,61 @@ namespace builder{
     }
 
     void import(Scope* scope, Text* text, size_t* read_pos){
-        //TODO import
+        Element* element = text->f_current_target->read(read_pos);
+        CharSequence* seq = element->f_sequence;
+        ProjectContent* content = text->f_interface->project;
+        while(seq->type != CharSequenceType::END){
+            if (element->elementType() != ElementType::SEQUENCE){
+                CB001::throwError(seq, text->f_interface);
+            }
+            assertCustomLabels(seq, text);
+            if (content->isInterface()){
+                //error
+                return;
+            }
+            auto content_temp = ((Package*)content)->contents.find(seq->chars);
+            if (content_temp == ((Package*)content)->contents.end()){
+                //error
+                return;
+            }
+            content = content_temp->second;
+            element = text->f_current_target->read(read_pos);
+            seq = element->f_sequence;
+            if (seq->chars == ";"){
+                break;
+            }
+            if (seq->chars == "."){
+                element = text->f_current_target->read(read_pos);
+                seq = element->f_sequence;
+                continue;
+            }
+            //error
+            return;
+        }
+        if (!content->isInterface()){
+            //error
+            return;
+        }
+        text->f_interface->imports.push_back((FileInterface*)content);
+    }
+
+    namespace keyword{
+        Scope* buildIfKeyword(Scope* scope, Text* text, size_t* read_pos){
+            Element* element = text->f_current_target->read(read_pos);
+
+            if (element->elementType() != ElementType::BRACKET || ((SequenceBracket*)element)->f_btype != BracketListType::SINGLE){
+                //error
+                return nullptr;
+            }
+
+            SequenceLine* temp = text->f_current_target;
+            text->f_current_target = ((SequenceBracket*)element)->f_contents.front();
+            size_t temp_read_pos = 0;
+            Operation* operation = operation::buildOperationStart(scope, text, &temp_read_pos);
+            text->f_current_target = temp;
+            
+            element = text->f_current_target->read(read_pos);
+        }
     }
 
     namespace declaration{
@@ -471,7 +546,8 @@ namespace builder{
     namespace operation{
 
         Operation* operation::buildOperationStart(Scope* scope, Text* text, size_t* read_pos){
-            //todo handle ++$, --$ operators
+            //todo handle ++$, --$ operators$
+            //todo handle single word inputs;
             return nullptr;
         }
 

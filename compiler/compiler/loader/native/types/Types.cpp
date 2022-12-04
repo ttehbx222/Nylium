@@ -13,20 +13,17 @@
  * See the License for the specific language governing permissionsand
  * limitations under the License.
  */
-#pragma once
+#include "Types.hpp"
+#include "ClassType.hpp"
 
-#include "../../code_bodies/compilable/TypeDeclaration.hpp"
+using namespace nylium;
 
-namespace nylium{
+bool isInit = false;
 
-    struct ClassType : public TypeDeclaration {
-        ClassType();
-
-        Castable conversionTo(TypeDeclaration* declaration){
-            return Castable::IMPOSSIBLE;
-        }
-    };
-
-    ClassType* getClassType();
-
+void nylium::initNativeTypes(){
+    if (isInit){
+        return;
+    }
+    isInit = true;
+    new ClassType();
 }

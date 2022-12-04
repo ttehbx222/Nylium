@@ -13,20 +13,16 @@
  * See the License for the specific language governing permissionsand
  * limitations under the License.
  */
-#pragma once
+#include "BoolType.hpp"
 
-#include "../../code_bodies/compilable/TypeDeclaration.hpp"
+using namespace nylium;
 
-namespace nylium{
+BoolType* self = nullptr;
 
-    struct ClassType : public TypeDeclaration {
-        ClassType();
+BoolType::BoolType() : TypeDeclaration(std::string("bool"), nullptr, nullptr, nullptr) {
+    self = this;
+}
 
-        Castable conversionTo(TypeDeclaration* declaration){
-            return Castable::IMPOSSIBLE;
-        }
-    };
-
-    ClassType* getClassType();
-
+BoolType* nylium::getBoolType(){
+    return self;
 }

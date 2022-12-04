@@ -13,20 +13,11 @@
  * See the License for the specific language governing permissionsand
  * limitations under the License.
  */
-#pragma once
+#include "Scope.hpp"
 
-#include "../../code_bodies/compilable/TypeDeclaration.hpp"
+using namespace nylium;
 
-namespace nylium{
-
-    struct ClassType : public TypeDeclaration {
-        ClassType();
-
-        Castable conversionTo(TypeDeclaration* declaration){
-            return Castable::IMPOSSIBLE;
-        }
-    };
-
-    ClassType* getClassType();
-
+Scope::Scope(Scope* scope){
+    this->f_parent = scope;
+    this->f_parent_interface = scope->f_parent_interface;
 }

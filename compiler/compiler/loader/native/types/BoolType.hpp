@@ -19,14 +19,12 @@
 
 namespace nylium{
 
-    struct ClassType : public TypeDeclaration {
-        ClassType();
-
-        Castable conversionTo(TypeDeclaration* declaration){
-            return Castable::IMPOSSIBLE;
-        }
+    struct BoolType : public TypeDeclaration {
+        BoolType();
     };
 
-    ClassType* getClassType();
+    BoolType* getBoolType();
+
+    Castable conversionTo(TypeDeclaration* declaration);
 
 }

@@ -15,18 +15,21 @@
  */
 #pragma once
 
-#include "../../code_bodies/compilable/TypeDeclaration.hpp"
+#include "../../code_bodies/compilable/Scope.hpp"
+#include "../../code_bodies/Operation.hpp"
+#include "../../code_bodies/compilable/Keyword.hpp"
 
 namespace nylium{
 
-    struct ClassType : public TypeDeclaration {
-        ClassType();
-
-        Castable conversionTo(TypeDeclaration* declaration){
-            return Castable::IMPOSSIBLE;
-        }
+    struct ConditionalScope : public Scope, public Keyword {
+        inline ConditionalScope(Scope* scope) : Scope(scope){};
     };
 
-    ClassType* getClassType();
+    struct IfKeyword : ConditionalScope{
+        Operation* f_condition;
+        ConditionalScope* following = nullptr;
+        ConditionalScope* last = this;
+        inline IfKeyword(Operation* condition, Scope* scope) : ConditionalScope(scope) { f_condition = condition; }; //TODO add SequenceScope
+    };
 
 }

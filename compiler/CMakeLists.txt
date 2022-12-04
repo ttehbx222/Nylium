@@ -7,21 +7,33 @@ project(NyliumCompiler)
 add_executable(NyliumCompiler "nylium.cpp"
 #compiler.error_handling
 "compiler/error_handling/CompileError.cpp"
-"compiler/error_handling/errors/CB001.cpp" "compiler/error_handling/errors/CB004.cpp"
+"compiler/error_handling/errors/CB001.cpp"
+"compiler/error_handling/errors/CB004.cpp"
 #compiler.loader.character_sequences
-"compiler/loader/character_sequences/Bracket.cpp" "compiler/loader/character_sequences/Value.cpp"
-"compiler/loader/character_sequences/NyliumCharSequence.cpp" "compiler/loader/character_sequences/IllegalCharSequence.cpp"
+"compiler/loader/character_sequences/Bracket.cpp"
+"compiler/loader/character_sequences/Value.cpp"
+"compiler/loader/character_sequences/NyliumCharSequence.cpp"
+"compiler/loader/character_sequences/IllegalCharSequence.cpp"
 #compiler.loader.code_bodies
-"compiler/loader/code_bodies/CodeObject.cpp" "compiler/loader/code_bodies/Declaration.cpp" 
-"compiler/loader/code_bodies/compilable/FunctionDeclaration.cpp" "compiler/loader/code_bodies/compilable/FieldDeclaration.cpp"
+"compiler/loader/code_bodies/CodeObject.cpp"
+"compiler/loader/code_bodies/Declaration.cpp"
+"compiler/loader/code_bodies/compilable/Scope.cpp"
+"compiler/loader/code_bodies/compilable/FunctionDeclaration.cpp"
+"compiler/loader/code_bodies/compilable/FieldDeclaration.cpp"
 "compiler/loader/code_bodies/compilable/NamespaceDeclaration.cpp"
 #compiler.loader.load_iterations
-"compiler/loader/load_iterations/0_CharSequences.cpp" "compiler/loader/load_iterations/1_CodeBodies.cpp" "compiler/loader/load_iterations/2_InternalLinking.cpp"
+"compiler/loader/load_iterations/0_CharSequences.cpp"
+"compiler/loader/load_iterations/1_CodeBodies.cpp"
+"compiler/loader/load_iterations/2_InternalLinking.cpp"
 #compiler.loader.native.keywords
 "compiler/loader/native/keywords/Keywords.cpp"
 #compiler.loader.native.types
+"compiler/loader/native/types/Types.cpp"
+"compiler/loader/native/types/ClassType.cpp"
+"compiler/loader/native/types/BoolType.cpp"
 #compiler.loader.project
-"compiler/loader/project/Interface.cpp" "compiler/loader/project/Project.cpp"
+"compiler/loader/project/Interface.cpp"
+"compiler/loader/project/Project.cpp"
 #compiler.loader.utils
 #compiler.loader
 "compiler/loader/Loader.cpp"

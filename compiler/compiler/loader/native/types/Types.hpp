@@ -15,18 +15,8 @@
  */
 #pragma once
 
-#include "../../code_bodies/compilable/TypeDeclaration.hpp"
-
 namespace nylium{
 
-    struct ClassType : public TypeDeclaration {
-        ClassType();
-
-        Castable conversionTo(TypeDeclaration* declaration){
-            return Castable::IMPOSSIBLE;
-        }
-    };
-
-    ClassType* getClassType();
+    void initNativeTypes();
 
 }
