@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 #include "AssignOperation.hpp"
+#include "Literal.hpp"
 #include "../../../preassembler/utils/Names.hpp"
 
 using namespace nylium;
@@ -22,9 +23,10 @@ void AssignOperation::compile(Assembly* assembly){
     switch(this->f_vhtype){
         case ValueHolderType::LITERAL:
         {
-            
+            AssemblyStorageElement* source_element = new AssemblyStorageElement((Literal*)this->f_source);
+            assembly->f_data.push_back(source_element);
+            //TODO
         }
-
     }
     //error
 }

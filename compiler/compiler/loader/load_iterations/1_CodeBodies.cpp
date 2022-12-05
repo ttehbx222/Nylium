@@ -54,9 +54,10 @@ namespace builder{
     }
     namespace misc{
         Scope* buildFieldOrOperationOrFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, PendingDeclaration* first_label);
-        Scope* buildValueHolder(Scope* scope, Text* text, size_t* read_pos);
+        ValueHolder* buildValueHolder(Scope* scope, Text* text, size_t* read_pos);
     }
     namespace operation{
+        int operatorPriority(std::string& operator);
         Operation* buildOperationStart(Scope* scope, Text* text, size_t* read_pos);
         Operation* buildOperationArgument(Scope* scope, Text* text, size_t* read_pos, PendingDeclaration* target, std::string& operation, bool f_operator);
     }
@@ -206,7 +207,7 @@ namespace builder{
                     attributes->f_dtype = DeclarationType::CLASS;
                     return declaration::buildTypeDeclaration(scope, text, attributes, read_pos);
                 }
-                if (seq->chars == "struct" && ((int)scope->f_layer & ((int)SCOPE_LAYER::CLASS | (int)SCOPE_LAYER::MAIN))){
+                /*if (seq->chars == "struct" && ((int)scope->f_layer & ((int)SCOPE_LAYER::CLASS | (int)SCOPE_LAYER::MAIN))){
                     DeclarationAttributes* attributes = new DeclarationAttributes();
                     if (attributes->f_static == Boolean::TRUE){
                         CB007::throwError(seq, text->f_interface);
@@ -215,7 +216,7 @@ namespace builder{
                     attributes->f_dtype = DeclarationType::STRUCT;
                     return declaration::buildTypeDeclaration(scope, text, attributes, read_pos);
                 }
-                /*if (seq->chars == "enum"){
+                if (seq->chars == "enum"){
                     attributes->f_dtype = DeclarationType::ENUM;
                     return declaration::buildTypeDeclaration(scope, text, attributes, read_pos);
                 }*/ //not implemented yet
@@ -232,7 +233,7 @@ namespace builder{
                 }
 
                 if (seq->chars == "if" && ((int)scope->f_layer & (int)SCOPE_LAYER::FUNCTION)){
-                    //return buildIfKeyoword
+                    return keyword::buildIfKeyword(scope, text, read_pos);
                 }
 
                 if (seq->chars == "while" && ((int)scope->f_layer & (int)SCOPE_LAYER::FUNCTION)){
@@ -324,10 +325,12 @@ namespace builder{
         Scope* buildForKeyword(Scope* scope, Text* text, size_t* read_pos){
             Element* element = text->f_current_target->read(read_pos);
 
-            if (element->elementType() != ElementType::BRACKET || ((SequenceBracket*)element)->f_btype != BracketListType::ENDED_LINE_LIST){
+            if (element->elementType() != ElementType::BRACKET || ((SequenceBracket*)element)->f_btype != BracketListType::ENDED_LINE_LIST || ((SequenceBracket*)element)->f_contents.size() != 3){
                 //error
                 return nullptr;
             }
+
+
         }
 
     }
@@ -563,16 +566,69 @@ namespace builder{
             }
         }
 
-        Scope* buildValueHolder(Scope* scope, Text* text, size_t* read_pos){
+        ValueHolder* misc::buildValueHolder(Scope* scope, Text* text, size_t* read_pos){ //TODO implement operator priority
             Element* element = text->f_current_target->read(read_pos);
             CharSequence* seq = element->f_sequence;
 
-            
+            switch(seq->type){
+                case CharSequenceType::OPERATOR:
+                {
+                    if (seq->chars != "++" && seq->chars != "--"){
+                        //error
+                        return nullptr;
+                    }
+                    
+                    return nullptr;
+                }
+                case CharSequenceType::NAME:
+                {
+                    return nullptr;
+                }
+                default:
+                {
+                    //error
+                    return nullptr;
+                }
+            }
         }
 
     }
 
     namespace operation{
+
+        int operation::operatorPriority(std::string& operation){
+            if (operation == "="){ //target = value returns target
+                return 1;
+            }
+            if (operation == "||"){ //value1 || value2
+                return 2;
+            }
+            if (operation == "&&"){//value1 && value2
+                return 3;
+            }
+            if (operation == "|" || operation == "&" ||operation == "^"){//value1 | value2
+                return 4;
+            }
+            if (operation == "==" || operation == "!="){//value1 == value2 returns bool
+                return 5;
+            }
+            if (operation == "<" || operation == "<=" || operation == ">=" || operation == ">"){ // value1 < value2 returns bool
+                return 6;
+            }
+            if (operation == "+" || operation == "-"){ //value1 + value2
+                return 7;
+            }
+            if (operation == "*" || operation == "/"){ //value1 * value2
+                return 8;
+            }
+            if (operation == "<<" || operation == ">>"){ //value1 << value2
+                return 9;
+            }
+            if (operation == "++" || operation == "--"){ //value++ //++value
+                return 10;
+            }
+            return 0;
+        }
 
         Operation* operation::buildOperationStart(Scope* scope, Text* text, size_t* read_pos){
             //todo handle ++$, --$ operators$

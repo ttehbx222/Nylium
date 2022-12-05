@@ -15,10 +15,16 @@
 */
 #pragma once
 
+#include "../../loader/code_bodies/compilable/Literal.hpp"
+
 namespace nylium{
 
     struct AssemblyStorageElement {
-
+        size_t f_size;
+        void* f_data;
+        AssemblyStorageElement(Literal* literal){
+            //TODO
+        }
     };
 
 }
