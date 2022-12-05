@@ -26,6 +26,7 @@ void AssignOperation::compile(Assembly* assembly){
             AssemblyStorageElement* source_element = new AssemblyStorageElement((Literal*)this->f_source);
             assembly->f_data.push_back(source_element);
             //TODO
+            //TODO memory_location of field
         }
     }
     //error

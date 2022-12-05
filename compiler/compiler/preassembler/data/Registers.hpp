@@ -43,4 +43,8 @@ namespace nylium{
         U128 = 16
     };
 
+    using REG = size_t;
+
+    REG reserveUnnamedRegister();
+
 }

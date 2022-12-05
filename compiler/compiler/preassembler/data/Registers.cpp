@@ -13,29 +13,12 @@
 * See the License for the specific language governing permissionsand
 * limitations under the License.
 */
-#pragma once
-
 #include "Registers.hpp"
-#include "../compilable/PendingReference.hpp"
 
-namespace nylium{
+using namespace nylium;
 
-    struct AssemblyValue{
-    };
+REG current_register = 0;
 
-    struct AssemblyLiteral : public AssemblyValue {
-        size_t f_size;
-        void* f_data;
-    };
-
-    struct AssemblyRegister : public AssemblyValue {
-        SIZE f_size;
-        REGISTER f_register;
-    };
-
-    struct AssemblyMemoryReference : public AssemblyValue {
-        SIZE f_size;
-        PendingReference f_ref;
-    };
-
+REG nylium::reserveUnnamedRegister(){
+    return current_register++;
 }
