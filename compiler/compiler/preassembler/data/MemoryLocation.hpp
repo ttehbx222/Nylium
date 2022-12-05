@@ -14,13 +14,30 @@
  * limitations under the License.
  */
 #pragma once
-#include "../data/AsmInstruction.hpp"
+
+#include <map>
+
+#include "Registers.hpp"
+#include "../../loader/code_bodies/compilable/TypeDeclaration.hpp"
 
 namespace nylium{
 
-    struct MOV : public AssemblyInstructionElement {
-        AssemblyRegister* target;
-        AssemblyValue* source;
+    enum class MemoryState {
+        MEMORY,
+        REGISTER
+    };
+
+    struct MemoryLocation {
+        bool fitted = false;
+        SIZE f_size;
+        MemoryState f_state;
+        REG f_address;
+    };
+
+    struct TypeTemplate {
+        TypeDeclaration* f_target;
+        std::map<TypeDeclaration*, MemoryLocation*> f_field_access; 
+        std::map<TypeDeclaration*, MemoryLocation*> f_function_access; 
     };
 
 }
