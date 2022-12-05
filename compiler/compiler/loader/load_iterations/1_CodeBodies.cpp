@@ -54,10 +54,10 @@ namespace builder{
     }
     namespace misc{
         Scope* buildFieldOrOperationOrFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, PendingDeclaration* first_label);
-        ValueHolder* buildValueHolder(Scope* scope, Text* text, size_t* read_pos);
+        ValueHolder* buildValueHolder(Scope* scope, Text* text, size_t* read_pos, int previous_priority = 0);
     }
     namespace operation{
-        int operatorPriority(std::string& operator);
+        int operatorPriority(std::string& _operator);
         Operation* buildOperationStart(Scope* scope, Text* text, size_t* read_pos);
         Operation* buildOperationArgument(Scope* scope, Text* text, size_t* read_pos, PendingDeclaration* target, std::string& operation, bool f_operator);
     }
@@ -566,7 +566,7 @@ namespace builder{
             }
         }
 
-        ValueHolder* misc::buildValueHolder(Scope* scope, Text* text, size_t* read_pos){ //TODO implement operator priority
+        ValueHolder* misc::buildValueHolder(Scope* scope, Text* text, size_t* read_pos, int previous_priority){ //TODO implement operator priority
             Element* element = text->f_current_target->read(read_pos);
             CharSequence* seq = element->f_sequence;
 
@@ -577,11 +577,43 @@ namespace builder{
                         //error
                         return nullptr;
                     }
-                    //TODO
-                    return nullptr;
+                    ValueHolder* target = buildValueHolder(scope, text, read_pos, operation::operatorPriority(seq->chars));
+                    return new FunctionCallOperation(target, seq->chars + "x", std::vector<ValueHolder*>());
                 }
                 case CharSequenceType::NAME:
                 {
+                    PendingDeclaration* valueHolder = new PendingDeclaration(seq->chars);
+                    element = text->f_current_target->read(read_pos);
+                    CharSequence* seq = element->f_sequence;
+                    if (seq->type == CharSequenceType::END){
+                        return valueHolder;
+                    }
+                    if (seq->type != CharSequenceType::OPERATOR){
+                        //error
+                        return nullptr;
+                    }
+                    if (seq->chars == "."){
+                        //TODO member call
+                        return nullptr;
+                    }
+                    if (seq->chars == "::"){
+                        //TODO static member call
+                        return nullptr;
+                    }
+                    int current_priority = operation::operatorPriority(seq->chars);
+                    if (!current_priority){
+                        //error
+                        return nullptr;
+                    }
+                    if (current_priority > previous_priority){
+                        if (current_priority == 10){ //value++
+                            return new FunctionCallOperation(valueHolder, seq->chars, std::vector<ValueHolder*>());
+                        }
+                        ValueHolder* source = buildValueHolder(scope, text, read_pos, current_priority);
+                        //TODO add loop for infinite same priority chaining
+                    }else{
+
+                    }
                     return nullptr;
                 }
                 default:

@@ -20,6 +20,7 @@
 namespace nylium{
 
     struct CallOperation : public Operation, public CompilableBody {
+        bool f_static;
         std::string f_key;
     };
 
