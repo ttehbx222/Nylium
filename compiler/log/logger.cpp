@@ -104,44 +104,42 @@ namespace nlog {
 	#include <conio.h>
 
 	void nlog::init(){
-		std::cout << "Enabling ASCII encoding for Windows..." << std::endl;
-	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	if (hOut == INVALID_HANDLE_VALUE)
-	{
-		return;
-	}
-	HANDLE hIn = GetStdHandle(STD_INPUT_HANDLE);
-	if (hIn == INVALID_HANDLE_VALUE)
-	{
-		return;
-	}
-
-	DWORD dwOriginalOutMode = 0;
-	DWORD dwOriginalInMode = 0;
-	if (!GetConsoleMode(hOut, &dwOriginalOutMode))
-	{
-		return;
-	}
-	if (!GetConsoleMode(hIn, &dwOriginalInMode))
-	{
-		return;
-	}
-
-	DWORD dwRequestedOutModes = ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN;
-	DWORD dwRequestedInModes = ENABLE_VIRTUAL_TERMINAL_INPUT;
-
-	DWORD dwOutMode = dwOriginalOutMode | dwRequestedOutModes;
-	if (!SetConsoleMode(hOut, dwOutMode))
-	{
-		std::cout << "we failed to set both modes, try to step down mode gracefully." << std::endl;
-		dwRequestedOutModes = ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-		dwOutMode = dwOriginalOutMode | dwRequestedOutModes;
-		if (!SetConsoleMode(hOut, dwOutMode))
+		HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+		if (hOut == INVALID_HANDLE_VALUE)
 		{
-			std::cout << "Failed to set any VT mode, can't do anything here." << std::endl;
 			return;
 		}
-	}
+		HANDLE hIn = GetStdHandle(STD_INPUT_HANDLE);
+		if (hIn == INVALID_HANDLE_VALUE)
+		{
+			return;
+		}
+	
+		DWORD dwOriginalOutMode = 0;
+		DWORD dwOriginalInMode = 0;
+		if (!GetConsoleMode(hOut, &dwOriginalOutMode))
+		{
+			return;
+		}
+		if (!GetConsoleMode(hIn, &dwOriginalInMode))
+		{
+			return;
+		}
+
+		DWORD dwRequestedOutModes = ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN;
+		DWORD dwRequestedInModes = ENABLE_VIRTUAL_TERMINAL_INPUT;
+
+		DWORD dwOutMode = dwOriginalOutMode | dwRequestedOutModes;
+		if (!SetConsoleMode(hOut, dwOutMode))
+		{
+			dwRequestedOutModes = ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+			dwOutMode = dwOriginalOutMode | dwRequestedOutModes;
+			if (!SetConsoleMode(hOut, dwOutMode))
+			{
+				std::cout << "Failed to set any VT mode" << std::endl;
+				return;
+			}
+		}
 	}
 
 	#endif
