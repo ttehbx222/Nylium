@@ -38,6 +38,8 @@ namespace nylium{
         CB008, //unnamed namespace
         CB009, //unexpected initializer list
         CB010, //unnamed class
+        CB998, //unreachable point
+        CB999, //unresolved error
     };
 
     struct FileInterface;

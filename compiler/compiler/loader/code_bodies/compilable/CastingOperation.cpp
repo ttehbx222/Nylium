@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissionsand
  * limitations under the License.
  */
-#pragma once
+#include "CastingOperation.hpp"
 
-#include "../Operation.hpp"
+using namespace nylium;
 
-namespace nylium{
+CastingOperation::CastingOperation(ValueHolder* target, PendingDeclaration* target_type){
+    f_target = target;
+    f_target_type = target_type;
+}
 
-    struct CastingOperation : public Operation, public CompilableBody {
-        PendingDeclaration* f_target_type;
-        CastingOperation(ValueHolder* target, PendingDeclaration* target_type);
-        void compile(Assembly*);
-    };
-
+void CastingOperation::compile(Assembly* assembly){
+    
 }

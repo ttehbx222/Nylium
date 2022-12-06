@@ -42,6 +42,7 @@ namespace nylium{
             }
         }
         virtual Castable conversionTo(TypeDeclaration* declaration);
+        virtual void compile(Assembly*);
     };
 
 }

@@ -30,7 +30,7 @@ namespace nylium{
 
     struct PendingDeclaration;
 
-    struct ValueHolder : public CodeObject {
+    struct ValueHolder : public CodeObject, public CompilableBody{
         ValueHolderType f_vhtype;
 		PendingDeclaration* f_type;
 	};

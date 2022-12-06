@@ -23,6 +23,9 @@ namespace nylium{
         //TODO resolve
         PendingDeclaration() {};
         inline PendingDeclaration(std::string& label){ this->f_key = label; }
+        virtual void compile(Assembly*){
+            //error
+        }
     };
 
 }

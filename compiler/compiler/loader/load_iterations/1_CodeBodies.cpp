@@ -35,6 +35,9 @@
 #include "../../error_handling/errors/CB009.hpp"
 #include "../../error_handling/errors/CB010.hpp"
 
+#include "../../error_handling/errors/CB998.hpp"
+#include "../../error_handling/errors/CB999.hpp"
+
 #include "../../../log/logger.hpp"
 
 using namespace nylium;
@@ -266,12 +269,12 @@ namespace builder{
             }
             assertCustomLabels(seq, text);
             if (content->isInterface()){
-                //error
+                CB999::throwError(seq, text->f_interface);
                 return;
             }
             auto content_temp = ((Package*)content)->contents.find(seq->chars);
             if (content_temp == ((Package*)content)->contents.end()){
-                //error
+                CB999::throwError(seq, text->f_interface);
                 return;
             }
             content = content_temp->second;
@@ -285,11 +288,11 @@ namespace builder{
                 seq = element->f_sequence;
                 continue;
             }
-            //error
+            CB999::throwError(seq, text->f_interface);
             return;
         }
         if (!content->isInterface()){
-            //error
+            CB999::throwError(seq, text->f_interface);
             return;
         }
         text->f_interface->imports.push_back((FileInterface*)content);
@@ -299,9 +302,10 @@ namespace builder{
 
         Scope* buildIfKeyword(Scope* scope, Text* text, size_t* read_pos){
             Element* element = text->f_current_target->read(read_pos);
+            CharSequence* seq = element->f_sequence;
 
             if (element->elementType() != ElementType::BRACKET || ((SequenceBracket*)element)->f_btype != BracketListType::SINGLE){
-                //error
+                CB999::throwError(seq, text->f_interface);
                 return nullptr;
             }
 
@@ -312,9 +316,10 @@ namespace builder{
             text->f_current_target = temp;
             
             element = text->f_current_target->read(read_pos);
+            seq = element->f_sequence;
 
             if (element->elementType() != ElementType::SCOPE || ((SequenceScope*)element)->f_stype != ScopeListType::SCOPE){
-                //error
+                CB999::throwError(seq, text->f_interface);
                 return nullptr;
             }
 
@@ -325,9 +330,10 @@ namespace builder{
 
         Scope* buildForKeyword(Scope* scope, Text* text, size_t* read_pos){
             Element* element = text->f_current_target->read(read_pos);
+            CharSequence* seq = element->f_sequence;
 
             if (element->elementType() != ElementType::BRACKET || ((SequenceBracket*)element)->f_btype != BracketListType::ENDED_LINE_LIST || ((SequenceBracket*)element)->f_contents.size() != 3){
-                //error
+                CB999::throwError(seq, text->f_interface);
                 return nullptr;
             }
 
@@ -548,7 +554,13 @@ namespace builder{
                 case ElementType::SEQUENCE:
                 {
                     if (seq->type == CharSequenceType::OPERATOR && (int)scope->f_layer & (int)SCOPE_LAYER::FUNCTION){
-                        Operation* operation;
+                        (*read_pos)-=2;
+                        ValueHolder* valueHolder = buildValueHolder(scope, text, read_pos);
+                        if (valueHolder){
+                            scope->f_code.push_back(valueHolder);
+                        }
+                        return nullptr;
+                        /*Operation* operation;
                         if (seq->chars == "." || seq->chars == "::"){
                             operation = operation::buildOperationArgument(scope, text, read_pos, first_label, std::string(""), false);
                         }else{
@@ -557,7 +569,7 @@ namespace builder{
                         
                         if (operation){
                             scope->f_code.push_back(operation);
-                        }
+                        }*/
                     }
                     if (!assertCustomLabels(seq, text)){
                         return nullptr;
@@ -587,10 +599,14 @@ namespace builder{
                         //TODO static member call
                         return nullptr;
                         }
+                        if (seq->chars == "="){
+                            //TODO assign operation
+                            return nullptr;
+                        }
                         int current_priority = operation::operatorPriority(seq->chars);
                         if (current_priority > previous_priority){
                             if (current_priority > last_priority){
-                                //unreachable
+                                CB998::throwError(seq, text->f_interface);
                                 return nullptr;
                             }
                             if (current_priority == 10){ //value++
@@ -608,7 +624,7 @@ namespace builder{
                         }
                     }else{
                         if (seq->chars != "++" && seq->chars != "--" && seq->chars != "!"){
-                            //error
+                            CB999::throwError(seq, text->f_interface);
                             return nullptr;
                         }
                         ValueHolder* target = buildValueHolder(scope, text, read_pos, 11);
@@ -620,7 +636,7 @@ namespace builder{
                 case CharSequenceType::NAME:
                 {
                     if (last){
-                        //error
+                        CB999::throwError(seq, text->f_interface);
                         return nullptr;
                     }
                     last = new PendingDeclaration(seq->chars);
@@ -629,7 +645,7 @@ namespace builder{
                 case CharSequenceType::BRACKET:
                 {
                     if (last || element->elementType() != ElementType::BRACKET || ((SequenceBracket*)element)->f_btype != BracketListType::SINGLE){
-                        //error
+                        CB999::throwError(seq, text->f_interface);
                         return nullptr;
                     }
                     SequenceLine* temp = text->f_current_target;
@@ -644,7 +660,7 @@ namespace builder{
                             case CharSequenceType::BRACKET:
                             {
                                 if (element->elementType() != ElementType::BRACKET || ((SequenceBracket*)element)->f_btype != BracketListType::SINGLE){
-                                    //error
+                                    CB999::throwError(seq, text->f_interface);
                                     return nullptr;
                                 }
                                 temp = text->f_current_target;
@@ -657,7 +673,34 @@ namespace builder{
                             }
                             case CharSequenceType::OPERATOR:
                             {
-                                //TODO scenario (value)++++value2
+                                bool result = false; //false = not casting
+                                size_t fake_read_pos = *read_pos;
+                                CharSequence* outlook = temp->read(&fake_read_pos)->f_sequence;
+                                while (outlook->type != CharSequenceType::END){
+                                    switch(outlook->type){
+                                        case CharSequenceType::OPERATOR:
+                                        {
+                                            if (outlook->chars == "++" || outlook->chars == "--"){
+                                                break;
+                                            }
+                                            if (outlook->chars == "!"){ //TODO add ~ operator
+                                                goto break_loop;
+                                            }
+                                            result = true;
+                                        }
+                                        case CharSequenceType::NAME:
+                                        case CharSequenceType::BRACKET:
+                                        {
+                                            goto break_loop;
+                                        }
+                                    }
+                                    outlook = temp->read(&fake_read_pos)->f_sequence;
+                                }
+                                break_loop:
+                                if (result){
+                                    ValueHolder* cast_target = buildValueHolder(scope, text, read_pos);
+                                    last = new CastingOperation(cast_target, (PendingDeclaration*)last);
+                                }
                                 break;
                             }
                             case CharSequenceType::NAME:
@@ -669,7 +712,7 @@ namespace builder{
                             }
                             default:
                             {
-                                //error
+                                CB999::throwError(seq, text->f_interface);
                                 return nullptr;
                             }
                         }
@@ -678,7 +721,7 @@ namespace builder{
                 }
                 default:
                 {
-                    //error
+                    CB999::throwError(seq, text->f_interface);
                     return nullptr;
                 }
                 }
@@ -686,7 +729,7 @@ namespace builder{
                 seq = element->f_sequence; 
             }
             if (!last){
-                //error
+                CB999::throwError(seq, text->f_interface);
             }
             return last;
         }
@@ -807,9 +850,9 @@ namespace builder{
                     return nullptr;
                 }
             }
-        }
+        }*/
 
-    }*/
+    }
 
 
 }

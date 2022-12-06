@@ -15,14 +15,15 @@
  */
 #pragma once
 
-#include "../Operation.hpp"
+#include "../CompileError.hpp"
+#include "../../loader/character_sequences/NyliumCharSequence.hpp"
 
 namespace nylium{
-
-    struct CastingOperation : public Operation, public CompilableBody {
-        PendingDeclaration* f_target_type;
-        CastingOperation(ValueHolder* target, PendingDeclaration* target_type);
-        void compile(Assembly*);
-    };
-
+    namespace CB999{
+        void throwError(CharSequence* seq, FileInterface* fInterface){
+                std::string message = std::string("unresolved error");
+                new CompileError(fInterface, seq, message, ERROR_CODE::CB999);
+                throw seq;
+        }
+    }
 }

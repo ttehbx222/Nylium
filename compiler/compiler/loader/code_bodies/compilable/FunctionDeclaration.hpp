@@ -26,6 +26,7 @@ namespace nylium{
     struct FunctionDeclaration : public Namespace, public CompilableBody {
         Parameters* f_parameters;
         FunctionDeclaration(std::string& name, SequenceScope* text_code, DeclarationAttributes* attributes, Scope* scope, Parameters* parameters);
+        virtual void compile(Assembly*);
     };
 
     //Scope* buildFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, PendingDeclaration* return_type, std::string& name, Parameters* parameters);

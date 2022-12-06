@@ -99,6 +99,14 @@ nylium::CompileError::CompileError(FileInterface* file, CharSequence* location, 
             error_code_str = "CB010: ";
             break;
         }
+        case ERROR_CODE::CB998:{
+            error_code_str = "CB998: ";
+            break;
+        }
+        case ERROR_CODE::CB999:{
+            error_code_str = "CB999: ";
+            break;
+        }
     }
 
     console_message = std::string(ANSI::BRIGHT_RED) + error_code_str + ANSI::RED + console_message;

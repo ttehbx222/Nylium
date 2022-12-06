@@ -15,14 +15,15 @@
  */
 #pragma once
 
-#include "../Operation.hpp"
+#include "../CompileError.hpp"
+#include "../../loader/character_sequences/NyliumCharSequence.hpp"
 
 namespace nylium{
-
-    struct CastingOperation : public Operation, public CompilableBody {
-        PendingDeclaration* f_target_type;
-        CastingOperation(ValueHolder* target, PendingDeclaration* target_type);
-        void compile(Assembly*);
-    };
-
+    namespace CB998{
+        void throwError(CharSequence* seq, FileInterface* fInterface){
+                std::string message = std::string("unreachable point has been reached (compiler-issue)");
+                new CompileError(fInterface, seq, message, ERROR_CODE::CB998);
+                throw seq;
+        }
+    }
 }

@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissionsand
  * limitations under the License.
  */
-#pragma once
+#include "FunctionCallOperation.hpp"
 
-#include "../Operation.hpp"
+using namespace nylium;
 
-namespace nylium{
+FunctionCallOperation::FunctionCallOperation(ValueHolder* target, std::string& label, std::vector<ValueHolder*>& arguments){
+    f_target = target;
+    f_key = new PendingDeclaration(label);
+    f_arguments = arguments;
+}
 
-    struct CastingOperation : public Operation, public CompilableBody {
-        PendingDeclaration* f_target_type;
-        CastingOperation(ValueHolder* target, PendingDeclaration* target_type);
-        void compile(Assembly*);
-    };
-
+void FunctionCallOperation::compile(Assembly* assembly){
+    
 }
