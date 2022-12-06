@@ -23,7 +23,7 @@
 namespace nylium {
 
     struct Assembly{
-        std::vector<AssemblyInstructionElement*> f_instructions;
+        std::vector<AssemblyInstructionElement*> f_instructions; //add sorted segments
         std::vector<AssemblyStorageElement*> f_data;
     };
 

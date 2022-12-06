@@ -24,6 +24,7 @@ namespace nylium{
         LITERAL,
         OPERATION,
         FIELD,
+        DECLARATION,
         OTHER
     };
 

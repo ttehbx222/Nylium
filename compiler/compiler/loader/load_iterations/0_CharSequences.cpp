@@ -53,6 +53,8 @@ const char value_int_dec[] = "^[0-9]+";
 const char value_char[] = "^'[^'\\\\]'|'[\\\\].'";
 const char value_str[] = "^\"([^\"\\\\]|[\\\\].)*\"";
 
+const char comment_line[] = "^//";
+
 const char first_chars[] = "[]()<>{} \t;,ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_+-*/&|^!=:.0123456789'\"";
 
 const std::regex regex_text(std::string("(")
@@ -66,7 +68,8 @@ const std::regex regex_text(std::string("(")
     +value_int_bin+")|("
     +value_int_dec+")|("
     +value_char+")|("
-    +value_str+")");
+    +value_str+")|("
+    +comment_line+")");
 
 void processLine(FileInterface* fInterface, Text* text, std::string line, size_t line_number, CharSequence** last){
     size_t coloumn = 0;
@@ -150,6 +153,10 @@ void processLine(FileInterface* fInterface, Text* text, std::string line, size_t
             {
                 sequence = new Value(chars, line_number, coloumn, ValueType::STRING);
                 break;  
+            }
+            case 13:
+            {
+                return;
             }
         }
         if (sequence){

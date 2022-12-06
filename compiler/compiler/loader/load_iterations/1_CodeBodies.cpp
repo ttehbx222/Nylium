@@ -570,58 +570,90 @@ namespace builder{
             Element* element = text->f_current_target->read(read_pos);
             CharSequence* seq = element->f_sequence;
 
-            switch(seq->type){
+            ValueHolder* last = nullptr;
+            int last_priority = 11;
+
+            while(seq->type != CharSequenceType::END){
+                switch(seq->type){
                 case CharSequenceType::OPERATOR:
                 {
-                    if (seq->chars != "++" && seq->chars != "--"){
-                        //error
+                    if (last){
+                        if (seq->chars == "."){
+                        //TODO member call
                         return nullptr;
+                        }
+                        if (seq->chars == "::"){
+                        //TODO static member call
+                        return nullptr;
+                        }
+                        int current_priority = operation::operatorPriority(seq->chars);
+                        if (current_priority > previous_priority){
+                            if (current_priority > last_priority){
+                                //unreachable
+                                return nullptr;
+                            }
+                            if (current_priority == 10){ //value++
+                                last_priority = 10;
+                                last = new FunctionCallOperation(last, seq->chars, std::vector<ValueHolder*>());
+                                break;
+                            }
+                            ValueHolder* source = buildValueHolder(scope, text, read_pos, current_priority);
+                            last = new FunctionCallOperation(last, seq->chars, std::vector<ValueHolder*>({source}));
+                            last_priority = current_priority;
+                            break;
+                        }else{
+                            --(*read_pos);
+                            return last;
+                        }
+                    }else{
+                        if (seq->chars != "++" && seq->chars != "--" && seq->chars != "!"){
+                            //error
+                            return nullptr;
+                        }
+                        ValueHolder* target = buildValueHolder(scope, text, read_pos, 11);
+                        last_priority = 11;
+                        last = new FunctionCallOperation(target, seq->chars + "x", std::vector<ValueHolder*>());
+                        break;
                     }
-                    ValueHolder* target = buildValueHolder(scope, text, read_pos, operation::operatorPriority(seq->chars));
-                    return new FunctionCallOperation(target, seq->chars + "x", std::vector<ValueHolder*>());
                 }
                 case CharSequenceType::NAME:
                 {
-                    PendingDeclaration* valueHolder = new PendingDeclaration(seq->chars);
-                    element = text->f_current_target->read(read_pos);
-                    CharSequence* seq = element->f_sequence;
-                    if (seq->type == CharSequenceType::END){
-                        return valueHolder;
-                    }
-                    if (seq->type != CharSequenceType::OPERATOR){
-                        //error
-                        return nullptr;
-                    }
-                    if (seq->chars == "."){
-                        //TODO member call
-                        return nullptr;
-                    }
-                    if (seq->chars == "::"){
-                        //TODO static member call
-                        return nullptr;
-                    }
-                    int current_priority = operation::operatorPriority(seq->chars);
-                    if (!current_priority){
-                        //error
-                        return nullptr;
-                    }
-                    if (current_priority > previous_priority){
-                        if (current_priority == 10){ //value++
-                            return new FunctionCallOperation(valueHolder, seq->chars, std::vector<ValueHolder*>());
+                    if (last){
+                        if (last->f_vhtype != ValueHolderType::DECLARATION){
+                            //TODO add CastingOperation
                         }
-                        ValueHolder* source = buildValueHolder(scope, text, read_pos, current_priority);
-                        //TODO add loop for infinite same priority chaining
-                    }else{
-
+                        //error
+                        return nullptr;
                     }
-                    return nullptr;
+                    last = new PendingDeclaration(seq->chars);
+                    break;
+                }
+                case CharSequenceType::BRACKET:
+                {
+                    if (last || element->elementType() != ElementType::BRACKET || ((SequenceBracket*)element)->f_btype != BracketListType::SINGLE){
+                        //error
+                        return nullptr;
+                    }
+                    SequenceLine* temp = text->f_current_target;
+                    size_t temp_read_pos = 0;
+                    text->f_current_target = ((SequenceBracket*)element)->f_contents.front();
+                    last = buildValueHolder(scope, text, &temp_read_pos);
+                    text->f_current_target = temp;
+                    break;
                 }
                 default:
                 {
                     //error
                     return nullptr;
                 }
+                }
+                element = text->f_current_target->read(read_pos);
+                seq = element->f_sequence; 
             }
+            if (!last){
+                //error
+            }
+            return last;
         }
 
     }
@@ -648,21 +680,23 @@ namespace builder{
                 return 6;
             }
             if (operation == "+" || operation == "-"){ //value1 + value2
-                return 7;
-            }
-            if (operation == "*" || operation == "/"){ //value1 * value2
                 return 8;
             }
-            if (operation == "<<" || operation == ">>"){ //value1 << value2
+            if (operation == "*" || operation == "/"){ //value1 * value2
                 return 9;
             }
-            if (operation == "++" || operation == "--"){ //value++ //++value
+            if (operation == "<<" || operation == ">>"){ //value1 << value2
+                return 7;
+            }
+            if (operation == "++" || operation == "--"){ //value++
                 return 10;
             }
+            //++value technicaly 11
+            //!value technicaly 11
             return 0;
         }
 
-        Operation* operation::buildOperationStart(Scope* scope, Text* text, size_t* read_pos){
+        /*Operation* operation::buildOperationStart(Scope* scope, Text* text, size_t* read_pos){
             //todo handle ++$, --$ operators$
             //todo handle single word inputs;
             return nullptr;
@@ -740,7 +774,7 @@ namespace builder{
             }
         }
 
-    }
+    }*/
 
 
 }
