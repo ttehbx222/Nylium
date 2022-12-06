@@ -39,12 +39,14 @@
 
 using namespace nylium;
 
-const char bracket[] = "^[\\(\\)<>{}\\[\\]]";
+//const char bracket[] = "^[\\(\\)<>{}\\[\\]]";
+const char bracket[] = "^[\\(\\){}\\[\\]]";
 const char empty_separator[] = "^[ \t]+";
 const char end[] = "^;";
 const char list_separator[] = "^,";
 const char name[] = "^[A-Za-z_][A-Za-z0-9_]*";
-const char operator_[] = "^[\\+\\-\\*\\/\\&\\|\\^\\!\\=\\:\\.]*";
+//const char operator_[] = "^[\\+\\-\\*\\/\\&\\|\\^\\!\\=\\:\\.]*";
+const char operator_[] = "^[\\+\\-\\*\\/\\&\\|\\^\\!\\=\\:\\.\\<\\>]*";
 
 const char value_int_hex[] = "^0x[A-Fa-f0-9]+";
 const char value_int_bin[] = "^0b[01]+";

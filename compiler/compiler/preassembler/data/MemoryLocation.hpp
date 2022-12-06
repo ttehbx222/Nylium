@@ -36,8 +36,7 @@ namespace nylium{
 
     struct TypeTemplate {
         TypeDeclaration* f_target;
-        std::map<TypeDeclaration*, MemoryLocation*> f_field_access; 
-        std::map<TypeDeclaration*, MemoryLocation*> f_function_access; 
+        std::map<TypeDeclaration*, MemoryLocation*> f_access;
     };
 
 }

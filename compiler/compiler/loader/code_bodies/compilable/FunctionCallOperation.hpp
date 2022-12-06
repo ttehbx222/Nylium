@@ -24,9 +24,9 @@ namespace nylium{
 
     struct FunctionCallOperation : public CallOperation, public CompilableBody {
         std::vector<ValueHolder*> f_arguments;
-        inline FunctionCallOperation(PendingDeclaration* target, std::string& label, std::vector<ValueHolder*>& arguments){
+        inline FunctionCallOperation(ValueHolder* target, std::string& label, std::vector<ValueHolder*>& arguments){
             f_target = target;
-            f_key = label;
+            f_key = new PendingDeclaration(label);
             f_arguments = arguments;
         }
     };

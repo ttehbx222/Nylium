@@ -17,6 +17,7 @@
 
 #include "../code_bodies/compilable/TypeDeclaration.hpp"
 #include "../code_bodies/compilable/FunctionCallOperation.hpp"
+#include "../code_bodies/compilable/CastingOperation.hpp"
 #include "../code_bodies/Operation.hpp"
 #include "../character_sequences/NyliumCharSequence.hpp"
 #include "0_CharSequences.hpp"
@@ -619,9 +620,6 @@ namespace builder{
                 case CharSequenceType::NAME:
                 {
                     if (last){
-                        if (last->f_vhtype != ValueHolderType::DECLARATION){
-                            //TODO add CastingOperation
-                        }
                         //error
                         return nullptr;
                     }
@@ -639,6 +637,43 @@ namespace builder{
                     text->f_current_target = ((SequenceBracket*)element)->f_contents.front();
                     last = buildValueHolder(scope, text, &temp_read_pos);
                     text->f_current_target = temp;
+                    if (last->f_vhtype == ValueHolderType::DECLARATION){
+                        element = temp->read(read_pos);
+                        seq = element->f_sequence;
+                        switch(seq->type){
+                            case CharSequenceType::BRACKET:
+                            {
+                                if (element->elementType() != ElementType::BRACKET || ((SequenceBracket*)element)->f_btype != BracketListType::SINGLE){
+                                    //error
+                                    return nullptr;
+                                }
+                                temp = text->f_current_target;
+                                temp_read_pos = 0;
+                                text->f_current_target = ((SequenceBracket*)element)->f_contents.front();
+                                ValueHolder* cast_target = buildValueHolder(scope, text, &temp_read_pos);
+                                text->f_current_target = temp;
+                                last = new CastingOperation(cast_target, (PendingDeclaration*)last);
+                                break;
+                            }
+                            case CharSequenceType::OPERATOR:
+                            {
+                                //TODO scenario (value)++++value2
+                                break;
+                            }
+                            case CharSequenceType::NAME:
+                            {
+                                --(*read_pos);
+                                ValueHolder* cast_target = buildValueHolder(scope, text, read_pos, 12);
+                                last = new CastingOperation(cast_target, (PendingDeclaration*)last);
+                                break;
+                            }
+                            default:
+                            {
+                                //error
+                                return nullptr;
+                            }
+                        }
+                    }
                     break;
                 }
                 default:

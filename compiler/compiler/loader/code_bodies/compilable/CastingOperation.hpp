@@ -15,14 +15,16 @@
  */
 #pragma once
 
-#include "CodeLine.hpp"
-#include "ValueHolder.hpp"
-#include "compilable/FieldDeclaration.hpp"
+#include "../Operation.hpp"
 
 namespace nylium{
 
-    struct Operation : public CodeLine, public ValueHolder {
-        ValueHolder* f_target;
+    struct CastingOperation : public Operation, public CompilableBody {
+        PendingDeclaration* f_target_type;
+        CastingOperation(ValueHolder* target, PendingDeclaration* target_type){
+            f_target = target;
+            f_target_type = target_type;
+        }
     };
 
 }
