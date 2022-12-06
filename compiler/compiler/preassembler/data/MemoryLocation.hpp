@@ -27,6 +27,8 @@ namespace nylium{
         REGISTER
     };
 
+    //TODO add relative Location
+
     struct MemoryLocation {
         bool fitted = false;
         SIZE f_size;
@@ -36,7 +38,7 @@ namespace nylium{
 
     struct TypeTemplate {
         TypeDeclaration* f_target;
-        std::map<TypeDeclaration*, MemoryLocation*> f_access;
+        std::map<TypeDeclaration*, MemoryLocation*> f_access; //pointer to the members of target sorted by supertype
     };
 
 }
