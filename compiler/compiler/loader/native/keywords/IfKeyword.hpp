@@ -29,7 +29,7 @@ namespace nylium{
         ValueHolder* f_condition;
         ConditionalScope* f_following = nullptr;
         ConditionalScope* f_last = this;
-        inline IfKeyword(ValueHolder* condition, SequenceScope* element, Scope* scope) : ConditionalScope(scope, element) { f_condition = condition;f_layer = SCOPE_LAYER::FUNCTION;  }; //TODO add SequenceScope
+        inline IfKeyword(ValueHolder* condition, SequenceScope* element, Scope* scope) : ConditionalScope(scope, element) { f_kwtype = KeywordType::IF, f_condition = condition; f_layer = SCOPE_LAYER::FUNCTION;  };
         virtual void compile(Assembly*);
     };
 

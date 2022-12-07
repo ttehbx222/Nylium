@@ -15,24 +15,13 @@
  */
 #pragma once
 
-#include "../Operation.hpp"
+#include "IfKeyword.hpp"
 
 namespace nylium{
 
-    enum class KeywordType{
-        IF,
-        FOR,
-        WHILE,
-        ELSE
-    };
-
-    //TODO check for importance
-
-    struct Keyword : public Operation {
-        KeywordType f_kwtype;
-        Keyword(){
-            this->f_ctype = CompilableType::KEYWORD;
-        }
+    struct ElseKeyword : public ConditionalScope{
+        inline ElseKeyword(ValueHolder* condition, SequenceScope* element, Scope* scope) : ConditionalScope(scope, element) { f_kwtype = KeywordType::ELSE; f_layer = SCOPE_LAYER::FUNCTION;  };
+        virtual void compile(Assembly*);
     };
 
 }

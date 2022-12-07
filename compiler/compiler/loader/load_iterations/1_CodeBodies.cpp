@@ -51,7 +51,7 @@ namespace builder{
         Scope* buildIfKeyword(Scope* scope, Text* text, size_t* read_pos);
         Scope* buildWhileKeyword(Scope* scope, Text* text, size_t* read_pos);
         Scope* buildForKeyword(Scope* scope, Text* text, size_t* read_pos);
-        Scope* buildElseKeyword(Scope* scope, Text* text, size_t* read_pos/*,IfKeyword if_statement*/);
+        ConditionalScope* buildElseKeyword(Scope* scope, Text* text, size_t* read_pos/*,IfKeyword if_statement*/);
     }
     namespace declaration{
         Scope* buildDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos);
@@ -251,8 +251,20 @@ namespace builder{
                 }
 
                 if (seq->chars == "else" && ((int)scope->f_layer & (int)SCOPE_LAYER::FUNCTION)){
-                    //TODO check if previous is if
-                    //return buildElseKeyword
+                    ConditionalScope* else_statement = keyword::buildElseKeyword(scope, text, read_pos);
+                    CompilableBody* last = scope->f_code.back();
+                    if (last->f_ctype == CompilableType::KEYWORD && ((Keyword*)last)->f_kwtype == KeywordType::IF){
+                        IfKeyword* if_statement = (IfKeyword*)(Scope*)last;
+                        if (if_statement->f_last->f_kwtype != KeywordType::IF){
+                            CB999::throwError(seq, text->f_interface);
+                            return nullptr;
+                        }
+                        ((IfKeyword*)if_statement->f_last)->f_following = else_statement;
+                        if_statement->f_last = else_statement;
+                        return else_statement;
+                    }
+                    CB999::throwError(seq, text->f_interface);
+                    return nullptr;
                 }
 
                 return misc::buildFieldOrOperationOrFunctionDeclaration(scope, text, read_pos, new PendingDeclaration(seq->chars));
@@ -348,7 +360,7 @@ namespace builder{
 
             buildStart(wrapper_scope, text, &temp_read_pos);
 
-            ValueHolder* init_operation = (ValueHolder*)wrapper_scope->f_code.front();
+            ValueHolder* init_operation = (ValueHolder*)wrapper_scope->f_code.front(); //TODO limit to FiledOrOperation
 
             temp_read_pos = 0;
             text->f_current_target = ((SequenceBracket*)element)->f_contents.at(1);
@@ -370,7 +382,7 @@ namespace builder{
 
             Scope* for_statement = new ForKeyword(init_operation, condition_operation, iteration_operation, (SequenceScope*)element, scope);
             scope->code().push_back(for_statement);
-            delete wrapper_scope;
+            delete wrapper_scope; //todo check if wrapper_scope is needed
             return for_statement;
         }
 
@@ -401,6 +413,11 @@ namespace builder{
             scope->code().push_back(while_statement);
             return while_statement;
         }
+    
+        ConditionalScope* buildElseKeyword(Scope* scope, Text* text, size_t* read_pos){
+            //TODO
+        }
+
     }
 
     namespace declaration{
