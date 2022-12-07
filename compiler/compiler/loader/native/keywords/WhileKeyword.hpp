@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 #pragma once
-#include "../data/AssemblyRepresentation.hpp"
+
+#include "../../code_bodies/compilable/Scope.hpp"
+#include "../../code_bodies/Operation.hpp"
+#include "../../code_bodies/compilable/Keyword.hpp"
 
 namespace nylium{
 
-    enum class CompilableType{
-        KEYWORD,
-        SCOPE,
-        OPERATION
-    };
-
-    struct CompilableBody {
-        CompilableType f_ctype;
-        virtual void compile(Assembly* assembly) = 0;
+    struct WhileKeyword : public Scope, public Keyword{
+        ValueHolder* f_condition;
+        inline WhileKeyword(ValueHolder* condition, SequenceScope* element, Scope* scope) : Scope(scope, element) { f_condition = condition;f_layer = SCOPE_LAYER::FUNCTION;  }; //TODO add SequenceScope
+        virtual void compile(Assembly*);
     };
 
 }

@@ -19,9 +19,17 @@
 
 namespace nylium{
 
+    enum class KeywordType{
+        IF,
+        FOR,
+        WHILE,
+        ELSE
+    };
+
     //TODO check for importance
 
     struct Keyword : public Operation, public CompilableBody {
+        KeywordType f_kwtype;
         //TODO
     };
 

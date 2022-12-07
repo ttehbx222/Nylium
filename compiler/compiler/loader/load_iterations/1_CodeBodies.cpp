@@ -24,6 +24,7 @@
 #include "../native/keywords/Keywords.hpp"
 #include "../native/keywords/IfKeyword.hpp"
 #include "../native/keywords/ForKeyword.hpp"
+#include "../native/keywords/WhileKeyword.hpp"
 
 #include "../../error_handling/errors/CB001.hpp"
 #include "../../error_handling/errors/CB002.hpp"
@@ -242,7 +243,7 @@ namespace builder{
                 }
 
                 if (seq->chars == "while" && ((int)scope->f_layer & (int)SCOPE_LAYER::FUNCTION)){
-                    //return buildWhileKeyword
+                    return keyword::buildWhileKeyword(scope, text, read_pos);
                 }
 
                 if (seq->chars == "for" && ((int)scope->f_layer & (int)SCOPE_LAYER::FUNCTION)){
@@ -373,6 +374,33 @@ namespace builder{
             return for_statement;
         }
 
+        Scope* buildWhileKeyword(Scope* scope, Text* text, size_t* read_pos){
+            Element* element = text->f_current_target->read(read_pos);
+            CharSequence* seq = element->f_sequence;
+
+            if (element->elementType() != ElementType::BRACKET || ((SequenceBracket*)element)->f_btype != BracketListType::SINGLE){
+                CB999::throwError(seq, text->f_interface);
+                return nullptr;
+            }
+
+            SequenceLine* temp = text->f_current_target;
+            text->f_current_target = ((SequenceBracket*)element)->f_contents.front();
+            size_t temp_read_pos = 0;
+            ValueHolder* operation = misc::buildValueHolder(scope, text, &temp_read_pos);
+            text->f_current_target = temp;
+            
+            element = text->f_current_target->read(read_pos);
+            seq = element->f_sequence;
+
+            if (element->elementType() != ElementType::SCOPE || ((SequenceScope*)element)->f_stype != ScopeListType::SCOPE){
+                CB999::throwError(seq, text->f_interface);
+                return nullptr;
+            }
+
+            Scope* while_statement = new WhileKeyword(operation, (SequenceScope*)element, scope);
+            scope->code().push_back(while_statement);
+            return while_statement;
+        }
     }
 
     namespace declaration{
