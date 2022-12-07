@@ -14,3 +14,9 @@
  * limitations under the License.
  */
 #include "Keyword.hpp"
+
+using namespace nylium;
+
+Keyword::Keyword(KeywordType kwtype) : Operation(nullptr, nullptr){
+    this->f_kwtype = kwtype;
+}

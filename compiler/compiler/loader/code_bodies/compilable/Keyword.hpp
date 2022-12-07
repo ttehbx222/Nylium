@@ -30,9 +30,7 @@ namespace nylium{
 
     struct Keyword : public Operation {
         KeywordType f_kwtype;
-        Keyword(KeyWordType) : Operation(nullptr, nullptr){
-            this->f_ctype = CompilableType::KEYWORD;
-        }
+        Keyword(KeyWordType kwtype);
     };
 
 }
