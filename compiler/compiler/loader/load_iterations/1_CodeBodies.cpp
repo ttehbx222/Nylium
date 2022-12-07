@@ -23,6 +23,7 @@
 #include "0_CharSequences.hpp"
 #include "../native/keywords/Keywords.hpp"
 #include "../native/keywords/IfKeyword.hpp"
+#include "../native/keywords/ForKeyword.hpp"
 
 #include "../../error_handling/errors/CB001.hpp"
 #include "../../error_handling/errors/CB002.hpp"
@@ -245,7 +246,7 @@ namespace builder{
                 }
 
                 if (seq->chars == "for" && ((int)scope->f_layer & (int)SCOPE_LAYER::FUNCTION)){
-                    //return buildForKeyword
+                    return keyword::buildForKeyword(scope, text, read_pos);
                 }
 
                 if (seq->chars == "else" && ((int)scope->f_layer & (int)SCOPE_LAYER::FUNCTION)){
@@ -312,7 +313,7 @@ namespace builder{
             SequenceLine* temp = text->f_current_target;
             text->f_current_target = ((SequenceBracket*)element)->f_contents.front();
             size_t temp_read_pos = 0;
-            ValueHolder* operation; //TODO = buildValueHolder
+            ValueHolder* operation = misc::buildValueHolder(scope, text, &temp_read_pos);
             text->f_current_target = temp;
             
             element = text->f_current_target->read(read_pos);
@@ -337,7 +338,39 @@ namespace builder{
                 return nullptr;
             }
 
+            SequenceLine* temp = text->f_current_target;
 
+            size_t temp_read_pos = 0;
+            text->f_current_target = ((SequenceBracket*)element)->f_contents.front();
+
+            Scope* wrapper_scope = new Scope(scope, nullptr);
+
+            buildStart(wrapper_scope, text, &temp_read_pos);
+
+            ValueHolder* init_operation = (ValueHolder*)wrapper_scope->f_code.front();
+
+            temp_read_pos = 0;
+            text->f_current_target = ((SequenceBracket*)element)->f_contents.at(1);
+            ValueHolder* condition_operation = misc::buildValueHolder(wrapper_scope, text, &temp_read_pos);
+
+            temp_read_pos = 0;
+            text->f_current_target = ((SequenceBracket*)element)->f_contents.at(2);
+            ValueHolder* iteration_operation = misc::buildValueHolder(wrapper_scope, text, &temp_read_pos);
+
+            text->f_current_target = temp;
+
+            element = text->f_current_target->read(read_pos);
+            seq = element->f_sequence;
+
+            if (element->elementType() != ElementType::SCOPE || ((SequenceScope*)element)->f_stype != ScopeListType::SCOPE){
+                CB999::throwError(seq, text->f_interface);
+                return nullptr;
+            }
+
+            Scope* for_statement = new ForKeyword(init_operation, condition_operation, iteration_operation, (SequenceScope*)element, scope);
+            scope->code().push_back(for_statement);
+            delete wrapper_scope;
+            return for_statement;
         }
 
     }
@@ -521,7 +554,19 @@ namespace builder{
 
                     element = text->f_current_target->read(read_pos);
                     seq = element->f_sequence;
-                    if (element->elementType() != ElementType::SCOPE){ //TODO inheritance
+                    std::vector<PendingDeclaration*> inheritance;
+                    if (seq->type == CharSequenceType::OPERATOR && seq->chars == ":"){
+                        seq = text->f_current_target->read(read_pos)->f_sequence;
+                        if (!assertCustomLabels(seq, text)){
+                            CB999::throwError(seq, text->f_interface);
+                            return nullptr;
+                        }
+                        inheritance.push_back(new PendingDeclaration(seq->chars));
+                        element = text->f_current_target->read(read_pos);
+                        seq = element->f_sequence;
+                        //TODO multi inheritance
+                    }
+                    if (element->elementType() != ElementType::SCOPE){
                         CB001::throwError(seq, text->f_interface);
                         return nullptr;
                     }
@@ -530,6 +575,7 @@ namespace builder{
                         return nullptr;
                     }
                     TypeDeclaration* type_decl = new TypeDeclaration(type_name, (SequenceScope*)element, attributes, scope);
+                    type_decl->f_supertypes = inheritance;
                     scope->addDeclaration(type_decl);
                     return type_decl;
                 }

@@ -21,15 +21,11 @@
 
 namespace nylium{
 
-    struct ConditionalScope : public Scope, public Keyword {
-        inline ConditionalScope(Scope* scope, SequenceScope* text_code) : Scope(scope, text_code){};
-    };
-
-    struct IfKeyword : public ConditionalScope{
+    struct ForKeyword : public Scope, public Keyword{
         ValueHolder* f_condition;
-        ConditionalScope* f_following = nullptr;
-        ConditionalScope* f_last = this;
-        inline IfKeyword(ValueHolder* condition, SequenceScope* element, Scope* scope) : ConditionalScope(scope, element) { f_condition = condition;f_layer = SCOPE_LAYER::FUNCTION;  }; //TODO add SequenceScope
+        ValueHolder* f_init;
+        ValueHolder* f_iteration;
+        inline ForKeyword(ValueHolder* init, ValueHolder* condition, ValueHolder* iteration, SequenceScope* element, Scope* scope) : Scope(scope, element) { f_init = init; f_condition = condition; f_iteration = iteration; f_layer = SCOPE_LAYER::FUNCTION;  }; //TODO add SequenceScope
         virtual void compile(Assembly*);
     };
 

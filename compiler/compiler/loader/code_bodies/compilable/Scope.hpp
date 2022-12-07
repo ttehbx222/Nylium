@@ -45,6 +45,8 @@ namespace nylium{
 	    	Visibility visibilityOf(Scope* scope);
 	      	Declaration* searchDeclaration(PendingDeclaration* decl);
 	    	void addDeclaration(Declaration* decl) {} //TODO
+
+			virtual void compile(Assembly*);
 	};
 
     typedef Scope* SCOPE;

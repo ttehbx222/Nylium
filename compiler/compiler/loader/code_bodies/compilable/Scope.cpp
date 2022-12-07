@@ -18,6 +18,7 @@
 using namespace nylium;
 
 Scope::Scope(Scope* scope, SequenceScope* seqScope){
+    this->f_layer = scope->f_layer;
     this->f_parent = scope;
     this->f_text_code = seqScope;
     this->f_parent_interface = scope->f_parent_interface;

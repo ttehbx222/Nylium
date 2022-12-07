@@ -24,5 +24,9 @@ int main(/*TODO params*/) { //TEST RUN
 	nlog::init();
 	nlog::ConsoleLogFilter(nlog::LOGLEVEL::DEBUG_3);
 	Project* project = loadProject(std::string("TestRun"));
+	if (project->error){
+		return -1;
+	}
 	Assembly* assembly = preassembleProject(project);
+	return 0;
 }

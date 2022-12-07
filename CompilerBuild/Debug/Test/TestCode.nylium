@@ -1,6 +1,5 @@
 namespace potato{
-	struct A{
+	class A : B{
 		int a;
 	}
-	A a = {3};
 }
