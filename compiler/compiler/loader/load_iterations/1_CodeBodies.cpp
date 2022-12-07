@@ -17,6 +17,7 @@
 
 #include "../code_bodies/compilable/TypeDeclaration.hpp"
 #include "../code_bodies/compilable/FunctionCallOperation.hpp"
+#include "../code_bodies/compilable/FunctionDeclaration.hpp"
 #include "../code_bodies/compilable/CastingOperation.hpp"
 #include "../code_bodies/Operation.hpp"
 #include "../character_sequences/NyliumCharSequence.hpp"
@@ -58,6 +59,8 @@ namespace builder{
         Scope* buildDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos);
         Scope* buildNamespaceDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos);
         Scope* buildTypeDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos); 
+        Scope* buildFieldOrFunctionDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, PendingDeclaration* first_label);
+        Scope* buildFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, PendingDeclaration* return_type, std::string& name, SequenceBracket* parameters, SequenceScope* body);
     }
     namespace misc{
         Scope* buildFieldOrOperationOrFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, PendingDeclaration* first_label);
@@ -65,8 +68,8 @@ namespace builder{
     }
     namespace operation{
         int operatorPriority(std::string& _operator);
-        Operation* buildOperationStart(Scope* scope, Text* text, size_t* read_pos);
-        Operation* buildOperationArgument(Scope* scope, Text* text, size_t* read_pos, PendingDeclaration* target, std::string& operation, bool f_operator);
+        //Operation* buildOperationStart(Scope* scope, Text* text, size_t* read_pos);
+        //Operation* buildOperationArgument(Scope* scope, Text* text, size_t* read_pos, PendingDeclaration* target, std::string& operation, bool f_operator);
     }
 }
 
@@ -669,6 +672,93 @@ namespace builder{
             }
         }
 
+        Scope* buildFieldOrFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, PendingDeclaration* first_label){
+            Element* element = text->f_current_target->read(read_pos);
+            CharSequence* seq = element->f_sequence;
+
+            assertCustomLabels(seq, text);
+
+            std::string name = seq->chars;
+
+            element = text->f_current_target->read(read_pos);
+            seq = element->f_sequence;
+
+            switch(element->elementType()){
+                case ElementType::BRACKET:
+                {
+                    SequenceBracket* params = (SequenceBracket*)element;
+                    if (params->f_btype == BracketListType::ENDED_LINE_LIST){
+                        CB999::throwError(seq, text->f_interface);
+                        return nullptr;
+                    }
+                    element = text->f_current_target->read(read_pos);
+                    if (element->elementType() != ElementType::SCOPE || ((SequenceScope*)element)->f_stype != ScopeListType::SCOPE){
+                        CB999::throwError(seq, text->f_interface);
+                        return nullptr;
+                    }
+                    SequenceScope* body = (SequenceScope*)element;
+                    return buildFunctionDeclaration(scope, text, read_pos, attributes, first_label, name, params, body);
+                }
+                case ElementType::SCOPE:
+                {
+                    CB999::throwError(seq, text->f_interface);
+                    return nullptr;
+                }
+                case ElementType::SEQUENCE:
+                {
+                    switch(seq->type){
+                        case CharSequenceType::END:
+                        {
+                            //FieldDeclaration no init
+                        }
+                        case CharSequenceType::OPERATOR:
+                        {
+                            if (seq->chars == "="){
+                                (*read_pos)-=2;
+                                //FieldDeclaration init
+                            }
+                        }
+                        default:
+                        {
+                            CB999::throwError(seq, text->f_interface);
+                            return nullptr;
+                        }
+                    }
+                }
+            }
+        }
+
+        std::vector<ValueHolder*> buildParameters(Scope* scope, Text* text, SequenceBracket* params){
+            std::vector<ValueHolder*> params_vec;
+            for (SequenceLine* line : params->f_contents){
+                size_t read_pos = 0;
+                CharSequence* seq = line->read(&read_pos)->f_sequence;
+                assertCustomLabels(seq, text);
+                PendingDeclaration* param_type = new PendingDeclaration(seq->chars);
+                seq = line->read(&read_pos)->f_sequence;
+                assertCustomLabels(seq, text);
+                std::string name = seq->chars;
+                seq = line->read(&read_pos)->f_sequence;
+                if (seq->chars == "="){
+                    read_pos -= 2; //= 1
+                    text->f_current_target = line;
+                    AssignOperation* initializer = (AssignOperation*)misc::buildValueHolder(scope, text, &read_pos);
+                    params_vec.push_back(new FieldDeclaration(param_type, name, initializer));
+                    continue;
+                }
+                if (seq->type == CharSequenceType::END){
+                    params_vec.push_back(new FieldDeclaration(param_type, name));
+                    continue;
+                }
+                CB999::throwError(seq, text->f_interface);
+                return params_vec;
+            }
+        }
+
+        Scope* buildFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, PendingDeclaration* return_type, std::string& name, SequenceBracket* parameters, SequenceScope* body){
+            //new FunctionDeclaration;
+        }
+
     }
 
     namespace misc{
@@ -707,7 +797,8 @@ namespace builder{
                     if (!assertCustomLabels(seq, text)){
                         return nullptr;
                     }
-                    //TODO return buildFieldOrFunctionDeclaration
+                    --(*read_pos);
+                    return declaration::buildFieldOrFunctionDeclaration(scope, text, new DeclarationAttributes(), first_label);
                 }
             }
         }
@@ -786,7 +877,7 @@ namespace builder{
                     text->f_current_target = ((SequenceBracket*)element)->f_contents.front();
                     last = buildValueHolder(scope, text, &temp_read_pos);
                     text->f_current_target = temp;
-                    if (last->f_vhtype == ValueHolderType::DECLARATION){
+                    if (last->f_vhtype == ValueHolderType::PENDING_DECLARATION){
                         element = temp->read(read_pos);
                         seq = element->f_sequence;
                         switch(seq->type){

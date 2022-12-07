@@ -17,7 +17,6 @@
 
 using namespace nylium;
 
-FieldDeclaration::FieldDeclaration(PendingDeclaration* type, std::string& label){
-    this->f_type = type;
-    this->f_key = label;
+FieldDeclaration::FieldDeclaration(DeclarationAttributes* attributes, PendingDeclaration* type, std::string& label, AssignOperation* initializer) : PendingDeclaration(attributes, label, type, ValueHolderType::FIELD){
+    
 }

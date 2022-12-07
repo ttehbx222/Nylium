@@ -20,9 +20,10 @@
 
 namespace nylium{
 
-    struct AssignOperation : public Operation, public CompilableBody {
+    struct AssignOperation : public Operation {
         ValueHolder* f_source;
         void compile(Assembly*);
+        AssignOperation(ValueHolder* target, ValueHolder* f_source);
     };
 
 }

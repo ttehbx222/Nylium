@@ -17,8 +17,7 @@
 
 using namespace nylium;
 
-CastingOperation::CastingOperation(ValueHolder* target, PendingDeclaration* target_type){
-    f_target = target;
+CastingOperation::CastingOperation(ValueHolder* target, PendingDeclaration* target_type) : Operation(target_type, target){
     f_target_type = target_type;
 }
 

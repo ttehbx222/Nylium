@@ -13,17 +13,11 @@
  * See the License for the specific language governing permissionsand
  * limitations under the License.
  */
-#pragma once
+#include "CallOperation.hpp"
 
-#include "../PendingDeclaration.hpp"
-#include "AssignOperation.hpp"
+using namespace nylium;
 
-namespace nylium{
-
-    struct FieldDeclaration : public PendingDeclaration {
-        FieldDeclaration(DeclarationAttributes* attributes, PendingDeclaration* type, std::string& label, AssignOperation* initializer = nullptr);
-        void compile(Assembly*);
-    };
-    //Scope* buildFieldDeclaration();
-
+CallOperation::CallOperation(ValueHolder* target, bool f_static, std::string& key) : Operation(nullptr, target) {
+    this->f_static = f_static;
+    this->f_key = new PendingDeclaration(nullptr, key);
 }

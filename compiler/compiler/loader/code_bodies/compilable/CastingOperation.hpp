@@ -19,7 +19,7 @@
 
 namespace nylium{
 
-    struct CastingOperation : public Operation, public CompilableBody {
+    struct CastingOperation : public Operation {
         PendingDeclaration* f_target_type;
         CastingOperation(ValueHolder* target, PendingDeclaration* target_type);
         void compile(Assembly*);

@@ -18,9 +18,7 @@
 
 using namespace nylium;
 
-Namespace::Namespace(std::string& name, SequenceScope* text_code, DeclarationAttributes* attributes, Scope* scope) : Scope(scope, text_code) {
-    this->f_attributes = attributes;
-    this->f_key = name;
+Namespace::Namespace(DeclarationAttributes* attributes, std::string& name, Scope* scope, SequenceScope* text_code, PendingDeclaration* type, ValueHolderType vhtype) : Scope(scope, text_code), PendingDeclaration(attributes, name, type, vhtype){
     if (attributes->f_dtype == DeclarationType::NAMESPACE){
         nlog::log(nlog::LOGLEVEL::DEBUG_0, std::string("namespace ") + name);
     }

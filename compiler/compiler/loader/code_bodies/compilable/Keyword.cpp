@@ -13,17 +13,4 @@
  * See the License for the specific language governing permissionsand
  * limitations under the License.
  */
-#pragma once
-
-#include "../PendingDeclaration.hpp"
-#include "AssignOperation.hpp"
-
-namespace nylium{
-
-    struct FieldDeclaration : public PendingDeclaration {
-        FieldDeclaration(DeclarationAttributes* attributes, PendingDeclaration* type, std::string& label, AssignOperation* initializer = nullptr);
-        void compile(Assembly*);
-    };
-    //Scope* buildFieldDeclaration();
-
-}
+#include "Keyword.hpp"

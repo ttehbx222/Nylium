@@ -22,3 +22,7 @@
 #include "../../../../log/logger.hpp"
 
 using namespace nylium;
+
+FunctionDeclaration::FunctionDeclaration(DeclarationAttributes* attributes, PendingDeclaration* return_type, std::string& name, Scope* scope, SequenceScope* text_code, Parameters* parameters) : Namespace(attributes, name, scope, text_code, return_type, ValueHolderType::FUNCTION){
+    this->f_parameters = parameters;
+}

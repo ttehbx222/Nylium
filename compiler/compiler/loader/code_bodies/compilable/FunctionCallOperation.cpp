@@ -17,9 +17,7 @@
 
 using namespace nylium;
 
-FunctionCallOperation::FunctionCallOperation(ValueHolder* target, std::string& label, std::vector<ValueHolder*>& arguments){
-    f_target = target;
-    f_key = new PendingDeclaration(label);
+FunctionCallOperation::FunctionCallOperation(ValueHolder* target, std::string& label, std::vector<ValueHolder*>& arguments, bool f_static) : CallOperation(target, f_static, label){
     f_arguments = arguments;
 }
 

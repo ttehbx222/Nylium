@@ -24,7 +24,9 @@ namespace nylium{
         LITERAL,
         OPERATION,
         FIELD,
-        DECLARATION,
+        FUNCTION,
+        PENDING_DECLARATION,
+        TYPE,
         OTHER
     };
 
@@ -33,6 +35,7 @@ namespace nylium{
     struct ValueHolder : public CodeObject, public CompilableBody{
         ValueHolderType f_vhtype;
 		PendingDeclaration* f_type;
+        ValueHolder(ValueHolderType vhtype, PendingDeclaration* type){}
 	};
 
 }

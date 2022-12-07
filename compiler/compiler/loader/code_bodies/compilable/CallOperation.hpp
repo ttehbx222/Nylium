@@ -19,9 +19,10 @@
 
 namespace nylium{
 
-    struct CallOperation : public Operation, public CompilableBody {
+    struct CallOperation : public Operation {
         bool f_static;
         PendingDeclaration* f_key;
+        CallOperation(ValueHolder* target, bool static, std::string& key);
     };
 
 }

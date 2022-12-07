@@ -27,6 +27,9 @@ namespace nylium{
     struct CompilableBody {
         CompilableType f_ctype;
         virtual void compile(Assembly* assembly) = 0;
+        inline CompilableBody(CompilableType ctype){
+            this->f_ctype = ctype;
+        }
     };
 
 }

@@ -19,6 +19,10 @@
 
 using namespace nylium;
 
+AssignOperation::AssignOperation(ValueHolder* target, ValueHolder* source) : Operation(target->f_type, target){
+    this->f_source = source;
+}
+
 void AssignOperation::compile(Assembly* assembly){
     switch(this->f_vhtype){
         case ValueHolderType::LITERAL:

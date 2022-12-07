@@ -22,9 +22,9 @@
 
 namespace nylium{
 
-    struct FunctionCallOperation : public CallOperation, public CompilableBody {
+    struct FunctionCallOperation : public CallOperation {
         std::vector<ValueHolder*> f_arguments;
-        FunctionCallOperation(ValueHolder* target, std::string& label, std::vector<ValueHolder*>& arguments);
+        FunctionCallOperation(ValueHolder* target, std::string& label, std::vector<ValueHolder*>& arguments, bool f_static = false);
         void compile(Assembly*);
     };
 

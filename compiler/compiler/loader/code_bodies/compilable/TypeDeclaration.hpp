@@ -28,7 +28,7 @@ namespace nylium{
 
     struct TypeDeclaration : public Namespace, public CompilableBody {
         std::vector<PendingDeclaration*> f_supertypes;
-        TypeDeclaration(std::string& name, SequenceScope* text_code, DeclarationAttributes* attributes, Scope* scope) : Namespace(name, text_code, attributes, scope) {
+        TypeDeclaration(std::string& name, SequenceScope* text_code, DeclarationAttributes* attributes, Scope* scope) : Namespace(attributes, name, scope, text_code, getClassType(), ValueHolderType::TYPE) {
             this->f_type = getClassType();
             this->f_layer = SCOPE_LAYER::CLASS;
 
