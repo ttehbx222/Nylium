@@ -21,7 +21,9 @@ namespace nylium{
     enum class CompilableType{
         KEYWORD,
         SCOPE,
-        OPERATION
+        OPERATION,
+        DECLARATION,
+        LITERAL
     };
 
     struct CompilableBody {

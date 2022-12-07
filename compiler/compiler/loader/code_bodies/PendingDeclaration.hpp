@@ -21,7 +21,7 @@ namespace nylium{
 
     struct PendingDeclaration : public Declaration {
         //TODO resolve
-        PendingDeclaration(DeclarationAttributes* attributes, std::string& label, PendingDeclaration* type = nullptr, ValueHolderType vhtype = ValueHolderType::PENDING_DECLARATION) : Declaration(vhtype, attributes, type, label){}
+        PendingDeclaration(DeclarationAttributes* attributes, std::string& label, PendingDeclaration* type = nullptr, ValueHolderType vhtype = ValueHolderType::PENDING_DECLARATION);
         virtual void compile(Assembly*){
             //error
         }

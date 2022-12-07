@@ -20,7 +20,7 @@
 
 namespace nylium{
 
-    struct Namespace : public Scope, public PendingDeclaration, public CompilableBody {
+    struct Namespace : public Scope, public PendingDeclaration {
         Namespace(DeclarationAttributes* attributes, std::string& name, Scope* scope, SequenceScope* text_code, PendingDeclaration* type = nullptr, ValueHolderType vhtype = ValueHolderType::OTHER);
         virtual void compile(Assembly*);
     };

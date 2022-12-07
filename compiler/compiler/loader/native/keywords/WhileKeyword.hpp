@@ -23,7 +23,7 @@ namespace nylium{
 
     struct WhileKeyword : public Scope, public Keyword{
         ValueHolder* f_condition;
-        inline WhileKeyword(ValueHolder* condition, SequenceScope* element, Scope* scope) : Scope(scope, element) { f_condition = condition;f_layer = SCOPE_LAYER::FUNCTION;  }; //TODO add SequenceScope
+        inline WhileKeyword(ValueHolder* condition, SequenceScope* element, Scope* scope) : Scope(scope, element, CompilableType::KEYWORD), Keyword(KeywordType::WHILE) { f_condition = condition;f_layer = SCOPE_LAYER::FUNCTION;  }; //TODO add SequenceScope
         virtual void compile(Assembly*);
     };
 

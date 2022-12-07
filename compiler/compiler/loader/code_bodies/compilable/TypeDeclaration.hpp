@@ -26,22 +26,9 @@ namespace nylium{
         IMPOSSIBLE
     };
 
-    struct TypeDeclaration : public Namespace, public CompilableBody {
+    struct TypeDeclaration : public Namespace {
         std::vector<PendingDeclaration*> f_supertypes;
-        TypeDeclaration(std::string& name, SequenceScope* text_code, DeclarationAttributes* attributes, Scope* scope) : Namespace(attributes, name, scope, text_code, getClassType(), ValueHolderType::TYPE) {
-            this->f_type = getClassType();
-            this->f_layer = SCOPE_LAYER::CLASS;
-
-            if (attributes->f_dtype == DeclarationType::CLASS){
-                nlog::log(nlog::LOGLEVEL::DEBUG_0, std::string("class ") + name);
-            }
-            if (attributes->f_dtype == DeclarationType::STRUCT){
-                nlog::log(nlog::LOGLEVEL::DEBUG_0, std::string("struct ") + name);
-            }
-            if (attributes->f_dtype == DeclarationType::ENUM){
-                nlog::log(nlog::LOGLEVEL::DEBUG_0, std::string("enum ") + name);
-            }
-        }
+        TypeDeclaration(DeclarationAttributes* attributes, std::string& name, std::vector<PendingDeclaration*>& supertypes, Scope* scope, SequenceScope* text_code);
         virtual Castable conversionTo(TypeDeclaration* declaration);
         virtual void compile(Assembly*);
     };

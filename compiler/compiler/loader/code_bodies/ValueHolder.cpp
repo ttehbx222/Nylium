@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissionsand
  * limitations under the License.
  */
-#pragma once
+#include "ValueHolder.hpp"
 
-#include "CodeObject.hpp"
+using namespace nylium;
 
-namespace nylium{
-
-    struct CodeLine : public CodeObject { //no use anymore
-
-	};
-
+ValueHolder::ValueHolder(ValueHolderType vhtype, PendingDeclaration* type, CompilableType ctype) : CompilableBody(ctype){
+    this->f_vhtype = vhtype;
+    this->f_type = type;
 }

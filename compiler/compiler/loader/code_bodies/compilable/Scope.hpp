@@ -37,8 +37,7 @@ namespace nylium{
 
 			SequenceScope* f_text_code;
 
-			Scope(){}
-	    	Scope(Scope* scope, SequenceScope* seqScope);
+	    	Scope(Scope* scope, SequenceScope* seqScope, CompilableType ctype = CompilableType::SCOPE);
 	    	Scope(FileInterface* file);
 	    	inline Scope* parent() { return f_parent; }
 	    	inline std::vector<CompilableBody*>& code() { return f_code; }

@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissionsand
  * limitations under the License.
  */
-#pragma once
+#include "Literal.hpp"
 
-#include "CodeObject.hpp"
+using namespace nylium;
 
-namespace nylium{
-
-    struct CodeLine : public CodeObject { //no use anymore
-
-	};
-
+Literal::Literal(PendingDeclaration* type, void* data, size_t size) : ValueHolder(ValueHolderType::LITERAL, type, CompilableType::LITERAL){
+    this->f_data = data;
+    this->f_size = size;
 }

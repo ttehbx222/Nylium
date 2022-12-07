@@ -13,14 +13,10 @@
  * See the License for the specific language governing permissionsand
  * limitations under the License.
  */
-#pragma once
+#include "PendingDeclaration.hpp"
 
-#include "CodeObject.hpp"
+using namespace nylium;
 
-namespace nylium{
-
-    struct CodeLine : public CodeObject { //no use anymore
-
-	};
-
+PendingDeclaration::PendingDeclaration(DeclarationAttributes* attributes, std::string& label, PendingDeclaration* type, ValueHolderType vhtype) : Declaration(attributes, type, label, vhtype){
+    
 }

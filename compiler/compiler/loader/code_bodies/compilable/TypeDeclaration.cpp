@@ -13,14 +13,10 @@
  * See the License for the specific language governing permissionsand
  * limitations under the License.
  */
-#pragma once
+#include "TypeDeclaration.hpp"
 
-#include "CodeObject.hpp"
+using namespace nylium;
 
-namespace nylium{
-
-    struct CodeLine : public CodeObject { //no use anymore
-
-	};
-
+TypeDeclaration::TypeDeclaration(DeclarationAttributes* attributes, std::string& name, std::vector<PendingDeclaration*>& supertypes, Scope* scope, SequenceScope* text_code) : Namespace(attributes, name, scope, text_code, getClassType(), ValueHolderType::TYPE){
+    this->f_supertypes = supertypes;
 }

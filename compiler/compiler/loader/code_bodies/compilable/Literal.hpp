@@ -19,7 +19,10 @@
 
 namespace nylium{
 
-    struct Literal : public ValueHolder, public CompilableBody {
+    struct Literal : public ValueHolder {
+        void* f_data;
+        size_t f_size;
+        Literal(PendingDeclaration* type, void* data, size_t size);
         //TODO
     };
 

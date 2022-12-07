@@ -17,7 +17,7 @@
 
 #include "FieldDeclaration.hpp"
 
-namespace nylium{
+namespace nylium{ //not implemented yet // maybe never implemented
 
     struct ReferenceDeclaration : public FieldDeclaration, public CompilableBody { //check for importance
         FieldDeclaration* f_source;

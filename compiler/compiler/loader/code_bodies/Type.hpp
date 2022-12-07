@@ -23,7 +23,7 @@ namespace nylium{
     struct Type;
     typedef std::vector<Type*> Specification; //No use yet
 
-    struct Type : public TypeDeclaration{
+    struct Type : public TypeDeclaration{ //unused
 	private:
 		Specification f_specification;
 	};

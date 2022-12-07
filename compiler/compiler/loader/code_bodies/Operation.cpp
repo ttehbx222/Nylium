@@ -13,14 +13,10 @@
  * See the License for the specific language governing permissionsand
  * limitations under the License.
  */
-#pragma once
+#include "Operation.hpp"
 
-#include "CodeObject.hpp"
+using namespace nylium;
 
-namespace nylium{
-
-    struct CodeLine : public CodeObject { //no use anymore
-
-	};
+Operation::Operation(PendingDeclaration* type, ValueHolder* target, CompilableType ctype = CompilableType::OPERATION) : ValueHolder(ValueHolderType::OPERATION, type, ctype){
 
 }

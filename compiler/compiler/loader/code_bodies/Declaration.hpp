@@ -52,7 +52,7 @@ namespace nylium{
     struct Declaration : public ValueHolder {
         DeclarationAttributes* f_attributes;
         std::string f_key;
-        Declaration(ValueHolderType vhtype, DeclarationAttributes* attributes, PendingDeclaration* type, std::string& name) : ValueHolder(vhtype, type) {}
+        Declaration(DeclarationAttributes* attributes, PendingDeclaration* type, std::string& name, ValueHolderType vhtype);
     };
 
     //Scope* buildDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes = new DeclarationAttributes());

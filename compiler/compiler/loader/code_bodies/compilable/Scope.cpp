@@ -17,9 +17,14 @@
 
 using namespace nylium;
 
-Scope::Scope(Scope* scope, SequenceScope* seqScope){
+Scope::Scope(Scope* scope, SequenceScope* seqScope, CompilableType ctype) : CompilableBody(ctype){
     this->f_layer = scope->f_layer;
     this->f_parent = scope;
     this->f_text_code = seqScope;
     this->f_parent_interface = scope->f_parent_interface;
+}
+
+Scope::Scope(FileInterface* fInterface) : CompilableBody(CompilableType::SCOPE){
+    this->f_parent_interface = fInterface;
+    this->f_text_code = &(fInterface->f_text->f_scope);
 }

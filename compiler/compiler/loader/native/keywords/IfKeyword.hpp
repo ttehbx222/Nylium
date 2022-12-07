@@ -22,7 +22,7 @@
 namespace nylium{
 
     struct ConditionalScope : public Scope, public Keyword {
-        inline ConditionalScope(Scope* scope, SequenceScope* text_code) : Scope(scope, text_code){};
+        inline ConditionalScope(Scope* scope, SequenceScope* text_code) : Scope(scope, text_code, CompilableType::KEYWORD), Keyword(KeywordType::IF){};
     };
 
     struct IfKeyword : public ConditionalScope{

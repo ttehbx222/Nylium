@@ -734,7 +734,7 @@ namespace builder{
                 size_t read_pos = 0;
                 CharSequence* seq = line->read(&read_pos)->f_sequence;
                 assertCustomLabels(seq, text);
-                PendingDeclaration* param_type = new PendingDeclaration(seq->chars);
+                PendingDeclaration* param_type = new PendingDeclaration(nullptr, seq->chars, getClassType());
                 seq = line->read(&read_pos)->f_sequence;
                 assertCustomLabels(seq, text);
                 std::string name = seq->chars;
@@ -743,11 +743,11 @@ namespace builder{
                     read_pos -= 2; //= 1
                     text->f_current_target = line;
                     AssignOperation* initializer = (AssignOperation*)misc::buildValueHolder(scope, text, &read_pos);
-                    params_vec.push_back(new FieldDeclaration(param_type, name, initializer));
+                    params_vec.push_back(new FieldDeclaration(param_type, name, initializer)); //TODO attributes
                     continue;
                 }
                 if (seq->type == CharSequenceType::END){
-                    params_vec.push_back(new FieldDeclaration(param_type, name));
+                    params_vec.push_back(new FieldDeclaration(param_type, name)); //TODO attributes
                     continue;
                 }
                 CB999::throwError(seq, text->f_interface);
@@ -998,85 +998,6 @@ namespace builder{
             return 0;
         }
 
-        /*Operation* operation::buildOperationStart(Scope* scope, Text* text, size_t* read_pos){
-            //todo handle ++$, --$ operators$
-            //todo handle single word inputs;
-            return nullptr;
-        }
-
-        Operation* operation::buildOperationArgument(Scope* scope, Text* text, size_t* read_pos, PendingDeclaration* target, std::string& operation, bool f_operator){
-            Element* element = text->f_current_target->read(read_pos);
-            CharSequence* seq = element->f_sequence;
-
-            switch(element->elementType()){
-                case ElementType::BRACKET:
-                {
-                    switch(seq->chars[0]){
-                        case '(':
-                        {
-                            if (!f_operator){
-                                if (operation == ""){
-                                    //error 
-                                    return nullptr;
-                                }
-                                //return buildFunctionCallOperation
-                            }
-                            Operation* argument = buildOperationStart(scope, text, read_pos);
-                            if (argument){
-                                Operation* result = new FunctionCallOperation(target, operation, std::vector<ValueHolder*>({argument}));
-                                return result;
-                            }
-                            return nullptr;
-                        }
-                        case ')':
-                        {
-                            if (f_operator){
-                                //return functioncalloperation, no argument
-                            }
-                            if (operation == ""){
-                                //error
-                                return nullptr;
-                            }
-                            //return calloperation
-                        }
-                        default:
-                        {
-                            CB001::throwError(seq, text->f_interface);
-                            return nullptr;
-                        }
-                    }
-                }
-                case ElementType::SCOPE:
-                {
-                    //TODO initializer list
-                    CB001::throwError(seq, text->f_interface);
-                    return nullptr;
-                }
-                case ElementType::SEQUENCE:
-                {
-                    if (seq->type == CharSequenceType::OPERATOR){
-                        if (f_operator){
-                            return buildOperationArgument(scope, text, read_pos, target, operation + seq->chars, true);
-                        }else{
-                            //return call operation as source continuing with wrapped operation
-                        }
-                    }
-                    if (!assertCustomLabels(seq, text)){
-                        return nullptr;
-                    }
-                    if (f_operator){
-                        //return function call operation
-                    }
-                    if (operation == ""){
-                        return buildOperationArgument(scope, text, read_pos, target, seq->chars, false);
-                    }
-                    //error
-                    return nullptr;
-                }
-            }
-        }*/
-
     }
-
 
 }

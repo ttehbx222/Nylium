@@ -21,3 +21,8 @@
 #include "compilable/FunctionDeclaration.hpp"
 
 using namespace nylium;
+
+Declaration::Declaration(DeclarationAttributes* attributes, PendingDeclaration* type, std::string& name, ValueHolderType vhtype) : ValueHolder(vhtype, type, CompilableType::DECLARATION){
+    this->f_attributes = attributes;
+    this->f_key = name;
+}
