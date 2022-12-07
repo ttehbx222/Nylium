@@ -20,7 +20,7 @@
 namespace nylium{
 
     struct ElseKeyword : public ConditionalScope{
-        inline ElseKeyword(ValueHolder* condition, SequenceScope* element, Scope* scope) : ConditionalScope(scope, element) { f_kwtype = KeywordType::ELSE; f_layer = SCOPE_LAYER::FUNCTION;  };
+        inline ElseKeyword(SequenceScope* element, Scope* scope) : ConditionalScope(scope, element) { f_kwtype = KeywordType::ELSE; f_layer = SCOPE_LAYER::FUNCTION;  };
         virtual void compile(Assembly*);
     };
 

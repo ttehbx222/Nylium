@@ -25,6 +25,7 @@
 #include "../native/keywords/IfKeyword.hpp"
 #include "../native/keywords/ForKeyword.hpp"
 #include "../native/keywords/WhileKeyword.hpp"
+#include "../native/keywords/ElseKeyword.hpp"
 
 #include "../../error_handling/errors/CB001.hpp"
 #include "../../error_handling/errors/CB002.hpp"
@@ -147,6 +148,10 @@ namespace builder{
                     return nullptr;
                 }
                 //TODO hadle ++$, --$ operators
+                if (seq->type == CharSequenceType::OPERATOR && (seq->chars == "++" || seq->chars == "--" || seq->chars == "!") && ((int)scope->f_layer & (int)SCOPE_LAYER::FUNCTION)){ //add ~operator
+                    --(*read_pos);
+                    scope->f_code.push_back(misc::buildValueHolder(scope ,text, read_pos));
+                }
                 if (seq->type != CharSequenceType::NAME){
                     CB001::throwError(seq, text->f_interface);
                     return nullptr;
@@ -416,6 +421,43 @@ namespace builder{
     
         ConditionalScope* buildElseKeyword(Scope* scope, Text* text, size_t* read_pos){
             //TODO
+            Element* element = text->f_current_target->read(read_pos);
+            CharSequence* seq = element->f_sequence;
+
+            if (seq->chars != "if"){
+                if (element->elementType() != ElementType::SCOPE || ((SequenceScope*)element)->f_stype != ScopeListType::SCOPE){
+                    CB999::throwError(seq, text->f_interface);
+                    return nullptr;
+                }
+
+                ConditionalScope* else_statement = new ElseKeyword((SequenceScope*)element, scope);
+                return else_statement;
+            }
+
+            element = text->f_current_target->read(read_pos);
+            seq = element->f_sequence;
+
+            if (element->elementType() != ElementType::BRACKET || ((SequenceBracket*)element)->f_btype != BracketListType::SINGLE){
+                CB999::throwError(seq, text->f_interface);
+                return nullptr;
+            }
+
+            SequenceLine* temp = text->f_current_target;
+            text->f_current_target = ((SequenceBracket*)element)->f_contents.front();
+            size_t temp_read_pos = 0;
+            ValueHolder* operation = misc::buildValueHolder(scope, text, &temp_read_pos);
+            text->f_current_target = temp;
+            
+            element = text->f_current_target->read(read_pos);
+            seq = element->f_sequence;
+
+            if (element->elementType() != ElementType::SCOPE || ((SequenceScope*)element)->f_stype != ScopeListType::SCOPE){
+                CB999::throwError(seq, text->f_interface);
+                return nullptr;
+            }
+
+            ConditionalScope* if_statement = new IfKeyword(operation, (SequenceScope*)element, scope);
+            return if_statement;
         }
 
     }
@@ -498,7 +540,7 @@ namespace builder{
                         attributes->f_dtype = DeclarationType::CLASS;
                         return declaration::buildTypeDeclaration(scope, text, attributes, read_pos);
                     }
-                    if (seq->chars == "struct"){
+                    /*if (seq->chars == "struct"){
                         if (attributes->f_static == Boolean::TRUE){
                             CB007::throwError(seq, text->f_interface);
                             return nullptr;
@@ -506,7 +548,7 @@ namespace builder{
                         attributes->f_dtype = DeclarationType::STRUCT;
                         return declaration::buildTypeDeclaration(scope, text, attributes, read_pos);
                     }
-                    /*if (seq->chars == "enum"){
+                    if (seq->chars == "enum"){
                         attributes->f_dtype = DeclarationType::ENUM;
                         return declaration::buildTypeDeclaration(scope, text, attributes, read_pos);
                     }*/ //not implemented yet
