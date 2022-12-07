@@ -30,7 +30,7 @@ namespace nylium{
 
     struct Keyword : public Operation {
         KeywordType f_kwtype;
-        Keyword(KeyWordType kwtype);
+        Keyword(KeywordType kwtype);
     };
 
 }
