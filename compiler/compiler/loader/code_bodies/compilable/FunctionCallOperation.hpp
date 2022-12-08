@@ -26,6 +26,7 @@ namespace nylium{
         std::vector<ValueHolder*> f_arguments;
         FunctionCallOperation(ValueHolder* target, std::string& label, std::vector<ValueHolder*>& arguments, bool f_static = false);
         void compile(Assembly*);
+        void debug_print(int depth);
     };
 
 }

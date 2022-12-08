@@ -20,10 +20,12 @@
 namespace nylium{
 
     struct Literal : public ValueHolder {
+        std::string f_chars;
         void* f_data;
         size_t f_size;
-        Literal(PendingDeclaration* type, void* data, size_t size);
+        Literal(PendingDeclaration* type, void* data, size_t size, std::string& chars);
         //TODO
+        void debug_print(int depth);
     };
 
 }

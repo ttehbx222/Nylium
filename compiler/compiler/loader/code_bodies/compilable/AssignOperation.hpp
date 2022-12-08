@@ -24,6 +24,7 @@ namespace nylium{
         ValueHolder* f_source;
         void compile(Assembly*);
         AssignOperation(ValueHolder* target, ValueHolder* f_source);
+        void debug_print(int depth);
     };
 
 }

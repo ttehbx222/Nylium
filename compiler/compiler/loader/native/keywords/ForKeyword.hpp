@@ -27,6 +27,7 @@ namespace nylium{
         ValueHolder* f_iteration;
         inline ForKeyword(ValueHolder* init, ValueHolder* condition, ValueHolder* iteration, SequenceScope* element, Scope* scope) : Scope(scope, element, CompilableType::KEYWORD), Keyword(KeywordType::FOR) { f_init = init; f_condition = condition; f_iteration = iteration; f_layer = SCOPE_LAYER::FUNCTION;  }; //TODO add SequenceScope
         virtual void compile(Assembly*);
+        void debug_print(int depth);
     };
 
 }

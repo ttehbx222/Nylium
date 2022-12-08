@@ -31,6 +31,7 @@ namespace nylium{
         TypeDeclaration(DeclarationAttributes* attributes, std::string& name, std::vector<PendingDeclaration*>& supertypes, Scope* scope, SequenceScope* text_code);
         virtual Castable conversionTo(TypeDeclaration* declaration);
         virtual void compile(Assembly*);
+        void debug_print(int depth);
     };
 
 }

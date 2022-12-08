@@ -34,6 +34,7 @@ namespace nylium{
 		    DeclarationSearch f_accessibles;
 		    FileInterface* f_parent_interface;
 	    	std::vector<CompilableBody*> f_code;
+			int f_depth;
 
 			SequenceScope* f_text_code;
 
@@ -43,9 +44,11 @@ namespace nylium{
 	    	inline std::vector<CompilableBody*>& code() { return f_code; }
 	    	Visibility visibilityOf(Scope* scope);
 	      	Declaration* searchDeclaration(PendingDeclaration* decl);
-	    	void addDeclaration(Declaration* decl) {} //TODO
+	    	void addDeclaration(Declaration* decl) {
+			} //TODO
 
 			virtual void compile(Assembly*);
+			virtual void debug_print(int depth);
 	};
 
     typedef Scope* SCOPE;

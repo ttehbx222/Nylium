@@ -25,6 +25,7 @@ namespace nylium{
         virtual void compile(Assembly*){
             //error
         }
+        virtual void debug_print(int depth);
     };
 
 }

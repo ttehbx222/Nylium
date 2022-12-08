@@ -31,6 +31,7 @@ namespace nylium{
     struct Keyword : public Operation {
         KeywordType f_kwtype;
         Keyword(KeywordType kwtype);
+        virtual void debug_print(int depth) = 0;
     };
 
 }

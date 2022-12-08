@@ -23,6 +23,7 @@ namespace nylium{
         PendingDeclaration* f_target_type;
         CastingOperation(ValueHolder* target, PendingDeclaration* target_type);
         void compile(Assembly*);
+        void debug_print(int depth);
     };
 
 }

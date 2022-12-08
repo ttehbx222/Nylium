@@ -31,6 +31,7 @@ namespace nylium{
         ConditionalScope* f_last = this;
         inline IfKeyword(ValueHolder* condition, SequenceScope* element, Scope* scope) : ConditionalScope(scope, element) { f_kwtype = KeywordType::IF, f_condition = condition; f_layer = SCOPE_LAYER::FUNCTION;  };
         virtual void compile(Assembly*);
+        void debug_print(int depth);
     };
 
 }

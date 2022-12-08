@@ -17,7 +17,8 @@
 
 using namespace nylium;
 
-Literal::Literal(PendingDeclaration* type, void* data, size_t size) : ValueHolder(ValueHolderType::LITERAL, type, CompilableType::LITERAL){
+Literal::Literal(PendingDeclaration* type, void* data, size_t size, std::string& chars) : ValueHolder(ValueHolderType::LITERAL, type, CompilableType::LITERAL){
     this->f_data = data;
     this->f_size = size;
+    this->f_chars = chars;
 }

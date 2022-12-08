@@ -22,6 +22,7 @@ Scope::Scope(Scope* scope, SequenceScope* seqScope, CompilableType ctype) : Comp
     this->f_parent = scope;
     this->f_text_code = seqScope;
     this->f_parent_interface = scope->f_parent_interface;
+    this->f_depth = scope->f_depth+1;
 }
 
 Scope::Scope(FileInterface* fInterface) : CompilableBody(CompilableType::SCOPE){

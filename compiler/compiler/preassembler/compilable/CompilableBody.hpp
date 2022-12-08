@@ -32,6 +32,7 @@ namespace nylium{
         inline CompilableBody(CompilableType ctype){
             this->f_ctype = ctype;
         }
+        virtual void debug_print(int depth) = 0;
     };
 
 }

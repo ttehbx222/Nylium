@@ -23,6 +23,7 @@ namespace nylium{
         bool f_static;
         PendingDeclaration* f_key;
         CallOperation(ValueHolder* target, bool static, std::string& key);
+        virtual void debug_print(int depth);
     };
 
 }
