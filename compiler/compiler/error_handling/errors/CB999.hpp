@@ -21,7 +21,7 @@
 namespace nylium{
     namespace CB999{
         void throwError(CharSequence* seq, FileInterface* fInterface){
-                std::string message = std::string("unresolved error");
+                std::string message = std::string("unresolved error \"") + ANSI::YELLOW + seq->chars + ANSI::RED + "\"";
                 new CompileError(fInterface, seq, message, ERROR_CODE::CB999);
                 throw seq;
         }

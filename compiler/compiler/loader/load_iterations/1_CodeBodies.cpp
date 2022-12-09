@@ -19,6 +19,7 @@
 #include "../code_bodies/compilable/FunctionCallOperation.hpp"
 #include "../code_bodies/compilable/FunctionDeclaration.hpp"
 #include "../code_bodies/compilable/CastingOperation.hpp"
+#include "../code_bodies/compilable/Literal.hpp"
 #include "../code_bodies/Operation.hpp"
 #include "../character_sequences/NyliumCharSequence.hpp"
 #include "0_CharSequences.hpp"
@@ -59,8 +60,8 @@ namespace builder{
         Scope* buildDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos);
         Scope* buildNamespaceDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos);
         Scope* buildTypeDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos); 
-        Scope* buildFieldOrFunctionDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, PendingDeclaration* first_label);
-        Scope* buildFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, PendingDeclaration* return_type, std::string& name, SequenceBracket* parameters, SequenceScope* body);
+        Scope* buildFieldOrFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, PendingDeclaration* first_label);
+        FunctionDeclaration* buildFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, PendingDeclaration* return_type, std::string& name, SequenceBracket* parameters, SequenceScope* body);
         PendingDeclaration* buildPendingDeclaration(Scope* scope, Text* text, size_t* read_pos);
     }
     namespace misc{
@@ -90,14 +91,8 @@ void nylium::loadBodies(FileInterface* fInterface){
                 Scope* newScope = nullptr;
                 size_t read_pos = 0;
                 try{
-                    switch(scope->f_layer){
-                        case SCOPE_LAYER::MAIN:
-                        {
-                            text->f_current_target = line;
-                            newScope = builder::buildStart(scope, text, &read_pos);
-                            break;
-                        }
-                    }
+                    text->f_current_target = line;
+                    newScope = builder::buildStart(scope, text, &read_pos);
                 }catch(CharSequence* seq){
 
                 }
@@ -109,6 +104,8 @@ void nylium::loadBodies(FileInterface* fInterface){
         toBeLoaded = newToBeLoaded;
         newToBeLoaded.clear();
     }
+
+    fInterface->main_scope->debug_print(0);
 }
 
 std::vector<std::string>& keywords = allKeywords();
@@ -130,10 +127,12 @@ bool assertCustomLabels(CharSequence* seq, Text* text){
     return true;
 }
 
+#include <iostream>
+
 namespace builder{
 
     Scope* builder::buildStart(Scope* scope, Text* text, size_t* read_pos){
-        SequenceLine* element = text->f_current_target->read(read_pos);
+        Element* element = text->f_current_target->read(read_pos);
         CharSequence* seq = element->f_sequence;
         switch(element->elementType()){
             case ElementType::BRACKET:
@@ -155,6 +154,7 @@ namespace builder{
                 if (seq->type == CharSequenceType::OPERATOR && (seq->chars == "++" || seq->chars == "--" || seq->chars == "!") && ((int)scope->f_layer & (int)SCOPE_LAYER::FUNCTION)){ //add ~operator
                     --(*read_pos);
                     scope->f_code.push_back(misc::buildValueHolder(scope ,text, read_pos));
+                    return nullptr;
                 }
                 if (seq->type != CharSequenceType::NAME){
                     CB001::throwError(seq, text->f_interface);
@@ -469,7 +469,7 @@ namespace builder{
     namespace declaration{
 
         Scope* declaration::buildDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos){
-            SequenceLine* element = text->f_current_target->read(read_pos);
+            Element* element = text->f_current_target->read(read_pos);
             CharSequence* seq = element->f_sequence;
             switch(element->elementType()){
                 case ElementType::BRACKET:
@@ -583,7 +583,7 @@ namespace builder{
         }
 
         Scope* declaration::buildNamespaceDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos){
-            SequenceLine* element = text->f_current_target->read(read_pos);
+            Element* element = text->f_current_target->read(read_pos);
             CharSequence* seq = element->f_sequence;
             switch(element->elementType()){
                 case ElementType::BRACKET:
@@ -666,11 +666,37 @@ namespace builder{
                     return type_decl;
                 }
             }
+
+            CB998::throwError(seq, text->f_interface);
+            return nullptr;
         }
 
-        Scope* buildFieldOrFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, PendingDeclaration* first_label){
+        Scope* declaration::buildFieldOrFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, PendingDeclaration* first_label){
             Element* element = text->f_current_target->read(read_pos);
             CharSequence* seq = element->f_sequence;
+
+            if (seq->chars == "("){//check for constructor
+                if (scope->f_ctype == CompilableType::DECLARATION && ((Namespace*)scope)->f_vhtype == ValueHolderType::TYPE){
+                    TypeDeclaration* current_type = (TypeDeclaration*)scope;
+                    if (!(first_label->f_declaration_path.empty() && first_label->f_key == current_type->f_key)){
+                        CB999::throwError(seq, text->f_interface);
+                        return nullptr;
+                    }
+                    if (element->elementType() != ElementType::BRACKET || ((SequenceBracket*)element)->f_btype == BracketListType::ENDED_LINE_LIST){
+                        CB999::throwError(seq, text->f_interface);
+                        return nullptr;
+                    }
+                    SequenceBracket* params = (SequenceBracket*)element;
+                    element = text->f_current_target->read(read_pos);
+                    if (element->elementType() != ElementType::SCOPE || ((SequenceScope*)element)->f_stype != ScopeListType::SCOPE){
+                        CB999::throwError(seq, text->f_interface);
+                        return nullptr;
+                    }
+                    FunctionDeclaration* decl = declaration::buildFunctionDeclaration(scope, text, read_pos, attributes, current_type, std::string(""), params, (SequenceScope*)element);
+                    scope->addDeclaration(decl);
+                    return decl;
+                }
+            }
 
             assertCustomLabels(seq, text);
 
@@ -682,6 +708,9 @@ namespace builder{
             switch(element->elementType()){
                 case ElementType::BRACKET:
                 {
+                    if (scope->f_layer == SCOPE_LAYER::FUNCTION){
+                        CB999::throwError(seq, text->f_interface);
+                    }
                     SequenceBracket* params = (SequenceBracket*)element;
                     if (params->f_btype == BracketListType::ENDED_LINE_LIST){
                         CB999::throwError(seq, text->f_interface);
@@ -693,7 +722,9 @@ namespace builder{
                         return nullptr;
                     }
                     SequenceScope* body = (SequenceScope*)element;
-                    return buildFunctionDeclaration(scope, text, read_pos, attributes, first_label, name, params, body);
+                    FunctionDeclaration* decl =  buildFunctionDeclaration(scope, text, read_pos, attributes, first_label, name, params, body);
+                    scope->addDeclaration(decl);
+                    return decl;
                 }
                 case ElementType::SCOPE:
                 {
@@ -705,13 +736,17 @@ namespace builder{
                     switch(seq->type){
                         case CharSequenceType::END:
                         {
-                            //FieldDeclaration no init
+                            FieldDeclaration* decl = new FieldDeclaration(attributes, first_label, name);
+                            scope->addDeclaration(decl);
+                            return nullptr;
                         }
                         case CharSequenceType::OPERATOR:
                         {
                             if (seq->chars == "="){
                                 (*read_pos)-=2;
-                                //FieldDeclaration init
+                                FieldDeclaration* decl = new FieldDeclaration(attributes, first_label, name, (AssignOperation*)misc::buildValueHolder(scope, text, read_pos));
+                                scope->addDeclaration(decl);
+                                return nullptr;
                             }
                         }
                         default:
@@ -722,6 +757,8 @@ namespace builder{
                     }
                 }
             }
+            CB998::throwError(seq, text->f_interface);
+            return nullptr;
         }
 
         FieldDeclaration* buildParam(Scope* scope, Text* text, SequenceLine* line, size_t* read_pos = nullptr, DeclarationAttributes* attributes = new DeclarationAttributes()){
@@ -742,6 +779,7 @@ namespace builder{
                 attributes->f_final = Boolean::TRUE;
                 return buildParam(scope, text, line , read_pos, attributes);
             }
+            --(*read_pos);
             SequenceLine* temp = text->f_current_target;
             text->f_current_target = line;
             PendingDeclaration* param_type = buildPendingDeclaration(scope, text, read_pos);
@@ -770,7 +808,7 @@ namespace builder{
             return params_vec;
         }
 
-        Scope* buildFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, PendingDeclaration* return_type, std::string& name, SequenceBracket* parameters, SequenceScope* body){
+        FunctionDeclaration* buildFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, PendingDeclaration* return_type, std::string& name, SequenceBracket* parameters, SequenceScope* body){
             return new FunctionDeclaration(attributes, return_type, name, scope, body, buildParameters(scope, text, parameters));
         }
 
@@ -807,6 +845,28 @@ namespace builder{
 
             switch(element->elementType()){
                 case ElementType::BRACKET:
+                {
+                    if (scope->f_ctype == CompilableType::DECLARATION && ((Namespace*)scope)->f_vhtype == ValueHolderType::TYPE){
+                        TypeDeclaration* current_type = (TypeDeclaration*)scope;
+                        if (!(first_label->f_declaration_path.empty() && first_label->f_key == current_type->f_key)){
+                            CB999::throwError(seq, text->f_interface);
+                            return nullptr;
+                        }
+                        if (element->elementType() != ElementType::BRACKET || ((SequenceBracket*)element)->f_btype == BracketListType::ENDED_LINE_LIST){
+                            CB999::throwError(seq, text->f_interface);
+                            return nullptr;
+                        }
+                        SequenceBracket* params = (SequenceBracket*)element;
+                        element = text->f_current_target->read(read_pos);
+                        if (element->elementType() != ElementType::SCOPE || ((SequenceScope*)element)->f_stype != ScopeListType::SCOPE){
+                            CB999::throwError(seq, text->f_interface);
+                            return nullptr;
+                        }
+                        FunctionDeclaration* decl = declaration::buildFunctionDeclaration(scope, text, read_pos, new DeclarationAttributes(), current_type, std::string(""), params, (SequenceScope*)element);
+                        scope->addDeclaration(decl);
+                        return decl;
+                    }
+                }
                 case ElementType::SCOPE:
                 {
                     CB001::throwError(seq, text->f_interface);
@@ -814,31 +874,25 @@ namespace builder{
                 }
                 case ElementType::SEQUENCE:
                 {
-                    if (seq->type == CharSequenceType::OPERATOR && (int)scope->f_layer & (int)SCOPE_LAYER::FUNCTION){
+                    /*if (seq->chars == "return")*/
+                    if (seq->chars == "new" || seq->type == CharSequenceType::OPERATOR && (int)scope->f_layer & (int)SCOPE_LAYER::FUNCTION){
                         (*read_pos)-=2;
                         ValueHolder* valueHolder = buildValueHolder(scope, text, read_pos);
                         if (valueHolder){
                             scope->f_code.push_back(valueHolder);
                         }
                         return nullptr;
-                        /*Operation* operation;
-                        if (seq->chars == "." || seq->chars == "::"){
-                            operation = operation::buildOperationArgument(scope, text, read_pos, first_label, std::string(""), false);
-                        }else{
-                            operation = operation::buildOperationArgument(scope, text, read_pos, first_label, std::string(""), true);
-                        }
-                        
-                        if (operation){
-                            scope->f_code.push_back(operation);
-                        }*/
                     }
                     if (!assertCustomLabels(seq, text)){
                         return nullptr;
                     }
                     --(*read_pos);
-                    return declaration::buildFieldOrFunctionDeclaration(scope, text, new DeclarationAttributes(), first_label);
+                    return declaration::buildFieldOrFunctionDeclaration(scope, text, read_pos, new DeclarationAttributes(), first_label);
                 }
             }
+
+            CB998::throwError(seq, text->f_interface);
+            return nullptr;
         }
 
         ValueHolder* misc::buildValueHolder(Scope* scope, Text* text, size_t* read_pos, int previous_priority){ //TODO implement operator priority
@@ -874,13 +928,18 @@ namespace builder{
                                 text->f_current_target = temp;
                                 last = new FunctionCallOperation(last, member, arguments);
                             }else{
-                                --(read_pos);
+                                --(*read_pos);
                                 last = new CallOperation(last, false, member);
                             }
+                            break;
                         }
                         if (seq->chars == "="){
-                            //TODO assign operation
-                            return nullptr;
+                            if (last->f_vhtype != ValueHolderType::PENDING_DECLARATION && (last->f_vhtype != ValueHolderType::OPERATION || ((Operation*)last)->f_otype != OperationType::CALL)){
+                                CB999::throwError(seq, text->f_interface);
+                                return nullptr;
+                            }
+                            last = new AssignOperation(last, buildValueHolder(scope, text, read_pos));
+                            break;
                         }
                         int current_priority = operation::operatorPriority(seq->chars);
                         if (current_priority > previous_priority){
@@ -917,6 +976,25 @@ namespace builder{
                     if (last){
                         CB999::throwError(seq, text->f_interface);
                         return nullptr;
+                    }
+                    if (seq->chars == "new"){
+                        PendingDeclaration* type = declaration::buildPendingDeclaration(scope, text, read_pos);
+                        element = text->f_current_target->read(read_pos);
+                        seq = element->f_sequence;
+                        if (element->elementType() != ElementType::BRACKET || ((SequenceBracket*)element)->f_btype == BracketListType::ENDED_LINE_LIST){
+                            CB999::throwError(seq, text->f_interface);
+                            return nullptr;
+                        }
+                        std::vector<ValueHolder*> arguments;
+                        SequenceLine* temp = text->f_current_target;
+                        for (SequenceLine* line : ((SequenceBracket*)element)->f_contents){
+                            size_t temp_read_pos = 0;
+                            text->f_current_target = line;
+                            arguments.push_back(misc::buildValueHolder(scope, text, &temp_read_pos));
+                        }
+                        text->f_current_target = temp;
+                        last = new FunctionCallOperation(type, std::string(""), arguments);
+                        break;
                     }
                     --(*read_pos);
                     last = declaration::buildPendingDeclaration(scope, text, read_pos);
@@ -1008,6 +1086,7 @@ namespace builder{
                                     ValueHolder* cast_target = buildValueHolder(scope, text, read_pos);
                                     last = new CastingOperation(cast_target, (PendingDeclaration*)last);
                                 }
+                                std::cout << "check if this causes an error" << std::endl;
                                 break;
                             }
                             case CharSequenceType::NAME:
@@ -1026,6 +1105,12 @@ namespace builder{
                     }
                     break;
                 }
+                case CharSequenceType::VALUE:
+                {
+                    std::cout << "todo" << std::endl;
+                    last = new Literal(nullptr, nullptr, 0, seq->chars);//TODO
+                    break;
+                }
                 default:
                 {
                     CB999::throwError(seq, text->f_interface);
@@ -1033,7 +1118,7 @@ namespace builder{
                 }
                 }
                 element = text->f_current_target->read(read_pos);
-                seq = element->f_sequence; 
+                seq = element->f_sequence;
             }
             if (!last){
                 CB999::throwError(seq, text->f_interface);

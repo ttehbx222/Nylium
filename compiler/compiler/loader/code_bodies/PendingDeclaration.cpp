@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 #include "PendingDeclaration.hpp"
+#include "../../../log/logger.hpp"
 
 using namespace nylium;
 
@@ -23,4 +24,14 @@ PendingDeclaration::PendingDeclaration(DeclarationAttributes* attributes, std::s
 
 PendingDeclaration::PendingDeclaration(std::string& label, std::vector<std::string>& declaration_path) : Declaration(nullptr, nullptr, label, ValueHolderType::PENDING_DECLARATION){
     this->f_declaration_path = declaration_path;
+}
+
+void PendingDeclaration::debug_print(int depth){
+    nlog::LOGLEVEL loglevel = nlog::LOGLEVEL::DEBUG_0;
+    std::string out = "";
+    for (int i = 0; i < depth; ++i){
+        out += LOGGING_TABULATOR;
+    }
+
+    nlog::log(loglevel, out + this->f_key);
 }

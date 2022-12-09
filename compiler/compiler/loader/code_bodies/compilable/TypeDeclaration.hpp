@@ -16,7 +16,6 @@
 #pragma once
 #include "NamespaceDeclaration.hpp"
 #include "../../../../log/logger.hpp"
-#include "../../native/types/ClassType.hpp"
 
 namespace nylium{
 

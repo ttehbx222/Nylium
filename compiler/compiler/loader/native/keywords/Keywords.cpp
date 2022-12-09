@@ -15,8 +15,8 @@
  */
 #include "Keywords.hpp"
 
-std::vector<std::string> keywords = {"import", "namespace", "class", "struct", "enum", "public", "private", "protected", "static", "final", "if", "else", "while", "for", "instanceof"};
-std::vector<std::string> op_keywords = {"if", "else", "while", "for", "instanceof"};
+std::vector<std::string> keywords = {"import", "namespace", "class", "struct", "enum", "public", "private", "protected", "static", "final", "if", "else", "while", "for", "instanceof", "new", "return"};
+std::vector<std::string> op_keywords = {"if", "else", "while", "for", "instanceof", "new", "return"};
 
 std::vector<std::string>& nylium::allKeywords(){
     return keywords;

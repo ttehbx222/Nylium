@@ -15,11 +15,49 @@
  */
 #include "NamespaceDeclaration.hpp"
 #include "../../../../log/logger.hpp"
+#include "FieldDeclaration.hpp"
 
 using namespace nylium;
 
 Namespace::Namespace(DeclarationAttributes* attributes, std::string& name, Scope* scope, SequenceScope* text_code, PendingDeclaration* type, ValueHolderType vhtype) : Scope(scope, text_code, CompilableType::DECLARATION), PendingDeclaration(attributes, name, type, vhtype){
     if (attributes->f_dtype == DeclarationType::NAMESPACE){
-        nlog::log(nlog::LOGLEVEL::DEBUG_0, std::string("namespace ") + name);
     }
+}
+
+void Namespace::compile(Assembly* assembly){
+    //TODO
+}
+
+void Namespace::debug_print(int depth){
+    nlog::LOGLEVEL loglevel = nlog::LOGLEVEL::DEBUG_0;
+    std::string out = "";
+    for (int i = 0; i < depth; ++i){
+        out += LOGGING_TABULATOR;
+    }
+    nlog::log(loglevel, out + "namespace " + this->f_key);
+    nlog::log(loglevel, out + LOGGING_TABULATOR + "{");
+
+    std::vector<CompilableBody*> bodies;
+
+    for (auto container : f_accessibles.declarations){
+            if (container.second->f_field){
+                bodies.push_back(container.second->f_field);
+            }
+        }
+        for (auto container : f_accessibles.declarations){
+            if (container.second->f_namespace){
+                bodies.push_back((Scope*)container.second->f_namespace);
+            }
+        }
+    for (auto container : f_accessibles.declarations){
+        for (FunctionDeclaration* function : container.second->f_functions){
+            bodies.push_back((Scope*)function);
+        }
+    }
+
+    for (CompilableBody* body : bodies){
+        body->debug_print(depth+2);
+    }
+
+    nlog::log(loglevel, out + LOGGING_TABULATOR + "}");
 }

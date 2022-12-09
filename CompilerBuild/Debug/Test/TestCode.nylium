@@ -1,5 +1,17 @@
 namespace potato{
-	class A : B{
-		int a;
+	class Foo : Bar{
+		static long important = 0xFF;
+		int bar = 5;
+		Foo(){
+			++a;
+		}
+		void func(long num){
+		}
+	}
+	void main(){
+		Foo foo = new A();
+		foo.bar = foo.bar + 5;
+		foo.func(potato::Bar::important);
+		a + b * c + d;
 	}
 }

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 #include "Literal.hpp"
+#include "../../../../log/logger.hpp"
 
 using namespace nylium;
 
@@ -21,4 +22,17 @@ Literal::Literal(PendingDeclaration* type, void* data, size_t size, std::string&
     this->f_data = data;
     this->f_size = size;
     this->f_chars = chars;
+}
+
+void Literal::compile(Assembly* assembly){
+    //TODO
+}
+
+void Literal::debug_print(int depth){
+    nlog::LOGLEVEL loglevel = nlog::LOGLEVEL::DEBUG_0;
+    std::string out = "";
+    for (int i = 0; i < depth; ++i){
+        out += LOGGING_TABULATOR;
+    }
+    nlog::log(loglevel, out + "literal " + f_chars);
 }

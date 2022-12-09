@@ -17,6 +17,8 @@
 
 namespace nylium{
 
-    void initNativeTypes();
+    struct FileInterface;
+
+    void initNativeTypes(FileInterface* fInterface);
 
 }

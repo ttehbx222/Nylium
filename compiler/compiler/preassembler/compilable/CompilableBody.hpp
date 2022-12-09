@@ -27,13 +27,12 @@ namespace nylium{
     };
 
     struct CompilableBody {
+        size_t f_orderIndex;
         CompilableType f_ctype;
         virtual void compile(Assembly* assembly) = 0;
-        inline CompilableBody(CompilableType ctype){
-            this->f_ctype = ctype;
-        }
+        CompilableBody(CompilableType ctype);
         virtual void debug_print(int depth) = 0;
-        virtual void resolve() = 0;
+        //virtual void resolve() = 0;
     };
 
 }

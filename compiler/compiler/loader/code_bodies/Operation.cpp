@@ -17,6 +17,7 @@
 
 using namespace nylium;
 
-Operation::Operation(PendingDeclaration* type, ValueHolder* target, CompilableType ctype = CompilableType::OPERATION) : ValueHolder(ValueHolderType::OPERATION, type, ctype){
-
+Operation::Operation(PendingDeclaration* type, ValueHolder* target, OperationType otype, CompilableType ctype) : ValueHolder(ValueHolderType::OPERATION, type, ctype){
+    this->f_otype = otype;
+    this->f_target = target;
 }

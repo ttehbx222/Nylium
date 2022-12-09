@@ -25,6 +25,7 @@ namespace nylium{
         size_t f_size;
         Literal(PendingDeclaration* type, void* data, size_t size, std::string& chars);
         //TODO
+        void compile(Assembly*);
         void debug_print(int depth);
     };
 

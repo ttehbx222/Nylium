@@ -14,13 +14,35 @@
  * limitations under the License.
  */
 #include "FunctionCallOperation.hpp"
+#include "../../../../log/logger.hpp"
 
 using namespace nylium;
 
-FunctionCallOperation::FunctionCallOperation(ValueHolder* target, std::string& label, std::vector<ValueHolder*>& arguments, bool f_static) : CallOperation(target, f_static, label){
+FunctionCallOperation::FunctionCallOperation(ValueHolder* target, std::string& label, std::vector<ValueHolder*>& arguments, bool f_static) : CallOperation(target, f_static, label, OperationType::FUNCTION){
     f_arguments = arguments;
 }
 
 void FunctionCallOperation::compile(Assembly* assembly){
     
+}
+
+void FunctionCallOperation::debug_print(int depth){
+    nlog::LOGLEVEL loglevel = nlog::LOGLEVEL::DEBUG_2;
+    std::string out = "";
+    for (int i = 0; i < depth; ++i){
+        out += LOGGING_TABULATOR;
+    }
+    f_target->debug_print(depth);
+    if (f_static){
+        nlog::log(loglevel, out + LOGGING_TABULATOR + "::" + f_key);
+    }else{
+        nlog::log(loglevel, out + LOGGING_TABULATOR + "." + f_key);
+    }
+    nlog::log(loglevel, out + LOGGING_TABULATOR + LOGGING_TABULATOR + "(");
+
+    for (ValueHolder* argument : f_arguments){
+        argument->debug_print(depth+3);
+    }
+
+    nlog::log(loglevel, out + LOGGING_TABULATOR + LOGGING_TABULATOR + "(");
 }

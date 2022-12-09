@@ -18,7 +18,6 @@
 #include <map>
 
 #include "Registers.hpp"
-#include "../../loader/code_bodies/compilable/TypeDeclaration.hpp"
 
 namespace nylium{
 
@@ -35,6 +34,8 @@ namespace nylium{
         MemoryState f_state;
         REG f_address;
     };
+
+    struct TypeDeclaration;
 
     struct TypeTemplate {
         TypeDeclaration* f_target;

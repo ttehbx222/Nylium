@@ -16,7 +16,6 @@
 #pragma once
 
 #include "Registers.hpp"
-#include "../compilable/PendingReference.hpp"
 
 namespace nylium{
 
@@ -33,9 +32,11 @@ namespace nylium{
         REGISTER f_register;
     };
 
+    struct PendingReference;
+
     struct AssemblyMemoryReference : public AssemblyValue {
         SIZE f_size;
-        PendingReference f_ref;
+        PendingReference* f_ref;
     };
 
 }

@@ -20,10 +20,10 @@ using namespace nylium;
 
 bool isInit = false;
 
-void nylium::initNativeTypes(){
+void nylium::initNativeTypes(FileInterface* fInterface){
     if (isInit){
         return;
     }
     isInit = true;
-    new ClassType();
+    new ClassType(fInterface->main_scope);
 }

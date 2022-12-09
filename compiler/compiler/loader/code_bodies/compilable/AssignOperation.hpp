@@ -16,7 +16,6 @@
 #pragma once
 
 #include "../Operation.hpp" //includes ValueHolder.hpp
-#include "FieldDeclaration.hpp"
 
 namespace nylium{
 

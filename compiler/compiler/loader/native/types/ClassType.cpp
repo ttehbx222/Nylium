@@ -19,7 +19,7 @@ using namespace nylium;
 
 ClassType* self = nullptr;
 
-ClassType::ClassType() : TypeDeclaration(std::string("Class"), nullptr, nullptr, nullptr) {
+ClassType::ClassType(Scope* scope) : TypeDeclaration(nullptr, std::string("Class"), std::vector<PendingDeclaration*>(), scope, nullptr) {
     self = this;
     this->f_type = this;
     DeclarationAttributes* attributes = new DeclarationAttributes();

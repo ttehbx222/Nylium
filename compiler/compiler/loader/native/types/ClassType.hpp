@@ -20,7 +20,7 @@
 namespace nylium{
 
     struct ClassType : public TypeDeclaration {
-        ClassType();
+        ClassType(Scope* scope);
 
         Castable conversionTo(TypeDeclaration* declaration){
             return Castable::IMPOSSIBLE;

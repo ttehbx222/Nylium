@@ -14,13 +14,26 @@
  * limitations under the License.
  */
 #include "CastingOperation.hpp"
+#include "../PendingDeclaration.hpp"
+#include "../../../../log/logger.hpp"
 
 using namespace nylium;
 
-CastingOperation::CastingOperation(ValueHolder* target, PendingDeclaration* target_type) : Operation(target_type, target){
+CastingOperation::CastingOperation(ValueHolder* target, PendingDeclaration* target_type) : Operation(target_type, target, OperationType::CAST){
     f_target_type = target_type;
 }
 
 void CastingOperation::compile(Assembly* assembly){
     
+}
+
+void CastingOperation::debug_print(int depth){
+    nlog::LOGLEVEL loglevel = nlog::LOGLEVEL::DEBUG_2;
+    std::string out = "";
+    for (int i = 0; i < depth; ++i){
+        out += LOGGING_TABULATOR;
+    }
+    f_target->debug_print(depth);
+    nlog::log(loglevel, out + LOGGING_TABULATOR + "cast");
+    f_target_type->debug_print(depth+2);
 }

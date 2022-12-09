@@ -30,7 +30,7 @@ Project* nylium::loadProject(std::string& name){
         loadCharSequences(fInterface);
     }
     project->flushErrors();
-    initNativeTypes();
+    initNativeTypes(project->interfaces.front()); //TODO add own scope
     for (FileInterface* fInterface : project->interfaces){
         loadBodies(fInterface);
     }

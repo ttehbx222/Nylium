@@ -25,5 +25,5 @@ FileInterface::FileInterface(std::string& name, std::string& file_path, std::str
     this->project = project;
     this->parent = parent;
     project->interfaces.push_back(this);
-    main_scope = new Scope();
+    main_scope = new Scope(this);
 }

@@ -28,4 +28,5 @@ Assembly* nylium::preassembleProject(Project* project){
             body->compile(assembly);
         }
     }
+    return assembly;
 }

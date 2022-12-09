@@ -14,9 +14,27 @@
  * limitations under the License.
  */
 #include "FieldDeclaration.hpp"
+#include "../../../../log/logger.hpp"
 
 using namespace nylium;
 
 FieldDeclaration::FieldDeclaration(DeclarationAttributes* attributes, PendingDeclaration* type, std::string& label, AssignOperation* initializer) : PendingDeclaration(attributes, label, type, ValueHolderType::FIELD){
-    
+    this->f_initializer = initializer;
+}
+
+void FieldDeclaration::compile(Assembly* assembly){
+    //TODO
+}
+
+void FieldDeclaration::debug_print(int depth){
+    nlog::LOGLEVEL loglevel = nlog::LOGLEVEL::DEBUG_0;
+    std::string out = "";
+    for (int i = 0; i < depth; ++i){
+        out += LOGGING_TABULATOR;
+    }
+    nlog::log(loglevel, out + "field " + this->f_type->f_key + " " + this->f_key);
+    if (this->f_initializer){
+        nlog::log(loglevel, out + LOGGING_TABULATOR + "=");
+        f_initializer->f_source->debug_print(depth+2);
+    }
 }

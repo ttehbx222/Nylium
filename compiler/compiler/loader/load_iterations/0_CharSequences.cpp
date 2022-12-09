@@ -45,8 +45,8 @@ const char empty_separator[] = "^[ \t]+";
 const char end[] = "^;";
 const char list_separator[] = "^,";
 const char name[] = "^[A-Za-z_][A-Za-z0-9_]*";
-//const char operator_[] = "^[\\+\\-\\*\\/\\&\\|\\^\\!\\=\\:\\.]*";
-const char operator_[] = "^[\\+\\-\\*\\/\\&\\|\\^\\!\\=\\:\\.\\<\\>]*";
+//const char operator_[] = "^[\\+\\-\\*\\/\\&\\|\\^\\!\\=\\:\\.]+";
+const char operator_[] = "^[\\+\\-\\*\\/\\&\\|\\^\\!\\=\\:\\.\\<\\>]+";
 
 const char value_int_hex[] = "^0x[A-Fa-f0-9]+";
 const char value_int_bin[] = "^0b[01]+";
@@ -60,18 +60,18 @@ const char comment_line[] = "^//";
 const char first_chars[] = "[]()<>{} \t;,ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_+-*/&|^!=:.0123456789'\"";
 
 const std::regex regex_text(std::string("(")
-    +bracket+")|("
-    +empty_separator+")|("
-    +end+")|("
-    +list_separator+")|("
-    +name+")|("
-    +operator_+")|("
-    +value_int_hex+")|("
-    +value_int_bin+")|("
-    +value_int_dec+")|("
-    +value_char+")|("
-    +value_str+")|("
-    +comment_line+")");
+    +bracket+")|(" //group 1
+    +empty_separator+")|(" //group 2
+    +end+")|(" //group 3
+    +list_separator+")|(" //group 4
+    +name+")|(" //group 5
+    +operator_+")|(" //group 6
+    +value_int_hex+")|(" //group 7
+    +value_int_bin+")|(" //group 8
+    +value_int_dec+")|(" //group 9
+    +value_char+")|(" //group 10
+    +value_str+")|(" //group 11
+    +comment_line+")"); //group 13
 
 void processLine(FileInterface* fInterface, Text* text, std::string line, size_t line_number, CharSequence** last){
     size_t coloumn = 0;
@@ -81,7 +81,7 @@ void processLine(FileInterface* fInterface, Text* text, std::string line, size_t
         char group = -1;
         char len;
         std::string chars;
-        for (char i = 1; i<12; i++){
+        for (char i = 1; i<13; i++){
             if (len = results[i].length()){
                 group = i;
                 chars = results[i].str();
@@ -269,6 +269,7 @@ void SequenceLine::push(CharSequence* in, Text* text){
                     switch(parent->f_stype){
                         case ScopeListType::INITIALIZER_LIST:
                         {
+                            //wtf?
                             if (parent->f_contents.size() == 1){
                                 parent->f_stype = ScopeListType::SCOPE;
                                 SequenceLine* line = new SequenceLine(parent);

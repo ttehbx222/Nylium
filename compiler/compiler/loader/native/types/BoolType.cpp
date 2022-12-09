@@ -19,7 +19,7 @@ using namespace nylium;
 
 BoolType* self = nullptr;
 
-BoolType::BoolType() : TypeDeclaration(std::string("bool"), nullptr, nullptr, nullptr) {
+BoolType::BoolType() : TypeDeclaration(nullptr, std::string("bool"), std::vector<PendingDeclaration*>(), nullptr, nullptr) {
     self = this;
 }
 

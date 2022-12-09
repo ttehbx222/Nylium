@@ -25,6 +25,7 @@ namespace nylium{
     struct FieldDeclaration;
     struct TypeDeclaration;
     struct Declaration;
+    struct ValueHolder;
 
     struct DeclarationContainer{
         Namespace* f_namespace = nullptr;
@@ -33,7 +34,7 @@ namespace nylium{
     };
 
     struct DeclarationMap{
-        bool resolved;
+        bool resolved = false;
         std::map<std::string, DeclarationContainer*> declarations;
         Namespace* getNamespace(std::string&);
         FieldDeclaration* getField(std::string&);

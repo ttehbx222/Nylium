@@ -38,6 +38,10 @@ add_executable(NyliumCompiler "nylium.cpp"
 "compiler/loader/load_iterations/2_InternalLinking.cpp"
 #compiler.loader.native.keywords
 "compiler/loader/native/keywords/Keywords.cpp"
+"compiler/loader/native/keywords/ElseKeyword.cpp"
+"compiler/loader/native/keywords/ForKeyword.cpp"
+"compiler/loader/native/keywords/IfKeyword.cpp"
+"compiler/loader/native/keywords/WhileKeyword.cpp"
 #compiler.loader.native.types
 "compiler/loader/native/types/Types.cpp"
 "compiler/loader/native/types/ClassType.cpp"
@@ -46,10 +50,16 @@ add_executable(NyliumCompiler "nylium.cpp"
 "compiler/loader/project/Interface.cpp"
 "compiler/loader/project/Project.cpp"
 #compiler.loader.utils
+"compiler/loader/utils/DeclarationMap.cpp"
 #compiler.loader
 "compiler/loader/Loader.cpp"
 #compiler.preassembler
 "compiler/preassembler/Preassembler.cpp"
+#compiler.preassembler.data
+"compiler/preassembler/data/AsmStorage.cpp"
+"compiler/preassembler/data/Registers.cpp"
+#compiler.preassembler.compilable
+"compiler/preassembler/compilable/CompilableBody.cpp"
 #fileutils
 "fileutils/file_io.cpp"
 #log

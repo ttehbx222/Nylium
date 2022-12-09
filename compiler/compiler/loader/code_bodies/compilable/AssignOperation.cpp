@@ -16,10 +16,11 @@
 #include "AssignOperation.hpp"
 #include "Literal.hpp"
 #include "../../../preassembler/utils/Names.hpp"
+#include "../../../../log/logger.hpp"
 
 using namespace nylium;
 
-AssignOperation::AssignOperation(ValueHolder* target, ValueHolder* source) : Operation(target->f_type, target){
+AssignOperation::AssignOperation(ValueHolder* target, ValueHolder* source) : Operation(target->f_type, target, OperationType::ASSIGN){
     this->f_source = source;
 }
 
@@ -34,4 +35,15 @@ void AssignOperation::compile(Assembly* assembly){
         }
     }
     //error
+}
+
+void AssignOperation::debug_print(int depth){
+    nlog::LOGLEVEL loglevel = nlog::LOGLEVEL::DEBUG_2;
+    std::string out = "";
+    for (int i = 0; i < depth; ++i){
+        out += LOGGING_TABULATOR;
+    }
+    f_target->debug_print(depth);
+    nlog::log(loglevel, out + LOGGING_TABULATOR + "=");
+    f_source->debug_print(depth+2);
 }

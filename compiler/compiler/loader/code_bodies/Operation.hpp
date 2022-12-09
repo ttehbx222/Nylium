@@ -17,13 +17,21 @@
 
 #include "CodeLine.hpp"
 #include "ValueHolder.hpp"
-#include "compilable/FieldDeclaration.hpp"
 
 namespace nylium{
 
+    enum class OperationType{
+        ASSIGN,
+        CALL,
+        CAST,
+        FUNCTION,
+        KEYWORD
+    };
+
     struct Operation : public CodeLine, public ValueHolder {
+        OperationType f_otype;
         ValueHolder* f_target;
-        Operation(PendingDeclaration* type, ValueHolder* target, CompilableType ctype = CompilableType::OPERATION);
+        Operation(PendingDeclaration* type, ValueHolder* target, OperationType otype, CompilableType ctype = CompilableType::OPERATION);
     };
 
 }

@@ -17,6 +17,8 @@
 
 #include "../fileutils/file_io.hpp"
 
+#define LOGGING_TABULATOR "   "
+
 namespace nlog {
 
 	enum class LOGLEVEL {
