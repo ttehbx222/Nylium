@@ -576,7 +576,8 @@ namespace builder{
                     if (attributes->f_static == Boolean::TRUE && (int)scope->f_layer & (int)SCOPE_LAYER::MAIN){
                         warn("\"static\" has no effect", seq, text->f_interface);
                     }
-                    //return buildFieldOrFunctionDeclaration
+                    --(*read_pos);
+                    return buildFieldOrFunctionDeclaration(scope, text, read_pos, attributes, buildPendingDeclaration(scope, text, read_pos));
                 }
             }
             return nullptr; //compiler reasons
@@ -1086,7 +1087,6 @@ namespace builder{
                                     ValueHolder* cast_target = buildValueHolder(scope, text, read_pos);
                                     last = new CastingOperation(cast_target, (PendingDeclaration*)last);
                                 }
-                                std::cout << "check if this causes an error" << std::endl;
                                 break;
                             }
                             case CharSequenceType::NAME:
@@ -1107,7 +1107,6 @@ namespace builder{
                 }
                 case CharSequenceType::VALUE:
                 {
-                    std::cout << "todo" << std::endl;
                     last = new Literal(nullptr, nullptr, 0, seq->chars);//TODO
                     break;
                 }
