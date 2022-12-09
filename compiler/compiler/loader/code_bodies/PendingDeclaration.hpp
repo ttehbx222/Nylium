@@ -20,7 +20,9 @@
 namespace nylium{
 
     struct PendingDeclaration : public Declaration {
+        std::vector<std::string> f_declaration_path; //only relevant in pure PendingDeclaration
         //TODO resolve
+        PendingDeclaration(std::string& label, std::vector<std::string>& declaration_path = {});
         PendingDeclaration(DeclarationAttributes* attributes, std::string& label, PendingDeclaration* type = nullptr, ValueHolderType vhtype = ValueHolderType::PENDING_DECLARATION);
         virtual void compile(Assembly*){
             //error

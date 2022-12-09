@@ -20,9 +20,10 @@
 namespace nylium{
 
     struct CallOperation : public Operation {
-        bool f_static;
-        PendingDeclaration* f_key;
+        bool f_static; 
+        std::string f_key;
         CallOperation(ValueHolder* target, bool static, std::string& key);
+        virtual void compile(Assembly*);
         virtual void debug_print(int depth);
     };
 

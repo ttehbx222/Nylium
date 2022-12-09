@@ -20,3 +20,7 @@ using namespace nylium;
 PendingDeclaration::PendingDeclaration(DeclarationAttributes* attributes, std::string& label, PendingDeclaration* type, ValueHolderType vhtype) : Declaration(attributes, type, label, vhtype){
     
 }
+
+PendingDeclaration::PendingDeclaration(std::string& label, std::vector<std::string>& declaration_path) : Declaration(nullptr, nullptr, label, ValueHolderType::PENDING_DECLARATION){
+    this->f_declaration_path = declaration_path;
+}

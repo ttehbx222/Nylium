@@ -19,5 +19,5 @@ using namespace nylium;
 
 CallOperation::CallOperation(ValueHolder* target, bool f_static, std::string& key) : Operation(nullptr, target) {
     this->f_static = f_static;
-    this->f_key = new PendingDeclaration(nullptr, key);
+    this->f_key = key;
 }

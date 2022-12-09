@@ -275,8 +275,8 @@ namespace builder{
                     CB999::throwError(seq, text->f_interface);
                     return nullptr;
                 }
-
-                return misc::buildFieldOrOperationOrFunctionDeclaration(scope, text, read_pos, new PendingDeclaration(nullptr, seq->chars, getClassType()));
+                --(*read_pos);
+                return misc::buildFieldOrOperationOrFunctionDeclaration(scope, text, read_pos, declaration::buildPendingDeclaration(scope, text, read_pos));
             }
         }
         return nullptr;
@@ -647,12 +647,7 @@ namespace builder{
                     seq = element->f_sequence;
                     std::vector<PendingDeclaration*> inheritance;
                     if (seq->type == CharSequenceType::OPERATOR && seq->chars == ":"){
-                        seq = text->f_current_target->read(read_pos)->f_sequence;
-                        if (!assertCustomLabels(seq, text)){
-                            CB999::throwError(seq, text->f_interface);
-                            return nullptr;
-                        }
-                        inheritance.push_back(new PendingDeclaration(nullptr, seq->chars, getClassType()));
+                        inheritance.push_back(declaration::buildPendingDeclaration(scope, text, read_pos));
                         element = text->f_current_target->read(read_pos);
                         seq = element->f_sequence;
                         //TODO multi inheritance
@@ -747,8 +742,9 @@ namespace builder{
                 attributes->f_final = Boolean::TRUE;
                 return buildParam(scope, text, line , read_pos, attributes);
             }
-            assertCustomLabels(seq, text);
-            PendingDeclaration* param_type = new PendingDeclaration(nullptr, seq->chars, getClassType());
+            SequenceLine* temp = text->f_current_target;
+            text->f_current_target = line;
+            PendingDeclaration* param_type = buildPendingDeclaration(scope, text, read_pos);
             seq = line->read(read_pos)->f_sequence;
             assertCustomLabels(seq, text);
             std::string name = seq->chars;
@@ -756,11 +752,13 @@ namespace builder{
             seq = line->read(read_pos)->f_sequence;
             if (seq->chars == "="){
                 (*read_pos)-=2;
-                SequenceLine* temp = text->f_current_target;
-                text->f_current_target = line;
                 default_value = (AssignOperation*)misc::buildValueHolder(scope, text, read_pos);
-                text->f_current_target = temp;
             }
+            else if (seq->type != CharSequenceType::END){
+                CB999::throwError(seq, text->f_interface);
+                return nullptr;
+            }
+            text->f_current_target = temp;
             return new FieldDeclaration(attributes, param_type, name, default_value);
         }
 
@@ -783,6 +781,7 @@ namespace builder{
                 return nullptr;
             }
             std::string name = seq->chars;
+            std::vector<std::string> decl_path;
             seq = text->f_current_target->read(read_pos)->f_sequence;
             while(seq->chars == "::"){
                 seq = text->f_current_target->read(read_pos)->f_sequence;
@@ -790,9 +789,12 @@ namespace builder{
                     CB999::throwError(seq, text->f_interface);
                     return nullptr;
                 }
-                name += "::" + seq->chars;
+                decl_path.push_back(name);
+                name = seq->chars;
                 seq = text->f_current_target->read(read_pos)->f_sequence;
             }
+            --(*read_pos);
+            return new PendingDeclaration(name, decl_path);
         }
 
     }
@@ -852,17 +854,34 @@ namespace builder{
                 {
                     if (last){
                         if (seq->chars == "."){
-                        //TODO member call
-                        return nullptr;
+                            seq = text->f_current_target->read(read_pos)->f_sequence;
+                            assertCustomLabels(seq, text);
+                            std::string member = seq->chars;
+                            element = text->f_current_target->read(read_pos);
+                            seq = element->f_sequence;
+                            if (seq->chars == "("){
+                                if (((SequenceBracket*)element)->f_btype == BracketListType::ENDED_LINE_LIST){
+                                    CB999::throwError(seq, text->f_interface);
+                                    return nullptr;
+                                }
+                                std::vector<ValueHolder*> arguments;
+                                SequenceLine* temp = text->f_current_target;
+                                for (SequenceLine* line : ((SequenceBracket*)element)->f_contents){
+                                    size_t temp_read_pos = 0;
+                                    text->f_current_target = line;
+                                    arguments.push_back(misc::buildValueHolder(scope, text, &temp_read_pos));
+                                }
+                                text->f_current_target = temp;
+                                last = new FunctionCallOperation(last, member, arguments);
+                            }else{
+                                --(read_pos);
+                                last = new CallOperation(last, false, member);
+                            }
                         }
-                        if (seq->chars == "::"){
-                        //TODO static member call
-                        return nullptr;
-                        }
-                        /*if (seq->chars == "="){
+                        if (seq->chars == "="){
                             //TODO assign operation
                             return nullptr;
-                        }*/
+                        }
                         int current_priority = operation::operatorPriority(seq->chars);
                         if (current_priority > previous_priority){
                             if (current_priority > last_priority){
@@ -899,12 +918,40 @@ namespace builder{
                         CB999::throwError(seq, text->f_interface);
                         return nullptr;
                     }
-                    last = new PendingDeclaration(nullptr, seq->chars);
+                    --(*read_pos);
+                    last = declaration::buildPendingDeclaration(scope, text, read_pos);
                     break;
                 }
                 case CharSequenceType::BRACKET:
                 {
-                    if (last || element->elementType() != ElementType::BRACKET || ((SequenceBracket*)element)->f_btype != BracketListType::SINGLE){
+                    if (seq->chars != "("){
+                        CB999::throwError(seq, text->f_interface);
+                        return nullptr;
+                    }
+                    if (last){
+                        if (last->f_vhtype != ValueHolderType::PENDING_DECLARATION){
+                            CB999::throwError(seq, text->f_interface);
+                            return nullptr;
+                        }
+                        if (((SequenceBracket*)element)->f_btype == BracketListType::ENDED_LINE_LIST){
+                            CB999::throwError(seq, text->f_interface);
+                            return nullptr;
+                        }
+                        std::vector<ValueHolder*> arguments;
+                        SequenceLine* temp = text->f_current_target;
+                        for (SequenceLine* line : ((SequenceBracket*)element)->f_contents){
+                            size_t temp_read_pos = 0;
+                            text->f_current_target = line;
+                            arguments.push_back(misc::buildValueHolder(scope, text, &temp_read_pos));
+                        }
+                        std::vector<std::string> declarationPath = ((PendingDeclaration*)last)->f_declaration_path;
+                        declarationPath.pop_back();
+                        PendingDeclaration* container = new PendingDeclaration(((PendingDeclaration*)last)->f_declaration_path.back(), declarationPath);
+                        text->f_current_target = temp;
+                        last = new FunctionCallOperation(last, ((PendingDeclaration*)last)->f_key, arguments, true);
+                        break;
+                    }
+                    if (((SequenceBracket*)element)->f_btype != BracketListType::SINGLE){
                         CB999::throwError(seq, text->f_interface);
                         return nullptr;
                     }
