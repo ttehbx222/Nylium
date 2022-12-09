@@ -61,6 +61,7 @@ namespace builder{
         Scope* buildTypeDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, size_t* read_pos); 
         Scope* buildFieldOrFunctionDeclaration(Scope* scope, Text* text, DeclarationAttributes* attributes, PendingDeclaration* first_label);
         Scope* buildFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, PendingDeclaration* return_type, std::string& name, SequenceBracket* parameters, SequenceScope* body);
+        PendingDeclaration* buildPendingDeclaration(Scope* scope, Text* text, size_t* read_pos);
     }
     namespace misc{
         Scope* buildFieldOrOperationOrFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, PendingDeclaration* first_label);
@@ -773,6 +774,25 @@ namespace builder{
 
         Scope* buildFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, DeclarationAttributes* attributes, PendingDeclaration* return_type, std::string& name, SequenceBracket* parameters, SequenceScope* body){
             return new FunctionDeclaration(attributes, return_type, name, scope, body, buildParameters(scope, text, parameters));
+        }
+
+        PendingDeclaration* buildPendingDeclaration(Scope* scope, Text* text, size_t* read_pos){
+            CharSequence* seq = text->f_current_target->read(read_pos)->f_sequence;
+            if (seq->type != CharSequenceType::NAME){
+                CB999::throwError(seq, text->f_interface);
+                return nullptr;
+            }
+            std::string name = seq->chars;
+            seq = text->f_current_target->read(read_pos)->f_sequence;
+            while(seq->chars == "::"){
+                seq = text->f_current_target->read(read_pos)->f_sequence;
+                if (seq->type != CharSequenceType::NAME){
+                    CB999::throwError(seq, text->f_interface);
+                    return nullptr;
+                }
+                name += "::" + seq->chars;
+                seq = text->f_current_target->read(read_pos)->f_sequence;
+            }
         }
 
     }

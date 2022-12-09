@@ -32,6 +32,7 @@ namespace nylium{
 
 		    Scope* f_parent;
 		    DeclarationMap f_accessibles;
+			std::vector<Scope*> f_decls;
 		    FileInterface* f_parent_interface;
 	    	std::vector<CompilableBody*> f_code;
 			int f_depth;
@@ -44,7 +45,10 @@ namespace nylium{
 	    	inline std::vector<CompilableBody*>& code() { return f_code; }
 	    	Visibility visibilityOf(Scope* scope);
 	      	Declaration* searchDeclaration(PendingDeclaration* decl);
-	    	inline void addDeclaration(Declaration* decl) {
+	    	void addDeclaration(Declaration* decl) { //TODO move to cpp //TODO check if order of declaration is needed inside functions
+				if (decl->f_ctype == CompilableType::SCOPE || decl->f_vhtype == ValueHolderType::NAMESPACE || decl->f_vhtype == ValueHolderType::FUNCTION || decl->f_vhtype == ValueHolderType::TYPE){
+					f_decls.push_back((Scope*)decl);
+				}
 				f_accessibles.addDeclaration(decl);
 			}
 
