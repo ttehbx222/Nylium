@@ -65,6 +65,7 @@ namespace builder{
     namespace misc{
         Scope* buildFieldOrOperationOrFunctionDeclaration(Scope* scope, Text* text, size_t* read_pos, PendingDeclaration* first_label);
         ValueHolder* buildValueHolder(Scope* scope, Text* text, size_t* read_pos, int previous_priority = 0);
+        //TODO static call opeartion to declaration_path
     }
     namespace operation{
         int operatorPriority(std::string& _operator);

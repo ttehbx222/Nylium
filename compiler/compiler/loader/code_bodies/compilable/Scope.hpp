@@ -18,7 +18,7 @@
 #include <vector>
 #include "../CodeLine.hpp"
 #include "../PendingDeclaration.hpp"
-#include "../../utils/DeclarationSearch.hpp"
+#include "../../utils/DeclarationMap.hpp"
 #include "../../load_iterations/0_CharSequences.hpp"
 
 
@@ -31,7 +31,7 @@ namespace nylium{
 			SCOPE_LAYER f_layer = SCOPE_LAYER::MAIN;
 
 		    Scope* f_parent;
-		    DeclarationSearch f_accessibles;
+		    DeclarationMap f_accessibles;
 		    FileInterface* f_parent_interface;
 	    	std::vector<CompilableBody*> f_code;
 			int f_depth;
@@ -44,8 +44,11 @@ namespace nylium{
 	    	inline std::vector<CompilableBody*>& code() { return f_code; }
 	    	Visibility visibilityOf(Scope* scope);
 	      	Declaration* searchDeclaration(PendingDeclaration* decl);
-	    	void addDeclaration(Declaration* decl) {
-			} //TODO
+	    	inline void addDeclaration(Declaration* decl) {
+				f_accessibles.addDeclaration(decl);
+			}
+
+			void resolveDeclarations();
 
 			virtual void compile(Assembly*);
 			virtual void debug_print(int depth);

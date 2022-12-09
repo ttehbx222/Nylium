@@ -33,6 +33,7 @@ namespace nylium{
             this->f_ctype = ctype;
         }
         virtual void debug_print(int depth) = 0;
+        virtual void resolve() = 0;
     };
 
 }

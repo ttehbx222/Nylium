@@ -27,7 +27,7 @@ namespace nylium{
         FUNCTION,
         PENDING_DECLARATION,
         TYPE,
-        OTHER
+        NAMESPACE
     };
 
     struct PendingDeclaration;

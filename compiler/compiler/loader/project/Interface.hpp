@@ -17,7 +17,6 @@
 
 #include <string>
 #include <vector>
-#include "../utils/DeclarationSearch.hpp"
 #include "../../../fileutils/file_io.hpp"
 #include "Project.hpp"
 
@@ -28,7 +27,6 @@ namespace nylium{
     struct Scope;
 
     struct FileInterface : ProjectContent {
-        DeclarationSearch f_accessibles;
         std::string name, import_path;
         std::vector<FileInterface*> imports;
 
