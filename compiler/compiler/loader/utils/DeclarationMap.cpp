@@ -20,6 +20,11 @@
 
 using namespace nylium;
 
+constexpr int TYPES_RESOLVE = 0x1;
+constexpr int FIELDS_RESOLVE = 0x2;
+constexpr int FUNCTIONS_RESOLVE = 0x4;
+constexpr int OPERATIONS_RESOLVE = 0x8;
+
 bool DeclarationMap::addDeclaration(Declaration* decl){
     auto declarationContainer = declarations.find(decl->f_key);
     if (declarationContainer == declarations.end()){
@@ -56,7 +61,7 @@ bool DeclarationMap::addDeclaration(Declaration* decl){
     return true;
 }
 
-FieldDeclaration* DeclarationMap::getField(std::string& name){
+FieldDeclaration* DeclarationMap::getField(PendingDeclaration* name){
     auto declarationContainer = declarations.find(name);
     if (declarationContainer == declarations.end()){
         //error
@@ -65,17 +70,13 @@ FieldDeclaration* DeclarationMap::getField(std::string& name){
     return declarationContainer->second->f_field;
 }
 
-Namespace* DeclarationMap::getNamespace(std::string& name){
-    auto declarationContainer = declarations.find(name);
-    if (declarationContainer == declarations.end()){
-        //error
-        return nullptr;
-    }
-    return declarationContainer->second->f_namespace;
+Namespace* DeclarationMap::getNamespace(PendingDeclaration* name, bool locked){
+    //TODO
+    return result;
 }
 
-FunctionDeclaration* DeclarationMap::getFunction(std::string& name, std::vector<ValueHolder*>& arguments){
-    if (!this->resolved){
+FunctionDeclaration* DeclarationMap::getFunction(PendingDeclaration* name, std::vector<ValueHolder*>& arguments){
+    if (!(this->resolve_flags & FUNCTIONS_RESOLVE)){
         //error
         return nullptr;
     }
@@ -102,7 +103,10 @@ FunctionDeclaration* DeclarationMap::getFunction(std::string& name, std::vector<
     return nullptr;
 }
 
-void DeclarationMap::resolveDeclarations(){
+void DeclarationMap::resolveTypes(){
+    if (resolve_flags & TYPES_RESOLVE){
+        return;
+    }
     //TODO
-    this->resolved = true;
+    resolve_flags |= TYPES_RESOLVE;
 }
