@@ -48,13 +48,21 @@ bool DeclarationMap::addDeclaration(Declaration* decl){
             break;
         }
         case ValueHolderType::NAMESPACE:
-        case ValueHolderType::TYPE:
         {
-            if (declarationContainer->second->f_namespace){
+            if ((!declarationContainer->second->f_namespace.empty()) && declarationContainer->second->f_namespace.front()->f_vhtype == ValueHolderType::TYPE){
                 //error
                 return false;
             }
-            declarationContainer->second->f_namespace = (Namespace*)decl;
+            declarationContainer->second->f_namespace.push_back((Namespace*)decl);
+            break;
+        }
+        case ValueHolderType::TYPE:
+        {
+            if (!declarationContainer->second->f_namespace.empty()){
+                //error
+                return false;
+            }
+            declarationContainer->second->f_namespace.push_back((Namespace*)decl);
             break;
         }
     }
@@ -62,45 +70,150 @@ bool DeclarationMap::addDeclaration(Declaration* decl){
 }
 
 FieldDeclaration* DeclarationMap::getField(PendingDeclaration* name){
-    auto declarationContainer = declarations.find(name);
-    if (declarationContainer == declarations.end()){
-        //error
-        return nullptr;
+    if (name->f_declaration_path.empty()){
+        auto container = declarations.find(name->f_key);
+        if (container == declarations.end() || !container->second->f_field){
+            Scope* parent = f_scope->f_parent;
+            if (!parent){
+                //TODO other files
+                return nullptr;
+            }
+            if (f_scope->f_ctype == CompilableType::DECLARATION){
+                FieldDeclaration* result = parent->f_accessibles.getField(name);
+                return result ? result : parent->f_accessibles.getField(new PendingDeclaration(name->f_key, std::vector<std::string>({((Namespace*)f_scope)->f_key}));
+            }else{
+                return parent->f_accessibles.getField(name);
+            }
+        }
+        return container->second->f_field;
+    }else{
+        std::vector<Namespace*> namespaces = getNamespaces(name->f_declaration_path);
+        for (Namespace* _namespace : namespaces){
+            FieldDeclaration* result = _namespace->f_accessibles.getField(new PendingDeclaration(name->f_key));
+            if (result){
+                return result;
+            }
+        }
+
+        Scope* parent = f_scope->f_parent;
+        if (!parent){
+            //TODO other files
+            return nullptr;
+        }
+        if (f_scope->f_ctype == CompilableType::DECLARATION){
+            FieldDeclaration* result = parent->f_accessibles.getField(name);
+            if (result){
+                return result;
+            }
+            std::vector<std::string> addition = name->f_declaration_path;
+            addition.push_back(((Namespace*)f_scope)->f_key);
+            return parent->f_accessibles.getField(new PendingDeclaration(name->f_key, addition));
+        }else{
+            return parent->f_accessibles.getField(name);
+        }
     }
-    return declarationContainer->second->f_field;
 }
 
-Namespace* DeclarationMap::getNamespace(PendingDeclaration* name, bool locked){
-    //TODO
-    return result;
+Namespace* DeclarationMap::getNamespace(PendingDeclaration* name){
+    if (name->f_declaration_path.empty()){
+        auto container = declarations.find(name->f_key);
+        if (container == declarations.end() || container->second->f_namespace.empty()){
+            Scope* parent = f_scope->f_parent;
+            if (!parent){
+                //TODO other file
+                return nullptr;
+            }
+            if (f_scope->f_ctype == CompilableType::DECLARATION){
+                Namespace* result = parent->f_accessibles.getNamespace(name);
+                return result ? result : parent->f_accessibles.getNamespace(new PendingDeclaration(name->f_key, std::vector<std::string>({((Namespace*)f_scope)->f_key}));
+            }else{
+                return parent->f_accessibles.getNamespace(name);
+            }
+        }
+        if (container->second->f_namespace.size() > 1){
+            //error
+            return nullptr;
+        }
+        return container->second->f_namespace.front();
+    }else{
+        std::vector<Namespace*> namespaces = getNamespaces(name->f_declaration_path);
+        for (Namespace* _namespace : namespaces){
+            Namespace* result = _namespace->f_accessibles.getNamespace(new PendingDeclaration(name->f_key));
+            if (result){
+                return result;
+            }
+        }
+
+        Scope* parent = f_scope->f_parent;
+        if (!parent){
+            //TODO other files
+            return nullptr;
+        }
+        if (f_scope->f_ctype == CompilableType::DECLARATION){
+            Namespace* result = parent->f_accessibles.getNamespace(name);
+            if (result){
+                return result;
+            }
+            std::vector<std::string> addition = name->f_declaration_path;
+            addition.push_back(((Namespace*)f_scope)->f_key);
+            return parent->f_accessibles.getNamespace(new PendingDeclaration(name->f_key, addition));
+        }else{
+            return parent->f_accessibles.getNamespace(name);
+        }
+    }
 }
 
 FunctionDeclaration* DeclarationMap::getFunction(PendingDeclaration* name, std::vector<ValueHolder*>& arguments){
-    if (!(this->resolve_flags & FUNCTIONS_RESOLVE)){
-        //error
-        return nullptr;
-    }
-    auto declarationContainer = declarations.find(name);
-    if (declarationContainer == declarations.end()){
-        //error
-        return nullptr;
-    }
-    for (FunctionDeclaration* allFunc : declarationContainer->second->f_functions){
-        if (allFunc->f_parameters.size() != arguments.size()){
-            continue;
-        }
-        bool match = true;
-        for (size_t i = 0; i < arguments.size(); ++i){
-            if (((TypeDeclaration*)arguments.at(i)->f_type)->conversionTo((TypeDeclaration*)allFunc->f_parameters.at(i)->f_type) != Castable::DIRECT){
-                match = false;
-                break;
+    if (name->f_declaration_path.empty()){
+        auto container = declarations.find(name->f_key);
+        if (container == declarations.end() || container->second->f_namespace.empty()){
+            Scope* parent = f_scope->f_parent;
+            if (!parent){
+                //TODO other file
+                return nullptr;
+            }
+            if (f_scope->f_ctype == CompilableType::DECLARATION){
+                Namespace* result = parent->f_accessibles.getNamespace(name);
+                return result ? result : parent->f_accessibles.getNamespace(new PendingDeclaration(name->f_key, std::vector<std::string>({((Namespace*)f_scope)->f_key}));
+            }else{
+                return parent->f_accessibles.getNamespace(name);
             }
         }
-        if (match){
-            return allFunc;
+        if (container->second->f_namespace.size() > 1){
+            //error
+            return nullptr;
+        }
+        return container->second->f_namespace.front();
+    }else{
+        std::vector<Namespace*> namespaces = getNamespaces(name->f_declaration_path);
+        for (Namespace* _namespace : namespaces){
+            Namespace* result = _namespace->f_accessibles.getNamespace(new PendingDeclaration(name->f_key));
+            if (result){
+                return result;
+            }
+        }
+
+        Scope* parent = f_scope->f_parent;
+        if (!parent){
+            //TODO other files
+            return nullptr;
+        }
+        if (f_scope->f_ctype == CompilableType::DECLARATION){
+            Namespace* result = parent->f_accessibles.getNamespace(name);
+            if (result){
+                return result;
+            }
+            std::vector<std::string> addition = name->f_declaration_path;
+            addition.push_back(((Namespace*)f_scope)->f_key);
+            return parent->f_accessibles.getNamespace(new PendingDeclaration(name->f_key, addition));
+        }else{
+            return parent->f_accessibles.getNamespace(name);
         }
     }
-    return nullptr;
+}
+
+std::vector<Namespace*> DeclarationMap::getNamespaces(std::vector<std::string> path){
+    
 }
 
 void DeclarationMap::resolveTypes(){

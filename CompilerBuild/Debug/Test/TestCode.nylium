@@ -1,3 +1,4 @@
+import Test.Imported;
 namespace potato{
 	class Foo : Bar{
 		static long important = 0xFF;

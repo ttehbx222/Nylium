@@ -51,7 +51,7 @@ void FunctionDeclaration::debug_print(int depth){
     if (nlog::lowestRelevantLogLevel() < nlog::LOGLEVEL::DEBUG_2){
         return;
     }
-    nlog::log(loglevel, out + LOGGING_TABULATOR + "{");
+    nlog::log(nlog::LOGLEVEL::DEBUG_2, out + LOGGING_TABULATOR + "{");
 
     std::vector<CompilableBody*> bodies;
     std::vector<CompilableBody*> sorted_fields;
@@ -94,5 +94,5 @@ void FunctionDeclaration::debug_print(int depth){
         body->debug_print(depth+2);
     }
 
-    nlog::log(loglevel, out + LOGGING_TABULATOR + "}");
+    nlog::log(nlog::LOGLEVEL::DEBUG_2, out + LOGGING_TABULATOR + "}");
 }

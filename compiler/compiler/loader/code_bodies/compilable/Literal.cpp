@@ -29,7 +29,7 @@ void Literal::compile(Assembly* assembly){
 }
 
 void Literal::debug_print(int depth){
-    nlog::LOGLEVEL loglevel = nlog::LOGLEVEL::DEBUG_0;
+    nlog::LOGLEVEL loglevel = nlog::LOGLEVEL::DEBUG_2;
     std::string out = "";
     for (int i = 0; i < depth; ++i){
         out += LOGGING_TABULATOR;

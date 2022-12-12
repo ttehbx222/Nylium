@@ -27,9 +27,10 @@ namespace nylium{
     struct Declaration;
     struct ValueHolder;
     struct Scope;
+    struct PendingDeclaration;
 
     struct DeclarationContainer{
-        Namespace* f_namespace = nullptr;
+        std::vector<Namespace*> f_namespace;
         FieldDeclaration* f_field = nullptr;
         std::vector<FunctionDeclaration*> f_functions;
     };
@@ -38,9 +39,10 @@ namespace nylium{
         Scope* f_scope;
         int resolve_flags = 0x0;
         std::map<std::string, DeclarationContainer*> declarations;
-        Namespace* getNamespace(PendingDeclaration*, bool = false);
-        FieldDeclaration* getField(PendingDeclaration*, bool = false);
-        FunctionDeclaration* getFunction(PendingDeclaration*, std::vector<ValueHolder*>&, bool = false);
+        Namespace* getNamespace(PendingDeclaration*);
+        FieldDeclaration* getField(PendingDeclaration*);
+        FunctionDeclaration* getFunction(PendingDeclaration*, std::vector<ValueHolder*>&);
+        std::vector<Namespace*> getNamespaces(std::vector<std::string>);
         void resolveTypes();
         void resolveFields();
         void resolveFunctions();

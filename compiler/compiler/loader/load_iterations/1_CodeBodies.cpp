@@ -45,6 +45,8 @@
 
 #include "../../../log/logger.hpp"
 
+//TODO pur boolean operators into separate section
+
 using namespace nylium;
 
 namespace builder{
@@ -303,7 +305,7 @@ namespace builder{
             content = content_temp->second;
             element = text->f_current_target->read(read_pos);
             seq = element->f_sequence;
-            if (seq->chars == ";"){
+            if (seq->type == CharSequenceType::END){
                 break;
             }
             if (seq->chars == "."){

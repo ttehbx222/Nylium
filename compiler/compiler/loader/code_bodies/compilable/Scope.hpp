@@ -31,7 +31,7 @@ namespace nylium{
 			SCOPE_LAYER f_layer = SCOPE_LAYER::MAIN;
 
 		    Scope* f_parent;
-		    DeclarationMap f_accessibles;
+		    DeclarationMap f_accessibles = this;
 			std::vector<Scope*> f_decls;
 		    FileInterface* f_parent_interface;
 	    	std::vector<CompilableBody*> f_code;

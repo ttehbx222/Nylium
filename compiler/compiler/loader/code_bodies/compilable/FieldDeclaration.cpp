@@ -34,7 +34,7 @@ void FieldDeclaration::debug_print(int depth){
     }
     nlog::log(loglevel, out + "field " + this->f_type->f_key + " " + this->f_key);
     if (this->f_initializer){
-        nlog::log(loglevel, out + LOGGING_TABULATOR + "=");
+        nlog::log(nlog::LOGLEVEL::DEBUG_2, out + LOGGING_TABULATOR + "=");
         f_initializer->f_source->debug_print(depth+2);
     }
 }

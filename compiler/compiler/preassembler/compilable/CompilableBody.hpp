@@ -32,7 +32,7 @@ namespace nylium{
         virtual void compile(Assembly* assembly) = 0;
         CompilableBody(CompilableType ctype);
         virtual void debug_print(int depth) = 0;
-        //virtual void resolve() = 0;
+        virtual void resolve() = 0;
     };
 
 }
