@@ -999,6 +999,7 @@ namespace builder{
                         last = new FunctionCallOperation(type, std::string(""), arguments);
                         break;
                     }
+                    //TODO function call operation
                     --(*read_pos);
                     last = declaration::buildPendingDeclaration(scope, text, read_pos);
                     break;

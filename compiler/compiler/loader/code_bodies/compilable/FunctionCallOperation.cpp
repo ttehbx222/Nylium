@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 #include "FunctionCallOperation.hpp"
+#include "TypeDeclaration.hpp"
+#include "FieldDeclaration.hpp"
+#include "FunctionDeclaration.hpp"
 #include "../../../../log/logger.hpp"
 
 using namespace nylium;
@@ -27,7 +30,38 @@ void FunctionCallOperation::compile(Assembly* assembly){
 }
 
 void FunctionCallOperation::resolve(){
-    
+    //TODO handle no type
+    for (size_t i = 0; i < f_arguments.size(); ++i){
+        ValueHolder*& vh = f_arguments.at(i);
+        if (vh->f_vhtype == ValueHolderType::PENDING_DECLARATION){
+            vh = f_container->f_accessibles.getField((PendingDeclaration*)vh);
+        }else{
+            vh->resolve();
+        }
+    }
+    if (f_static){
+        
+    }
+    else{
+        if (f_target->f_vhtype == ValueHolderType::PENDING_DECLARATION){
+            f_target = f_container->f_accessibles.getField((PendingDeclaration*)f_target);
+        }else{
+            f_target->resolve();
+        }
+        if (!f_target){
+            //error
+            return;
+        }
+        f_result =  ((TypeDeclaration*)f_target->f_type)->f_accessibles.getFunction(new PendingDeclaration(f_key, std::vector<std::string>()), this->f_arguments);
+        if (!f_result){
+            //error
+            return;
+        }
+        f_type = f_result->f_type;
+        if (f_result->f_attributes->f_static == Boolean::TRUE){
+            //error
+        }
+    }
 }
 
 void FunctionCallOperation::debug_print(int depth){
