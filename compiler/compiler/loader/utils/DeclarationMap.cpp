@@ -247,8 +247,7 @@ FunctionDeclaration* DeclarationMap::getFunction(PendingDeclaration* decl, std::
     return f_scope->f_parent_interface->f_accessibles.getFunction(f_scope, decl, param_types);
 }
 
-TypeDeclaration* DeclarationLinking::getType(Scope* source, PendingDeclaration* decl, bool other_files){
-    
+TypeDeclaration* DeclarationLinking::getType(Scope* source, PendingDeclaration* decl, bool other_files, int* last_match_strength_target){
     auto find_declaration = f_classes.find(decl->f_key);
     if (find_declaration != f_classes.end()){
         while (source->f_ctype != CompilableType::DECLARATION){
@@ -265,7 +264,6 @@ TypeDeclaration* DeclarationLinking::getType(Scope* source, PendingDeclaration* 
         std::vector<std::string>& referenced_path = decl->f_declaration_path;
         std::vector<TypeDeclaration*>& types = find_declaration->second;
 
-        bool ambiguous = false;
         TypeDeclaration* last_match = nullptr;
         int last_match_strength = -1;
 
@@ -294,25 +292,253 @@ TypeDeclaration* DeclarationLinking::getType(Scope* source, PendingDeclaration* 
                 continue;
             }
             if (last_match_strength < dif){
-                //TODO
+                last_match = type;
+                last_match_strength = dif;
+                continue;
             }
-            if (last_match_strength == dif){
+            else if (last_match_strength == dif){
                 //ambiguous
+                return nullptr;
+            }
+            else{
+                //unreachable
             }
         }
 
-
+        if (last_match){
+            if (last_match_strength_target){
+                (*last_match_strength_target = last_match_strength);
+            }
+            return last_match;
+        }
     }
-
+    if (other_files){
+        TypeDeclaration* last_match = nullptr;
+        int last_match_strength = -1;
+        for (FileInterface* fInterface : source->f_parent_interface->imports){
+            int last_match_strength_ptr = -1;
+            TypeDeclaration* type = fInterface->f_accessibles.getType(source, decl, false, &last_match_strength_ptr);
+            if (type && last_match_strength >= 0){ //redundant
+                if (last_match_strength < last_match_strength_ptr){
+                    last_match = type;
+                    last_match_strength = last_match_strength_ptr;
+                }
+                else if (last_match_strength == last_match_strength_ptr){
+                    //ambiguous
+                    return nullptr;
+                }
+            }
+        }
+        return last_match;
+    }
+    return nullptr;
 }
-FieldDeclaration* DeclarationLinking::getField(Scope* source, PendingDeclaration*){
+FieldDeclaration* DeclarationLinking::getField(Scope* source, PendingDeclaration* decl, bool other_files, int* last_match_strength_target){
+    auto find_declaration = f_fields.find(decl->f_key);
+    if (find_declaration != f_fields.end()){
+        while (source->f_ctype != CompilableType::DECLARATION){
+            source = source->f_parent;
+            if (!source)
+            {
+                break;
+            }
+        }
+        std::vector<std::string> local_path = source ? ((Namespace*)source)->f_declaration_path : std::vector<std::string>();
+        if (source){
+            local_path.push_back(((Namespace*)source)->f_key);
+        }
+        std::vector<std::string>& referenced_path = decl->f_declaration_path;
+        std::vector<FieldDeclaration*>& fields = find_declaration->second;
 
+        FieldDeclaration* last_match = nullptr;
+        int last_match_strength = -1;
+
+        for (size_t i = fields.size() - 1; i >= 0; --i){
+            FieldDeclaration* field = fields.at(i);
+            if (field->f_declaration_path.size() < last_match_strength){ //only works because the code is iterated one depth at a time
+                break;
+            }
+            size_t j = decl->f_declaration_path.size() - 1;
+            long long dif = field->f_declaration_path.size() - 1 - j;
+            if (dif < 0){
+                break;
+            }
+            bool match = true;
+            while (match && j >= 0){
+                match = decl->f_declaration_path.at(j) == field->f_declaration_path.at(dif+j);
+                --j;
+            }
+            if (!match){
+                continue;
+            }
+            for(j = 0; match && j < dif; ++j){
+                match = local_path.at(j) == field->f_declaration_path.at(j);
+            }
+            if (!match){
+                continue;
+            }
+            if (last_match_strength < dif){
+                last_match = field;
+                last_match_strength = dif;
+                continue;
+            }
+            else if (last_match_strength == dif){
+                //ambiguous
+                return nullptr;
+            }
+            else{
+                //unreachable
+            }
+        }
+
+        if (last_match){
+            if (last_match_strength_target){
+                (*last_match_strength_target = last_match_strength);
+            }
+            return last_match;
+        }
+    }
+    if (other_files){
+        FieldDeclaration* last_match = nullptr;
+        int last_match_strength = -1;
+        for (FileInterface* fInterface : source->f_parent_interface->imports){
+            int last_match_strength_ptr = -1;
+            FieldDeclaration* field = fInterface->f_accessibles.getField(source, decl, false, &last_match_strength_ptr);
+            if (field && last_match_strength >= 0){ //redundant
+                if (last_match_strength < last_match_strength_ptr){
+                    last_match = field;
+                    last_match_strength = last_match_strength_ptr;
+                }
+                else if (last_match_strength == last_match_strength_ptr){
+                    //ambiguous
+                    return nullptr;
+                }
+            }
+        }
+        return last_match;
+    }
+    return nullptr;
 }
-FunctionDeclaration* DeclarationLinking::getFunction(Scope* source, PendingDeclaration*, std::vector<ValueHolder*>&){
+FunctionDeclaration* DeclarationLinking::getFunction(Scope* source, PendingDeclaration* decl, std::vector<ValueHolder*>& param_types, bool other_files, int* last_match_strength_target, int* last_match_param_index_target){
+    auto find_declaration = f_functions.find(decl->f_key);
+    if (find_declaration != f_functions.end()){
+        while (source->f_ctype != CompilableType::DECLARATION){
+            source = source->f_parent;
+            if (!source)
+            {
+                break;
+            }
+        }
+        std::vector<std::string> local_path = source ? ((Namespace*)source)->f_declaration_path : std::vector<std::string>();
+        if (source){
+            local_path.push_back(((Namespace*)source)->f_key);
+        }
+        std::vector<std::string>& referenced_path = decl->f_declaration_path;
+        std::vector<FunctionDeclaration*>& functions = find_declaration->second;
 
+        FunctionDeclaration* last_match = nullptr;
+        int last_match_strength = -1;
+
+        size_t last_match_param_index = 0;
+
+        for (size_t i = functions.size() - 1; i >= 0; --i){
+            FunctionDeclaration* function = functions.at(i);
+            if (function->f_declaration_path.size() < last_match_strength){ //only works because the code is iterated one depth at a time
+                break;
+            }
+            size_t j = decl->f_declaration_path.size() - 1;
+            long long dif = function->f_declaration_path.size() - 1 - j;
+            if (dif < 0){
+                break;
+            }
+            bool match = true;
+            while (match && j >= 0){
+                match = decl->f_declaration_path.at(j) == function->f_declaration_path.at(dif+j);
+                --j;
+            }
+            if (!match){
+                continue;
+            }
+            for(j = 0; match && j < dif; ++j){
+                match = local_path.at(j) == function->f_declaration_path.at(j);
+            }
+            if (!match){
+                continue;
+            }
+            //TODO function params match
+            std::vector<FieldDeclaration*>& params = last_match->f_parameters;
+            if (params.size() < param_types.size()){
+                continue;
+            }
+            size_t k;
+            for (k = 0; k < param_types.size(); ++k){
+                if (((TypeDeclaration*)param_types.at(k)->f_type)->conversionTo((TypeDeclaration*)params.at(k)->f_type) != Castable::DIRECT){
+                    match = false;
+                    break;
+                }
+            }
+            if (!match){
+                continue;
+            }
+            if (last_match_strength < dif){
+                last_match = function;
+                last_match_strength = dif;
+                last_match_param_index = k;
+                continue;
+            }
+            else if (last_match_strength == dif){
+                //ambiguous
+                return nullptr;
+            }
+            else{
+                //unreachable
+            }
+        }
+
+        if (last_match){
+            
+            if (last_match_strength_target){
+                (*last_match_strength_target = last_match_strength);
+            }
+            if (last_match_param_index_target){
+                (*last_match_param_index_target = last_match_param_index);
+            }else{
+                for (size_t i = last_match_param_index; i < last_match->f_parameters.size()){
+                    ValueHolder* initializer = last_match->f_parameters.at(i)->f_initializer;
+                    if (!initializer){
+                        //error
+                        return nullptr;
+                    }
+                    param_types.push_back(initializer);
+                }
+            }
+            return last_match;
+        }
+    }
+    if (other_files){
+        FunctionDeclaration* last_match = nullptr;
+        int last_match_strength = -1;
+        for (FileInterface* fInterface : source->f_parent_interface->imports){
+            int last_match_strength_ptr = -1;
+            int last_match_param_index_ptr;
+            FunctionDeclaration* function = fInterface->f_accessibles.getFunction(source, decl, param_types, false, &last_match_strength_ptr, &last_match_param_index_ptr);
+            if (function && last_match_strength >= 0){ //redundant
+                if (last_match_strength < last_match_strength_ptr){
+                    last_match = function;
+                    last_match_strength = last_match_strength_ptr;
+                }
+                else if (last_match_strength == last_match_strength_ptr){
+                    //ambiguous
+                    return nullptr;
+                }
+            }
+        }
+        return last_match;
+    }
+    return nullptr;
 }
 bool DeclarationLinking::addField(FieldDeclaration* decl){
-
+    
 }
 bool DeclarationLinking::addFunction(FunctionDeclaration* decl){
 

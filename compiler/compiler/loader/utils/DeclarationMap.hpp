@@ -56,9 +56,9 @@ namespace nylium{
         std::map<std::string, std::vector<FieldDeclaration*>> f_fields;
         std::map<std::string, std::vector<FunctionDeclaration*>> f_functions;
         std::map<std::string, std::vector<TypeDeclaration*>> f_classes;
-        TypeDeclaration* getType(Scope* source, PendingDeclaration*, bool = true);
-        FieldDeclaration* getField(Scope* source, PendingDeclaration*, bool = true);
-        FunctionDeclaration* getFunction(Scope* source, PendingDeclaration*, std::vector<ValueHolder*>&, bool = true);
+        TypeDeclaration* getType(Scope* source, PendingDeclaration*, bool = true, int* = nullptr);
+        FieldDeclaration* getField(Scope* source, PendingDeclaration*, bool = true, int* = nullptr);
+        FunctionDeclaration* getFunction(Scope* source, PendingDeclaration*, std::vector<ValueHolder*>&, bool = true, int* = nullptr, int* = nullptr);
         bool addField(FieldDeclaration* decl);
         bool addFunction(FunctionDeclaration* decl);
         bool addType(TypeDeclaration* decl);
