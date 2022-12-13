@@ -15,11 +15,19 @@
  */
 #include "PendingDeclaration.hpp"
 #include "../../../log/logger.hpp"
+#include "compilable/Scope.hpp"
 
 using namespace nylium;
 
-PendingDeclaration::PendingDeclaration(DeclarationAttributes* attributes, std::string& label, PendingDeclaration* type, ValueHolderType vhtype) : Declaration(attributes, type, label, vhtype){
-    
+PendingDeclaration::PendingDeclaration(DeclarationAttributes* attributes, std::string& label, Scope* parent, PendingDeclaration* type, ValueHolderType vhtype) : Declaration(attributes, type, label, vhtype){
+    while(parent->f_ctype != CompilableType::DECLARATION){
+        parent = parent->f_parent;
+        if (!parent){
+            return;
+        }
+    }
+    this->f_declaration_path = ((PendingDeclaration*)parent)->f_declaration_path;
+    this->f_declaration_path.push_back(((PendingDeclaration*)parent)->f_key);
 }
 
 PendingDeclaration::PendingDeclaration(std::string& label, std::vector<std::string>& declaration_path) : Declaration(nullptr, nullptr, label, ValueHolderType::PENDING_DECLARATION){

@@ -30,7 +30,7 @@ namespace nylium{
     struct PendingDeclaration;
 
     struct DeclarationContainer{
-        std::vector<Namespace*> f_namespace;
+        TypeDeclaration* f_namespace;
         FieldDeclaration* f_field = nullptr;
         std::vector<FunctionDeclaration*> f_functions;
     };
@@ -39,9 +39,7 @@ namespace nylium{
         Scope* f_scope;
         int resolve_flags = 0x0;
         std::map<std::string, DeclarationContainer*> declarations;
-        Namespace* getNamespace(PendingDeclaration*);
-        FieldDeclaration* getField(PendingDeclaration*);
-        FunctionDeclaration* getFunction(PendingDeclaration*, std::vector<ValueHolder*>&);
+        
         std::vector<Namespace*> getNamespaces(std::vector<std::string>);
         void resolveTypes();
         void resolveFields();
@@ -49,6 +47,21 @@ namespace nylium{
         void resolveOperations();
         bool addDeclaration(Declaration*);
         inline DeclarationMap(Scope* scope){f_scope = scope;}
+        TypeDeclaration* getType(PendingDeclaration*);
+        FieldDeclaration* getField(PendingDeclaration*);
+        FunctionDeclaration* getFunction(PendingDeclaration*, std::vector<ValueHolder*>&);
+    };
+
+    struct DeclarationLinking{
+        std::map<std::string, std::vector<FieldDeclaration*>> f_fields;
+        std::map<std::string, std::vector<FunctionDeclaration*>> f_functions;
+        std::map<std::string, std::vector<TypeDeclaration*>> f_classes;
+        TypeDeclaration* getType(Scope* source, PendingDeclaration*, bool = true);
+        FieldDeclaration* getField(Scope* source, PendingDeclaration*, bool = true);
+        FunctionDeclaration* getFunction(Scope* source, PendingDeclaration*, std::vector<ValueHolder*>&, bool = true);
+        bool addField(FieldDeclaration* decl);
+        bool addFunction(FunctionDeclaration* decl);
+        bool addType(TypeDeclaration* decl);
     };
 
 }

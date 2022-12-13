@@ -19,6 +19,7 @@
 #include <vector>
 #include "../../../fileutils/file_io.hpp"
 #include "Project.hpp"
+#include "../utils/DeclarationMap.hpp"
 
 
 namespace nylium{
@@ -29,6 +30,8 @@ namespace nylium{
     struct FileInterface : ProjectContent {
         std::string name, import_path;
         std::vector<FileInterface*> imports;
+
+        DeclarationLinking f_accessibles;
 
         Scope* main_scope;
 
