@@ -53,6 +53,9 @@ void CallOperation::resolve(){
     }
     f_result = container->second->f_field;
     f_type = f_result->f_type;
+    if (f_result->f_attributes->f_static == Boolean::TRUE){
+        //error
+    }
 }
 
 void CallOperation::debug_print(int depth){

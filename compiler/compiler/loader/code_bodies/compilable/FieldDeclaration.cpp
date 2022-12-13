@@ -21,6 +21,16 @@ using namespace nylium;
 
 FieldDeclaration::FieldDeclaration(DeclarationAttributes* attributes, PendingDeclaration* type, std::string& label, Scope* container, AssignOperation* initializer) : PendingDeclaration(attributes, label, container, type, ValueHolderType::FIELD){
     this->f_initializer = initializer;
+
+    if (attributes->f_final == Boolean::DEFAULT){
+        attributes->f_final == Boolean::FALSE;
+    }
+    if (attributes->f_static == Boolean::DEFAULT){
+        attributes->f_static = container->f_layer == SCOPE_LAYER::MAIN ? Boolean::TRUE : Boolean::FALSE;
+    }
+    if (attributes->f_visibility == Visibility::DEFAULT){
+        attributes->f_visibility = container->f_layer == SCOPE_LAYER::MAIN ? Visibility::PROTECTED : Visibility::PRIVATE;
+    }
 }
 
 void FieldDeclaration::compile(Assembly* assembly){

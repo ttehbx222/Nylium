@@ -18,11 +18,15 @@
 
 using namespace nylium;
 
-FunctionCallOperation::FunctionCallOperation(ValueHolder* target, std::string& label, std::vector<ValueHolder*>& arguments, bool f_static) : CallOperation(target, f_static, label, OperationType::FUNCTION){
+FunctionCallOperation::FunctionCallOperation(ValueHolder* target, std::string& label, std::vector<ValueHolder*>& arguments, Scope* container, bool f_static) : CallOperation(target, f_static, label, container, OperationType::FUNCTION){
     f_arguments = arguments;
 }
 
 void FunctionCallOperation::compile(Assembly* assembly){
+    
+}
+
+void FunctionCallOperation::resolve(){
     
 }
 

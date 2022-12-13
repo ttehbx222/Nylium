@@ -20,6 +20,8 @@
 
 using namespace nylium;
 
+//TODO encapsulation
+
 constexpr int TYPES_RESOLVE = 0x1;
 constexpr int FIELDS_RESOLVE = 0x2;
 constexpr int FUNCTIONS_RESOLVE = 0x4;
