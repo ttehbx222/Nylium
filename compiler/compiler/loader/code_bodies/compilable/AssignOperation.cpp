@@ -16,11 +16,14 @@
 #include "AssignOperation.hpp"
 #include "Literal.hpp"
 #include "../../../preassembler/utils/Names.hpp"
+#include "Scope.hpp"
+#include "FieldDeclaration.hpp"
+#include "TypeDeclaration.hpp"
 #include "../../../../log/logger.hpp"
 
 using namespace nylium;
 
-AssignOperation::AssignOperation(ValueHolder* target, ValueHolder* source) : Operation(target->f_type, target, OperationType::ASSIGN){
+AssignOperation::AssignOperation(ValueHolder* target, ValueHolder* source, Scope* container) : Operation(target->f_type, target, OperationType::ASSIGN, container){
     this->f_source = source;
 }
 
@@ -35,6 +38,30 @@ void AssignOperation::compile(Assembly* assembly){
         }
     }
     //error
+}
+
+void AssignOperation::resolve(){
+    if (f_target->f_vhtype == ValueHolderType::PENDING_DECLARATION){
+        f_target = f_container->f_accessibles.getField((PendingDeclaration*)f_target);
+    }else{
+        f_target->resolve();
+    }
+    if (!f_target){
+        //error
+    }else{
+        f_type = f_target->f_type;
+    }
+    if (f_source->f_vhtype == ValueHolderType::PENDING_DECLARATION){
+        f_source = f_container->f_accessibles.getField((PendingDeclaration*)f_source);
+    }else{
+        f_source->resolve();
+    }
+    if (!f_source){
+        //error
+    }
+    if (((TypeDeclaration*)f_source->f_type)->conversionTo((TypeDeclaration*)f_target->f_type) != Castable::DIRECT){
+        //error
+    }
 }
 
 void AssignOperation::debug_print(int depth){

@@ -22,8 +22,9 @@ namespace nylium{
     struct AssignOperation : public Operation {
         ValueHolder* f_source;
         void compile(Assembly*);
-        AssignOperation(ValueHolder* target, ValueHolder* f_source);
+        AssignOperation(ValueHolder* target, ValueHolder* f_source, Scope* container);
         void debug_print(int depth);
+        void resolve();
     };
 
 }

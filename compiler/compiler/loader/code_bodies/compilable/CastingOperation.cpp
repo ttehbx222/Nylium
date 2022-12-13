@@ -14,17 +14,34 @@
  * limitations under the License.
  */
 #include "CastingOperation.hpp"
+#include "TypeDeclaration.hpp"
+#include "FieldDeclaration.hpp"
 #include "../PendingDeclaration.hpp"
 #include "../../../../log/logger.hpp"
 
 using namespace nylium;
 
-CastingOperation::CastingOperation(ValueHolder* target, PendingDeclaration* target_type) : Operation(target_type, target, OperationType::CAST){
-    f_target_type = target_type;
+CastingOperation::CastingOperation(ValueHolder* target, PendingDeclaration* target_type, Scope* container) : Operation(target_type, target, OperationType::CAST, container){
+    
 }
 
 void CastingOperation::compile(Assembly* assembly){
-    
+    if (f_target->f_vhtype == ValueHolderType::PENDING_DECLARATION){
+        f_target = f_container->f_accessibles.getField((PendingDeclaration*)f_target);
+    }else{
+        f_target->resolve();
+    }
+    if (!f_target){
+        //error
+    }
+    f_type = f_container->f_accessibles.getType(f_type);
+    if (!f_type){
+        //error
+    }
+}
+
+void CastingOperation::resolve(){
+
 }
 
 void CastingOperation::debug_print(int depth){
@@ -35,5 +52,5 @@ void CastingOperation::debug_print(int depth){
     }
     f_target->debug_print(depth);
     nlog::log(loglevel, out + LOGGING_TABULATOR + "cast");
-    f_target_type->debug_print(depth+2);
+    f_type->debug_print(depth+2);
 }

@@ -17,7 +17,7 @@
 
 using namespace nylium;
 
-ValueHolder::ValueHolder(ValueHolderType vhtype, PendingDeclaration* type, CompilableType ctype) : CompilableBody(ctype){
+ValueHolder::ValueHolder(ValueHolderType vhtype, PendingDeclaration* type, CompilableType ctype, Scope* container) : CompilableBody(ctype, container){
     this->f_vhtype = vhtype;
     this->f_type = type;
 }

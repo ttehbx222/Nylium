@@ -14,16 +14,27 @@
  * limitations under the License.
  */
 #include "FieldDeclaration.hpp"
+#include "TypeDeclaration.hpp"
 #include "../../../../log/logger.hpp"
 
 using namespace nylium;
 
-FieldDeclaration::FieldDeclaration(DeclarationAttributes* attributes, PendingDeclaration* type, std::string& label, AssignOperation* initializer) : PendingDeclaration(attributes, label, type, ValueHolderType::FIELD){
+FieldDeclaration::FieldDeclaration(DeclarationAttributes* attributes, PendingDeclaration* type, std::string& label, Scope* container, AssignOperation* initializer) : PendingDeclaration(attributes, label, container, type, ValueHolderType::FIELD){
     this->f_initializer = initializer;
 }
 
 void FieldDeclaration::compile(Assembly* assembly){
     //TODO
+}
+
+void FieldDeclaration::resolve(){
+    f_type = f_container->f_accessibles.getType(f_type);
+    if (!f_type){
+        //error
+    }
+    if (f_initializer){
+        f_initializer->resolve();
+    }
 }
 
 void FieldDeclaration::debug_print(int depth){

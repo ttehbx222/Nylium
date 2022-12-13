@@ -20,10 +20,10 @@
 namespace nylium{
 
     struct CastingOperation : public Operation {
-        PendingDeclaration* f_target_type;
-        CastingOperation(ValueHolder* target, PendingDeclaration* target_type);
+        CastingOperation(ValueHolder* target, PendingDeclaration* target_type, Scope* container);
         void compile(Assembly*);
         void debug_print(int depth);
+        void resolve();
     };
 
 }

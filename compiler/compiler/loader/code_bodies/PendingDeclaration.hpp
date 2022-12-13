@@ -28,6 +28,9 @@ namespace nylium{
             //error
         }
         virtual void debug_print(int depth);
+        virtual void resolve(){
+            //error
+        }
     };
 
 }

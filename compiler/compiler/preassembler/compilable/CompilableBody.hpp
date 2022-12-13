@@ -26,11 +26,14 @@ namespace nylium{
         LITERAL
     };
 
+    struct Scope;
+
     struct CompilableBody {
         size_t f_orderIndex;
+        Scope* f_container;
         CompilableType f_ctype;
         virtual void compile(Assembly* assembly) = 0;
-        CompilableBody(CompilableType ctype);
+        CompilableBody(CompilableType ctype, Scope* container);
         virtual void debug_print(int depth) = 0;
         virtual void resolve() = 0;
     };

@@ -14,17 +14,45 @@
  * limitations under the License.
  */
 #include "CallOperation.hpp"
+#include "TypeDeclaration.hpp"
+#include "FieldDeclaration.hpp"
 #include "../../../../log/logger.hpp"
 
 using namespace nylium;
 
-CallOperation::CallOperation(ValueHolder* target, bool f_static, std::string& key, OperationType otype) : Operation(nullptr, target, otype) {
+CallOperation::CallOperation(ValueHolder* target, bool f_static, std::string& key, Scope* container, OperationType otype) : Operation(nullptr, target, otype, container) {
     this->f_static = f_static;
     this->f_key = key;
 }
 
 void CallOperation::compile(Assembly* assembly){
     //TODO
+}
+
+void CallOperation::resolve(){
+    if (f_target->f_vhtype == ValueHolderType::PENDING_DECLARATION){
+        f_target = f_container->f_accessibles.getField((PendingDeclaration*)f_target);
+    }else{
+        f_target->resolve();
+    }
+    if (!f_target){
+        //error
+    }
+    if (f_static){
+        //error
+    }
+    TypeDeclaration* type = (TypeDeclaration*)f_target->f_type;
+    auto container = type->f_accessibles.declarations.find(f_key);
+    if (container == type->f_accessibles.declarations.end()){
+        //error
+        return;
+    }
+    if (!container->second->f_field){
+        //error
+        return;
+    }
+    f_result = container->second->f_field;
+    f_type = f_result->f_type;
 }
 
 void CallOperation::debug_print(int depth){

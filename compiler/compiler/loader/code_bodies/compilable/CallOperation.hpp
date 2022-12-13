@@ -19,12 +19,16 @@
 
 namespace nylium{
 
+    struct PendingDeclaration;
+
     struct CallOperation : public Operation {
         bool f_static; 
         std::string f_key;
-        CallOperation(ValueHolder* target, bool f_static, std::string& key, OperationType otype = OperationType::CALL);
+        PendingDeclaration* f_result = nullptr;
+        CallOperation(ValueHolder* target, bool f_static, std::string& key, Scope* container, OperationType otype = OperationType::CALL);
         virtual void compile(Assembly*);
         virtual void debug_print(int depth);
+        virtual void resolve();
     };
 
 }

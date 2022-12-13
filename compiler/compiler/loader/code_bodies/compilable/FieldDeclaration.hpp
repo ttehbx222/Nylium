@@ -22,9 +22,10 @@ namespace nylium{
 
     struct FieldDeclaration : public PendingDeclaration {
         AssignOperation* f_initializer;
-        FieldDeclaration(DeclarationAttributes* attributes, PendingDeclaration* type, std::string& label, AssignOperation* initializer = nullptr);
+        FieldDeclaration(DeclarationAttributes* attributes, PendingDeclaration* type, std::string& label, Scope* container, AssignOperation* initializer = nullptr);
         void compile(Assembly*);
         void debug_print(int depth);
+        void resolve();
     };
 
 }

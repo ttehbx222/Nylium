@@ -51,20 +51,21 @@ bool DeclarationMap::addDeclaration(Declaration* decl){ //TODO not add to interf
         }
         case ValueHolderType::NAMESPACE:
         {
-            if ((!declarationContainer->second->f_namespace.empty()) && declarationContainer->second->f_namespace.front()->f_vhtype == ValueHolderType::TYPE){
+            //error
+            /*if (declarationContainer->second->f_namespace) {
                 //error
                 return false;
             }
             declarationContainer->second->f_namespace.push_back((Namespace*)decl);
-            break;
+            break;*/
         }
         case ValueHolderType::TYPE:
         {
-            if (!declarationContainer->second->f_namespace.empty()){
+            if (declarationContainer->second->f_namespace){
                 //error
                 return false;
             }
-            declarationContainer->second->f_namespace.push_back((Namespace*)decl);
+            declarationContainer->second->f_namespace = (TypeDeclaration*)decl;
             this->f_scope->f_parent_interface->f_accessibles.addType((TypeDeclaration*)decl);
             break;
         }
@@ -503,7 +504,7 @@ FunctionDeclaration* DeclarationLinking::getFunction(Scope* source, PendingDecla
             if (last_match_param_index_target){
                 (*last_match_param_index_target = last_match_param_index);
             }else{
-                for (size_t i = last_match_param_index; i < last_match->f_parameters.size()){
+                for (size_t i = last_match_param_index; i < last_match->f_parameters.size(); ++i){
                     ValueHolder* initializer = last_match->f_parameters.at(i)->f_initializer;
                     if (!initializer){
                         //error
@@ -538,11 +539,29 @@ FunctionDeclaration* DeclarationLinking::getFunction(Scope* source, PendingDecla
     return nullptr;
 }
 bool DeclarationLinking::addField(FieldDeclaration* decl){
-    
+    auto container = f_fields.find(decl->f_key);
+    if (container == f_fields.end()){
+        f_fields.insert(std::pair<std::string, std::vector<FieldDeclaration*>>(decl->f_key, std::vector<FieldDeclaration*>()));
+        container = f_fields.find(decl->f_key);
+    }
+    container->second.push_back(decl);
+    return true; //no check for ambiguity yet
 }
 bool DeclarationLinking::addFunction(FunctionDeclaration* decl){
-
+    auto container = f_functions.find(decl->f_key);
+    if (container == f_functions.end()){
+        f_functions.insert(std::pair<std::string, std::vector<FunctionDeclaration*>>(decl->f_key, std::vector<FunctionDeclaration*>()));
+        container = f_functions.find(decl->f_key);
+    }
+    container->second.push_back(decl);
+    return true; //no check for ambiguity yet
 }
 bool DeclarationLinking::addType(TypeDeclaration* decl){
-
+    auto container = f_classes.find(decl->f_key);
+    if (container == f_classes.end()){
+        f_classes.insert(std::pair<std::string, std::vector<TypeDeclaration*>>(decl->f_key, std::vector<TypeDeclaration*>()));
+        container = f_classes.find(decl->f_key);
+    }
+    container->second.push_back(decl);
+    return true; //no check for ambiguity yet
 }

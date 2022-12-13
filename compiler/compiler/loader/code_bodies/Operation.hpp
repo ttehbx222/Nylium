@@ -31,7 +31,7 @@ namespace nylium{
     struct Operation : public CodeLine, public ValueHolder {
         OperationType f_otype;
         ValueHolder* f_target;
-        Operation(PendingDeclaration* type, ValueHolder* target, OperationType otype, CompilableType ctype = CompilableType::OPERATION);
+        Operation(PendingDeclaration* type, ValueHolder* target, OperationType otype, Scope* container, CompilableType ctype = CompilableType::OPERATION);
     };
 
 }

@@ -15,15 +15,18 @@
  */
 #include "CompilableBody.hpp"
 
+#include "../../loader/code_bodies/compilable/Scope.hpp"
+
 #include "../../../log/logger.hpp"
 
 using namespace nylium;
 
 size_t index = 0;
 
-CompilableBody::CompilableBody(CompilableType ctype){
+CompilableBody::CompilableBody(CompilableType ctype, Scope* container){
     this->f_orderIndex = index++;
     this->f_ctype = ctype;
+    this->f_container = container;
 
     if (nlog::lowestRelevantLogLevel() >= nlog::LOGLEVEL::DEBUG_3){
         nlog::log(nlog::LOGLEVEL::DEBUG_3, std::string("building CompilableBody #") + std::to_string(f_orderIndex));
