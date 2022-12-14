@@ -30,7 +30,7 @@ void FunctionCallOperation::compile(Assembly* assembly){
 }
 
 void FunctionCallOperation::resolve(){
-    //TODO handle no type
+    //TODO handle no target
     for (size_t i = 0; i < f_arguments.size(); ++i){
         ValueHolder*& vh = f_arguments.at(i);
         if (vh->f_vhtype == ValueHolderType::PENDING_DECLARATION){

@@ -999,8 +999,22 @@ namespace builder{
                         last = new FunctionCallOperation(type, std::string(""), arguments);
                         break;
                     }
+                    std::string name = seq->chars;
+                    element = text->f_current_target->read(read_pos);
+                    if (element->elementType() == ElementType::BRACKET && ((SequenceBracket*)element)->f_btype != BracketListType::ENDED_LINE_LIST){
+                        std::vector<ValueHolder*> arguments;
+                        SequenceLine* temp = text->f_current_target;
+                        for (SequenceLine* line : ((SequenceBracket*)element)->f_contents){
+                            size_t temp_read_pos = 0;
+                            text->f_current_target = line;
+                            arguments.push_back(misc::buildValueHolder(scope, text, &temp_read_pos));
+                        }
+                        text->f_current_target = temp;
+                        last = new FunctionCallOperation(nullptr, name, arguments);
+                        break;
+                    }
                     //TODO function call operation
-                    --(*read_pos);
+                    (*read_pos)-=2;
                     last = declaration::buildPendingDeclaration(scope, text, read_pos);
                     break;
                 }
