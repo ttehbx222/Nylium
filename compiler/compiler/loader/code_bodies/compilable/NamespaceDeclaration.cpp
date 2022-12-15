@@ -19,13 +19,17 @@
 
 using namespace nylium;
 
-Namespace::Namespace(DeclarationAttributes* attributes, std::string& name, Scope* scope, SequenceScope* text_code, PendingDeclaration* type, ValueHolderType vhtype) : Scope(scope, text_code, CompilableType::DECLARATION), PendingDeclaration(attributes, name, type, vhtype){
+Namespace::Namespace(DeclarationAttributes* attributes, std::string& name, Scope* scope, SequenceScope* text_code, PendingDeclaration* type, ValueHolderType vhtype) : Scope(scope, text_code, CompilableType::DECLARATION), PendingDeclaration(attributes, name, scope, type, vhtype){
     if (attributes->f_dtype == DeclarationType::NAMESPACE){
     }
 }
 
 void Namespace::compile(Assembly* assembly){
     //TODO
+}
+
+void Namespace::resolve(){
+    //this->resolveScope(); //reachable?
 }
 
 void Namespace::debug_print(int depth){

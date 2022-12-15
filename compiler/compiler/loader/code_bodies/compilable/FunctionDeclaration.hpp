@@ -26,6 +26,7 @@ namespace nylium{
         FunctionDeclaration(DeclarationAttributes* attributes, PendingDeclaration* return_type, std::string& name, Scope* scope, SequenceScope* text_code, std::vector<FieldDeclaration*>& parameters);
         virtual void compile(Assembly*);
         void debug_print(int depth);
+        void resolve();
     };
 
 }

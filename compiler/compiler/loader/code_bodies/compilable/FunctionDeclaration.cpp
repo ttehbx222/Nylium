@@ -17,8 +17,8 @@
 
 #include "../../load_iterations/0_CharSequences.hpp"
 
-#include "../../../error_handling/errors/CB001.hpp"
-#include "../../../error_handling/errors/CB004.hpp"
+#include "TypeDeclaration.hpp"
+
 #include "../../../../log/logger.hpp"
 
 using namespace nylium;
@@ -30,6 +30,17 @@ FunctionDeclaration::FunctionDeclaration(DeclarationAttributes* attributes, Pend
 
 void FunctionDeclaration::compile(Assembly* assembly){
     //TODO
+}
+
+void FunctionDeclaration::resolve(){
+    for (FieldDeclaration* param : f_parameters){
+        param->resolve();
+    }
+    f_type = ((Scope*)this)->f_container->f_accessibles.getType(f_type);
+    if (!f_type){
+        //error
+    }
+    this->resolveScope();
 }
 
 void FunctionDeclaration::debug_print(int depth){

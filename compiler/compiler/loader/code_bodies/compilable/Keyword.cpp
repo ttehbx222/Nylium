@@ -17,6 +17,6 @@
 
 using namespace nylium;
 
-Keyword::Keyword(KeywordType kwtype) : Operation(nullptr, nullptr, OperationType::KEYWORD, CompilableType::KEYWORD){
+Keyword::Keyword(KeywordType kwtype, Scope* container) : Operation(nullptr, nullptr, OperationType::KEYWORD, container, CompilableType::KEYWORD){
     this->f_kwtype = kwtype;
 }

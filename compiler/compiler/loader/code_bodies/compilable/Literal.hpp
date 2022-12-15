@@ -23,10 +23,11 @@ namespace nylium{
         std::string f_chars;
         void* f_data;
         size_t f_size;
-        Literal(PendingDeclaration* type, void* data, size_t size, std::string& chars);
+        Literal(PendingDeclaration* type, void* data, size_t size, std::string& chars, Scope* container);
         //TODO
         void compile(Assembly*);
         void debug_print(int depth);
+        void resolve() {};
     };
 
 }

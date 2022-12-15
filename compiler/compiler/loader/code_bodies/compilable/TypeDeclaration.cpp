@@ -29,6 +29,10 @@ void TypeDeclaration::compile(Assembly* assembly){
     //TODO
 }
 
+void TypeDeclaration::resolve(){
+    //
+}
+
 Castable TypeDeclaration::conversionTo(TypeDeclaration* declaration){
     //TODO
     return Castable::IMPOSSIBLE;

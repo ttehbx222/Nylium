@@ -54,7 +54,11 @@ namespace nylium{
 
 			void resolveDeclarations();
 
+			void resolveScope();
+			virtual void resolve();
+
 			virtual void compile(Assembly*);
+			//void compileCloseNamespace();
 			virtual void debug_print(int depth);
 	};
 

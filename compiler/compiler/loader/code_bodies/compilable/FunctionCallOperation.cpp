@@ -21,7 +21,7 @@
 
 using namespace nylium;
 
-FunctionCallOperation::FunctionCallOperation(ValueHolder* target, std::string& label, std::vector<ValueHolder*>& arguments, Scope* container, bool f_static) : CallOperation(target, f_static, label, container, OperationType::FUNCTION){
+FunctionCallOperation::FunctionCallOperation(PendingDeclaration* target, std::string& label, std::vector<ValueHolder*>& arguments, Scope* container, bool f_static) : CallOperation(target, f_static, label, container, OperationType::FUNCTION){
     f_arguments = arguments;
 }
 
@@ -39,8 +39,21 @@ void FunctionCallOperation::resolve(){
             vh->resolve();
         }
     }
+    if(!f_target){
+        f_result = f_container->f_accessibles.getFunction(new PendingDeclaration(f_key), f_arguments);
+        if (!f_result){
+            //error
+        }
+        return;
+    }
     if (f_static){
-        
+        std::vector<std::string> path = ((PendingDeclaration*)f_target)->f_declaration_path;
+        path.push_back(((PendingDeclaration*)f_target)->f_key);
+        PendingDeclaration* search = new PendingDeclaration(f_key, path);
+        f_result = f_container->f_accessibles.getFunction(search, f_arguments);
+        if (!f_result){
+            //error
+        }
     }
     else{
         if (f_target->f_vhtype == ValueHolderType::PENDING_DECLARATION){

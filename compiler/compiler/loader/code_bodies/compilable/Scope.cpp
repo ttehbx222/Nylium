@@ -22,7 +22,7 @@
 
 using namespace nylium;
 
-Scope::Scope(Scope* scope, SequenceScope* seqScope, CompilableType ctype) : CompilableBody(ctype){
+Scope::Scope(Scope* scope, SequenceScope* seqScope, CompilableType ctype) : CompilableBody(ctype, scope){
     this->f_layer = scope->f_layer;
     this->f_parent = scope;
     this->f_text_code = seqScope;
@@ -30,13 +30,23 @@ Scope::Scope(Scope* scope, SequenceScope* seqScope, CompilableType ctype) : Comp
     this->f_depth = scope->f_depth+1;
 }
 
-Scope::Scope(FileInterface* fInterface) : CompilableBody(CompilableType::SCOPE){
+Scope::Scope(FileInterface* fInterface) : CompilableBody(CompilableType::SCOPE, nullptr){
     this->f_parent_interface = fInterface;
     this->f_text_code = &(fInterface->f_text->f_scope);
 }
 
 void Scope::compile(Assembly* assembly){
     //TODO
+}
+
+void Scope::resolve(){
+    resolveScope();
+}
+
+void Scope::resolveScope(){
+    for (CompilableBody* body : this->f_code){
+        body->resolve();
+    }
 }
 
 void Scope::debug_print(int depth){
